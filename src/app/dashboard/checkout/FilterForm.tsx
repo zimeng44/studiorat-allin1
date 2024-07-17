@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 // import { Checkbox } from "@/components/ui/checkbox";
 // import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { studioList } from "@/app/lib/definitions";
+import { studioList } from "@/data/definitions";
 
 import {
   Form,

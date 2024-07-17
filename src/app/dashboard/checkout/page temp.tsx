@@ -7,7 +7,7 @@ import InventoryTable from "@/components/custom/InventoryTable";
 import PaginationControls from "@/components/custom/PaginationControls";
 import React from "react";
 
-import { InventoryItem } from "@/data/definitions";
+import { CheckoutSessionType, InventoryItem } from "@/data/definitions";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,19 +16,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getInventoryItems, getItemsByQuery } from "@/data/loaders";
 import { inventoryColumns } from "@/data/inventoryColumns";
 
-function LinkCard(item: Readonly<InventoryItem>) {
+function LinkCard(session: Readonly<CheckoutSessionType>) {
   return (
-    <Link href={`/dashboard/master-inventory/${item.id}`}>
+    <Link href={`/dashboard/master-inventory/${session.id}`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-8 text-pink-500">
-            {item.make + " " + item.model || "Brand Model"}
-            {/* {item.model || "Model"} */}
+            {session.studio || "Studio"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-4 w-full leading-7">
-            {item.description.slice(0, 50) + "... [read more]"}
+            {session.studioUser[0].lastName || "User Name"}
           </p>
         </CardContent>
       </Card>
@@ -43,16 +42,9 @@ interface SearchParamsProps {
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    mTechBarcode?: string;
-    make?: string;
-    model?: string;
-    category?: string;
-    description?: string;
-    accessories?: string;
-    storageLocation?: string;
-    comments?: string;
-    out?: string;
-    broken?: string;
+    userName?: string;
+    monitorName?: string;
+    finished?: string;
   };
 }
 
@@ -64,16 +56,9 @@ export default async function MasterInventory({
   const sort = searchParams?.sort ?? "";
 
   const filter = {
-    mTechBarcode: searchParams?.mTechBarcode ?? "",
-    make: searchParams?.make ?? "",
-    model: searchParams?.model ?? "",
-    category: searchParams?.category ?? "",
-    description: searchParams?.description ?? "",
-    accessories: searchParams?.accessories ?? "",
-    storageLocation: searchParams?.storageLocation ?? "All",
-    comments: searchParams?.comments ?? "",
-    out: searchParams?.out === "true" ? true : false,
-    broken: searchParams?.broken === "true" ? true : false,
+    userName: searchParams?.userName ?? "",
+    monitorName: searchParams?.monitorName ?? "",
+    finished: searchParams?.finished ?? "All",
   };
 
   // console.log(filter.broken);
@@ -110,7 +95,11 @@ export default async function MasterInventory({
         </div>
 
         <TabsContent value="list">
-          <InventoryTable data={data} filter={filter} columns={inventoryColumns} />
+          <InventoryTable
+            data={data}
+            filter={filter}
+            columns={inventoryColumns}
+          />
         </TabsContent>
         <TabsContent value="icon">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

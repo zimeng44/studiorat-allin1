@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import AddForm from "./AddForm";
+import AddForm from "./NewCheckoutForm";
 import { useState } from "react";
-import { CheckoutSessionSent } from "@/app/lib/definitions";
+import { CheckoutSessionType } from "@/app/lib/definitions";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const apiToken = process.env.NEXT_PUBLIC_API_TOKEN;
@@ -10,7 +10,7 @@ const apiToken = process.env.NEXT_PUBLIC_API_TOKEN;
 const page = () => {
   const [addOpen, setAddOpen] = useState(false);
 
-  const addItem = async (newItem: CheckoutSessionSent) => {
+  const addItem = async (newItem: CheckoutSessionType) => {
     const res = await fetch(`${apiUrl}/checkout-sessions`, {
       method: "POST",
       headers: {

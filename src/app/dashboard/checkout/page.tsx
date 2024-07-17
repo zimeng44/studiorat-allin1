@@ -4,11 +4,7 @@ import React from "react";
 // import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import ServerTable from "./ServerTable";
-import {
-  InventoryItem,
-  CheckoutSessionSent,
-  CheckoutSessionReceived,
-} from "@/app/lib/definitions";
+import { CheckoutSessionType } from "@/data/definitions";
 import { useToast } from "@/components/ui/use-toast";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -56,7 +52,7 @@ export default function Checkout() {
     // console.log("Sort is ", newSort, desc);
   }
 
-  const addItem = async (newItem: CheckoutSessionSent) => {
+  const addItem = async (newItem: CheckoutSessionType) => {
     const res = await fetch(`${apiUrl}/checkout-sessions`, {
       method: "POST",
       headers: {
@@ -89,7 +85,7 @@ export default function Checkout() {
     return;
   };
 
-  const updateItem = async (updatedItem: CheckoutSessionSent, id: number) => {
+  const updateItem = async (updatedItem: CheckoutSessionType, id: number) => {
     const res = await fetch(`${apiUrl}/checkout-sessions/${id}`, {
       method: "PUT",
       headers: {

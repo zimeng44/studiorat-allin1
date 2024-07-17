@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { studioList } from "@/app/lib/definitions";
+import { studioList } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

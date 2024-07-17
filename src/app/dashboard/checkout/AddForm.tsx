@@ -25,7 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { DialogClose } from "@/components/ui/dialog";
-import { studioList } from "@/app/lib/definitions";
+import { CheckoutSessionType, studioList } from "@/data/definitions";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -43,7 +43,15 @@ const formSchema = z.object({
   studio_user: z.number().array(),
 });
 
-const AddForm = ({ rowData, addItem, setAddOpen }) => {
+const AddForm = ({
+  rowData,
+  addItem,
+  setAddOpen,
+}: {
+  rowData: CheckoutSessionType;
+  addItem: Function;
+  setAddOpen: Function;
+}) => {
   const [data, setData] = useState(rowData);
 
   // console.log(rowId);
