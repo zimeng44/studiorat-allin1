@@ -3,7 +3,11 @@ import { getAuthToken } from "./services/get-token";
 // import { unstable_noStore as noStore } from "next/cache";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { boolean } from "zod";
-import { CheckoutSessionType } from "@/app/lib/definitions";
+import {
+  CheckoutSessionType,
+  InventoryItem,
+  UserType,
+} from "@/data/definitions";
 
 interface InventoryFilterProps {
   mTechBarcode: string;
@@ -16,6 +20,40 @@ interface InventoryFilterProps {
   comments: string;
   out: boolean;
   broken: boolean;
+}
+
+interface CheckoutSessionsFilterProps {
+  id?: number;
+  createdFrom?: string;
+  createdTo?: string;
+  finishedFrom?: string;
+  finishedTo?: string;
+  stuIDCheckout?: string;
+  stuIDCheckin?: string;
+  studio?: string;
+  otherLocation?: string;
+  creationMonitor?: string;
+  finishMonitor?: string;
+  finished?: string;
+  notes?: string;
+  // inventory_items?: InventoryItem[];
+  // studioUser?: UserType[];
+}
+
+interface BookingsFilterProps {
+  id?: number;
+  startTimeFrom?: string;
+  startTimeTo?: string;
+  endTimeFrom?: string;
+  endTimeTo?: string;
+  user?: string;
+  useLocation?: string;
+  type?: string;
+  bookingCreator?: string;
+  notes?: string;
+  // inventory_items?: string;
+  // inventory_items?: InventoryItem[];
+  // studioUser?: UserType[];
 }
 
 const baseUrl = getStrapiURL();
@@ -34,6 +72,7 @@ async function fetchData(url: string) {
   try {
     const response = await fetch(url, authToken ? headers : {});
     const data = await response.json();
+    // console.log(data);
     return flattenAttributes(data);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -188,13 +227,51 @@ export async function getCheckoutSessions(
   sort: string,
   page: string,
   pageSize: string,
-  filter: CheckoutSessionType,
+  filter: CheckoutSessionsFilterProps,
 ) {
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
-    if (value === "All") continue;
+    if (value === "All" || value === "") continue;
+
+    if (key === "creationTime" || key === "finishTime") {
+      if (value.from === undefined && value.to === undefined) {
+        continue;
+      } else if (value.to === undefined) {
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        continue;
+      } else if (value.from === undefined) {
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      } else {
+        // console.log(new Date(value.to).toISOString());
+        // console.log("Value to is ", value.to);
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      }
+    }
+
+    if (value === "finished") {
+      filterArr.push({ [key]: { $eq: true } });
+      continue;
+    } else if (value === "unfinished") {
+      filterArr.push({ [key]: { $eq: false } });
+      continue;
+    }
 
     if (value === true || value === "true") {
       filterArr.push({ [key]: { $eq: value } });
@@ -203,9 +280,8 @@ export async function getCheckoutSessions(
     }
   }
 
-  // console.log(filterArr);
-
   const query = qs.stringify({
+    populate: "*",
     sort: [sort],
     filters: {
       $and: filterArr,
@@ -215,15 +291,16 @@ export async function getCheckoutSessions(
       page: page,
     },
   });
-  const url = new URL("/api/inventory-items", baseUrl);
+  const url = new URL("/api/checkout-sessions", baseUrl);
   url.search = query;
   // console.log(url.href);
+
   return fetchData(url.href);
 }
 
 export async function getCheckoutSessionById(itemId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/inventory-items/${itemId}`);
+  return fetchData(`${baseUrl}/api/checkout-sessions/${itemId}?populate=*`);
 }
 
 export async function getCheckoutSessionsByQuery(
@@ -232,17 +309,17 @@ export async function getCheckoutSessionsByQuery(
   pageSize: string,
 ) {
   const query = qs.stringify({
+    populate: "*",
     sort: ["createdAt:desc"],
     filters: {
       $or: [
-        { mTechBarcode: { $containsi: queryString } },
-        { make: { $containsi: queryString } },
-        { model: { $containsi: queryString } },
-        { category: { $containsi: queryString } },
-        { description: { $containsi: queryString } },
-        { accessories: { $containsi: queryString } },
-        { storageLocation: { $containsi: queryString } },
-        { comments: { $containsi: queryString } },
+        { stuIDCheckout: { $containsi: queryString } },
+        { stuIDCheckin: { $containsi: queryString } },
+        { studio: { $containsi: queryString } },
+        { otherLocation: { $containsi: queryString } },
+        { creationMonitor: { $containsi: queryString } },
+        { finishMonitor: { $containsi: queryString } },
+        { notes: { $containsi: queryString } },
       ],
     },
     pagination: {
@@ -250,7 +327,131 @@ export async function getCheckoutSessionsByQuery(
       page: page,
     },
   });
-  const url = new URL("/api/inventory-items", baseUrl);
+  const url = new URL("/api/checkout-sessions", baseUrl);
   url.search = query;
+  // console.log("query data", query)
   return fetchData(url.href);
 }
+
+export async function getBookings(
+  sort: string,
+  page: string,
+  pageSize: string,
+  filter: BookingsFilterProps,
+) {
+  let filterArr = [];
+  for (const [key, value] of Object.entries(filter)) {
+    // console.log(`${key}: ${value}`);
+    // if (value === "" || value === false || value === "false") continue;
+    if (value === "All" || value === "") continue;
+
+    if (key === "starTime" || key === "endTime") {
+      if (value.from === undefined && value.to === undefined) {
+        continue;
+      } else if (value.to === undefined) {
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        continue;
+      } else if (value.from === undefined) {
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      } else {
+        // console.log(new Date(value.to).toISOString());
+        // console.log("Value to is ", value.to);
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      }
+    }
+
+    // if (value === "finished") {
+    //   filterArr.push({ [key]: { $eq: true } });
+    //   continue;
+    // } else if (value === "unfinished") {
+    //   filterArr.push({ [key]: { $eq: false } });
+    //   continue;
+    // }
+
+    if (value === true || value === "true") {
+      filterArr.push({ [key]: { $eq: value } });
+    } else {
+      filterArr.push({ [key]: { $containsi: value } });
+    }
+  }
+
+  const query = qs.stringify({
+    populate: "*",
+    sort: [sort],
+    filters: {
+      $and: filterArr,
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/bookings", baseUrl);
+  url.search = query;
+  // console.log(url.href);
+  // console.log(url.href);
+  return fetchData(url.href);
+}
+
+export async function getBookingById(bookingId: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
+  return fetchData(`${baseUrl}/api/bookings/${bookingId}?populate=*`);
+}
+
+export async function getBookingsByQuery(
+  queryString: string,
+  page: string,
+  pageSize: string,
+) {
+  const query = qs.stringify({
+    populate: "*",
+    sort: ["createdAt:desc"],
+    filters: {
+      $or: [
+        { stuIDCheckout: { $containsi: queryString } },
+        { stuIDCheckin: { $containsi: queryString } },
+        { studio: { $containsi: queryString } },
+        { otherLocation: { $containsi: queryString } },
+        { creationMonitor: { $containsi: queryString } },
+        { finishMonitor: { $containsi: queryString } },
+        { notes: { $containsi: queryString } },
+      ],
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/bookings", baseUrl);
+  url.search = query;
+  // console.log("query data", query)
+  return fetchData(url.href);
+}
+
+// export async function getStudioUserByStuId(stuId: string) {
+//   const query = qs.stringify({
+//     sort: ["createdAt:desc"],
+//     filters: {
+//       $or: [{ stuIDCheckout: { $containsi: stuId } }],
+//     },
+//   });
+//   const url = new URL("/api/checkout-sessions", baseUrl);
+//   url.search = query;
+//   // console.log("query data", query)
+//   return fetchData(url.href);
+// }

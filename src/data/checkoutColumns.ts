@@ -19,7 +19,7 @@ export type ColumnFields = {
 //   )
 // }
 
-export const CustomColumns = [
+export const checkoutColumns = [
   {
     accessorKey: "creationTime",
     header: "Creation Time",
@@ -28,12 +28,17 @@ export const CustomColumns = [
   {
     accessorKey: "stuIDCheckout",
     header: "Checkout ID",
-    visible: true,
+    visible: false,
   },
   {
     accessorKey: "stuIDCheckin",
     header: "Checkin ID",
     visible: false,
+  },
+  {
+    accessorKey: "userName",
+    header: "User Name",
+    visible: true,
   },
   {
     accessorKey: "studio",
@@ -70,6 +75,7 @@ export const CustomColumns = [
     header: "Finished",
     visible: true,
   },
+
   // {
   //   accessorKey: "inventory_items",
   //   header: "Inventory Items",
@@ -82,4 +88,62 @@ export const CustomColumns = [
   // },
 ];
 
-export default CustomColumns;
+export const checkoutColumnsDefault = {
+  creationTime: {
+    header: "Creation Time",
+    visible: true,
+  },
+  stuIDCheckout: {
+    header: "Checkout ID",
+    visible: false,
+  },
+  stuIDCheckin: {
+    header: "Checkin ID",
+    visible: false,
+  },
+  userName: {
+    header: "User Name",
+    visible: true,
+  },
+  studio: {
+    header: "Studio",
+    visible: true,
+  },
+  otherLocation: {
+    header: "Other Location",
+    visible: false,
+  },
+  creationMonitor: {
+    header: "Creation Monitor",
+    visible: false,
+  },
+  finishMonitor: {
+    header: "Finish Monitor",
+    visible: false,
+  },
+  finishTime: {
+    header: "Finish Time",
+    visible: false,
+  },
+  notes: {
+    header: "Notes",
+    visible: false,
+  },
+  finished: {
+    header: "Status",
+    visible: true,
+  },
+
+  // {
+  //   accessorKey: "inventory_items",
+  //   header: "Inventory Items",
+  //   visible: true,
+  // },
+  // {
+  //   accessorKey: "studio_user",
+  //   header: "Studio User",
+  //   visible: true,
+  // },
+};
+
+export default checkoutColumns;

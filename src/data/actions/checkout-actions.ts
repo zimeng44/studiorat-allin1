@@ -5,7 +5,7 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { CheckoutSessionType } from "@/app/lib/definitions";
+import { CheckoutSessionType } from "@/data/definitions";
 
 export async function createCheckoutSessionAction(
   newSession: CheckoutSessionType,
@@ -13,21 +13,46 @@ export async function createCheckoutSessionAction(
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
+  // console.log(newSession.finishTime);
+  if (newSession.creationTime === undefined) delete newSession.creationTime;
+  else
+    newSession.creationTime = new Date(newSession.creationTime).toISOString();
+
+  if (newSession.finishTime === undefined) delete newSession.finishTime;
+  else newSession.finishTime = new Date(newSession.finishTime).toISOString();
+
   const payload = {
     data: newSession,
   };
 
   const data = await mutateData("POST", "/api/checkout-sessions", payload);
-  // const flattenedData = flattenAttributes(data);
-  // console.log("data submited#########", flattenedData);
-  // redirect("/dashboard/master-inventory/" + flattenedData.id);
-  redirect("/dashboard/checkout/");
+  const flattenedData = flattenAttributes(data);
+  console.log("data submited#########", flattenedData);
+  redirect("/dashboard/checkout/" + flattenedData.id);
+  // redirect("/dashboard/checkout/");
 }
 
 export const updateCheckoutSessionAction = async (
   updatedSession: CheckoutSessionType,
   id: string,
 ) => {
+  if (updatedSession.creationTime === undefined)
+    delete updatedSession.creationTime;
+  else
+    updatedSession.creationTime = new Date(
+      updatedSession.creationTime,
+    ).toISOString();
+
+  if (
+    updatedSession.finishTime === undefined ||
+    updatedSession.finishTime === ""
+  )
+    delete updatedSession.finishTime;
+  else
+    updatedSession.finishTime = new Date(
+      updatedSession.finishTime,
+    ).toISOString();
+
   const payload = {
     data: updatedSession,
   };
@@ -47,6 +72,7 @@ export const updateCheckoutSessionAction = async (
   }
 
   if (responseData.error) {
+    // console.log("responseData.error", responseData.error);
     return {
       // ...prevState,
       strapiErrors: responseData.error,
@@ -56,6 +82,8 @@ export const updateCheckoutSessionAction = async (
 
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/checkout");
+
+  // console.log(flattenedData);
 
   return {
     // ...prevState,

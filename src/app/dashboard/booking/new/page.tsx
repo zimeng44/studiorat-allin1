@@ -1,3 +1,5 @@
+// import React from "react";
+import NewBookingForm from "./NewBookingForm";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,19 +8,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import EditItemForm from "@/components/forms/EditItemForm";
-import { getInventoryItemById } from "@/data/loaders";
 
-interface ParamsProps {
-  params: {
-    itemId: string;
-  };
-}
+// const INITIAL_STATE = {
+//   startTime: "",
+//   endTime: "",
+//   useLocation: "",
+//   type: "",
+//   createMonitor: "",
+//   notes: "",
+// };
 
-export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
-  // console.log(params);
-  const data = await getInventoryItemById(params.itemId);
-
+const NewBooking = () => {
   return (
     <div className="p-5">
       <Breadcrumb>
@@ -32,20 +32,20 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/master-inventory">
-              Master Inventory
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/booking">Booking</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Edit</BreadcrumbPage>
+            <BreadcrumbPage>New</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">Edit Item</h1>
+      <h1 className="px-2 py-4 text-lg font-bold">New Booking</h1>
       <div className="flex items-center px-4">
-        <EditItemForm item={data} itemId={params.itemId} />
+        <NewBookingForm />
       </div>
     </div>
   );
-}
+};
+
+export default NewBooking;

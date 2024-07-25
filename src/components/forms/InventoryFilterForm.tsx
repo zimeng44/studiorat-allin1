@@ -63,12 +63,6 @@ const InventoryFilterForm = ({
 }: {
   filter: InventoryFilterFormProps;
 }) => {
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: filter,
-  });
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -107,6 +101,12 @@ const InventoryFilterForm = ({
     // params.set("pageSize", newPageSize.toString());
     return `${pathname}?${params.toString()}`;
   };
+
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: filter,
+  });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {

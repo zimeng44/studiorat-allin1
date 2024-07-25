@@ -1,7 +1,6 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import { Toaster } from "@/components/ui/toaster";
 import { Toaster } from "@/components/ui/sonner";
 
 import { getGlobalPageData, getGlobalPageMetadata } from "@/data/loaders";
@@ -9,6 +8,8 @@ import { Header } from "@/components/custom/Header";
 import { Footer } from "@/components/custom/Footer";
 import { describe } from "node:test";
 import { unstable_noStore as noStore } from "next/cache";
+import { Suspense } from "react";
+import { NavigationEvents } from "@/components/custom/navigation-events";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,8 +40,13 @@ export default async function RootLayout({
       <body className={inter.className}>
         <Toaster position="bottom-center" />
         <Header data={globalData.header} />
-        <div>{children}</div>
-        <Footer data={globalData.footer} />
+        <div>
+          {children}{" "}
+          <Suspense fallback={null}>
+            <NavigationEvents />
+          </Suspense>
+        </div>
+        {/* <Footer data={globalData.footer} /> */}
       </body>
     </html>
   );

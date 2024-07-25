@@ -23,14 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import {
   EllipsisVertical,
   File,
@@ -42,39 +35,36 @@ import {
   Package,
   Package2,
   PanelLeft,
+  SquarePen,
   PlusCircle,
   // Search,
   Settings,
   ShoppingCart,
-  SquarePen,
   Users2,
 } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+
 import { deleteItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "../ui/badge";
-import { inventoryColumnsDefault } from "@/data/inventoryColumns";
+import { bookingColumnsDefault } from "@/data/bookingColumns";
 
-const MAX_TEXT_LEN = 20;
+const MAX_TEXT_LEN = 8;
 
-interface InventoryTableProps {
+interface BookingsTableProps {
   data: any[];
   columnsStatus: {};
 }
 
-const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
-  // console.log(data);
+const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
 
   const sort = searchParams.get("sort") ?? "";
-  // console.log(sort);
-
   // let filterOpen = searchParams.get("filterOpen") === "true";
   const pageIndex = searchParams.get("page") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
@@ -84,14 +74,9 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
+  // const [isAllSelected, setIsAllSelected] = useState(false);
+  // const [isBatchOpOpen, setIsBatchOpOpen] = useState(false);
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
-
-  // store columns visibility
-  // const [columnsVisible, setColumnsVisible] = useState(
-  //   Array(columns.length)
-  //     .fill(true)
-  //     .map((item, index) => columns[index].visible),
-  // );
 
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
@@ -115,28 +100,20 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
-    // const params = new URLSearchParams(searchParams);
-    // params.delete("numRowsSelected");
-    // params.delete("isBatchOpOpen");
-    // params.delete("isAllSelected");
-    // router.replace(`${pathname}?${params.toString()}`);
   }
 
   // store keys of columns
-  // const header = Array(columns.length)
+  // const header = Array(checkoutColumns.length)
   //   .fill("")
-  //   .map((item, index) => columns[index].accessorKey);
-
-  // console.log(data.length);
+  //   .map((item, index) => checkoutColumns[index].accessorKey);
 
   const handleAllSelected = (checked: boolean) => {
     setRowsSelected(Array(data.length).fill(checked));
-
+    // const params = new URLSearchParams(searchParams);
     params.set("isAllSelected", checked ? "true" : "false");
     params.set("isBatchOpOpen", checked ? "true" : "false");
     params.set("numRowsSelected", data.length.toString());
     router.replace(`${pathname}?${params.toString()}`);
-    // console.log("All Selected is ", allSelected);
   };
 
   const handleRowSelection = (
@@ -156,11 +133,11 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     params.set("isBatchOpOpen", "false");
     params.set("numRowsSelected", "0");
     router.replace(`${pathname}?${params.toString()}`);
+    // console.log("All Selected is ", allSelected);
   };
 
   const handleBatchDelete = () => {
     const counter = rowsSelected.filter((item) => item === true).length;
-    // console.log("Size of rowSelected is ", rowsSelected.length);
 
     const confirm = window.confirm(
       `Are you sure you want to delete ${counter} item(s)?`,
@@ -170,18 +147,10 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
     rowsSelected.map((row, index) => {
       if (row) {
-        deleteItemAction(data[index].id);
+        // deleteItemAction(data[index].id);
       }
     });
     setRowsSelected(Array(data.length).fill(false));
-  };
-
-  const handleSort = (field: string) => {
-    const order = sort.split(":")[1] === "asc" ? "desc" : "asc";
-    const sortStr = field + ":" + order;
-    const params = new URLSearchParams(searchParams);
-    params.set("sort", sortStr);
-    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -195,9 +164,9 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                   <Checkbox
                     className="mr-2"
                     checked={isAllSelected}
-                    onCheckedChange={(checked: boolean) => {
-                      handleAllSelected(checked);
-                    }}
+                    onCheckedChange={(checked: boolean) =>
+                      handleAllSelected(checked)
+                    }
                     aria-label="Select all"
                   />
                 </PopoverTrigger>
@@ -214,9 +183,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                     Delete Selected
                   </Button>
                   <Button
-                    onClick={() => {
-                      handleResetSelection();
-                    }}
+                    onClick={() => handleResetSelection()}
                     variant="secondary"
                   >
                     Reset
@@ -226,38 +193,28 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
             </TableHead>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
-                <TableHead className="whitespace-nowrap p-3" key={key}>
+                <TableHead className="whitespace-nowrap" key={key}>
                   {value.header}
-                  {key === "mTechBarcode" ||
-                  key === "make" ||
-                  key === "model" ||
-                  key === "category" ||
-                  key === "storageLocation" ? (
-                    <Button
+                  {/* <Button
                       className="p-1 text-left"
                       variant="ghost"
                       onClick={() => handleSort(key)}
                     >
                       <ArrowUpDown className="m-1 h-4 w-4" />
-                    </Button>
-                  ) : (
-                    ``
-                  )}
+                    </Button> */}
                 </TableHead>
               ) : (
                 ``
               );
             })}
             <TableHead className="text-center" key={"edit"}></TableHead>
+            {/* <TableHead className="text-center" key={"actions"}></TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.length ? (
             data.map((row, index) => (
-              <TableRow
-                key={row.id}
-                // data-state={row.getIsSelected() && "selected"}
-              >
+              <TableRow key={row.id}>
                 <TableCell key="select">
                   <Checkbox
                     checked={rowsSelected[index]}
@@ -270,45 +227,41 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "out") {
+                  if (key === "user") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.out ? (
-                          <Badge variant="default">Out</Badge>
-                        ) : (
-                          <Badge variant="secondary">In</Badge>
-                        )}
+                        {`${row.user.firstName} ${row.user.lastName}`}
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-                  if (key === "broken") {
-                    return value.visible ? (
-                      <TableCell className="whitespace-nowrap" key={key}>
-                        {row.broken ? (
-                          <Badge variant="destructive">Broken</Badge>
-                        ) : (
-                          <Badge variant="secondary">No</Badge>
-                        )}
-                      </TableCell>
-                    ) : (
-                      ``
-                    );
-                  }
+                  // if (key === "finished") {
+                  //   return value.visible ? (
+                  //     <TableCell className="whitespace-nowrap" key={key}>
+                  //       {row.finished ? (
+                  //         <Badge variant="secondary">Finished</Badge>
+                  //       ) : (
+                  //         <Badge variant="default">Ongoing</Badge>
+                  //       )}
+                  //     </TableCell>
+                  //   ) : (
+                  //     ``
+                  //   );
+                  // }
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                      {key === "startTime" || key === "endTime"
+                        ? new Date(row[key]).toLocaleString()
+                        : row[key]}
                     </TableCell>
                   ) : (
                     ``
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/master-inventory/${row.id}`}>
+                  <Link href={`/dashboard/booking/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
@@ -319,7 +272,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
           ) : (
             <TableRow>
               <TableCell
-                colSpan={Object.keys(inventoryColumnsDefault).length}
+                colSpan={Object.keys(bookingColumnsDefault).length}
                 className="h-24 text-center"
               >
                 No results.
@@ -332,4 +285,4 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   );
 };
 
-export default InventoryTable;
+export default BookingsTable;

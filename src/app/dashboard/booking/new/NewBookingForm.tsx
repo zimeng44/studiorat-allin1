@@ -44,17 +44,13 @@ import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { updateItemAction } from "@/data/actions/inventory-actions";
 
-// const NEW_CHECKOUT = {
-//   creationTime: `${new Date().toLocaleString()}`,
-//   stuIDCheckout: "",
-//   stuIDCheckin: "",
-//   studio: "",
-//   otherLocation: "",
-//   creationMonitor: "",
-//   finishMonitor: "",
-//   finishTime: "",
+// const NEW_BOOKING = {
+//   startTime: "",
+//   endTime: "",
+//   useLocation: "",
+//   type: "",
+//   createMonitor: "",
 //   notes: "",
-//   finished: false,
 // };
 
 interface StrapiErrorsProps {
@@ -88,13 +84,12 @@ const FormUserType = z
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  creationTime: z.date().or(z.string()),
-  finishTime: z.date().or(z.string()).optional(),
-  stuIDCheckout: z.string().min(15).max(16),
-  userName: z.string().optional(),
-  stuIDCheckin: z.string().optional(),
-  studio: z.enum(studioList),
-  otherLocation: z.string().optional(),
+  statDate: z.date().or(z.string().date()),
+  statTime: z.string().time(),
+  endDate: z.date().or(z.string().date()),
+  endTime: z.string().time(),
+  user: z.string(),
+  useLocation: z.string().min(1),
   creationMonitor: z.string().min(1),
   finishMonitor: z.string().optional(),
   notes: z.string().optional(),
@@ -104,7 +99,7 @@ const formSchema = z.object({
   studio_user: z.string().optional(),
 });
 
-const NewCheckoutForm = () => {
+const NewBookingForm = () => {
   const [data, setData] = useState({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
@@ -521,7 +516,7 @@ const NewCheckoutForm = () => {
             Add
           </Button>
 
-          <Link href="/dashboard/checkout">
+          <Link href="/dashboard/booking">
             <Button
               className="hover:bg-slate-200 active:bg-slate-300"
               type="button"
@@ -536,4 +531,4 @@ const NewCheckoutForm = () => {
   );
 };
 
-export default NewCheckoutForm;
+export default NewBookingForm;

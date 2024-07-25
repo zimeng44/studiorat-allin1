@@ -32,6 +32,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
+  CirclePlus,
   EllipsisVertical,
   File,
   Filter,
@@ -54,19 +55,35 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { deleteItemAction } from "@/data/actions/inventory-actions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "../ui/badge";
-import { inventoryColumnsDefault } from "@/data/inventoryColumns";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+// import { inventoryColumnsDefault } from "@/data/inventoryColumns";
+import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
+import { InventoryItem } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 20;
 
 interface InventoryTableProps {
   data: any[];
   columnsStatus: {};
+  itemObjArr: InventoryItem[];
+  addToBooking: Function;
 }
 
-const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
+const BookingInventoryTable = ({
+  data,
+  columnsStatus,
+  itemObjArr,
+  addToBooking,
+}: InventoryTableProps) => {
   // console.log(data);
+  const pathParams = useParams<{ bookingId: string }>();
+  // const editable = pathParams.bookingId ? false : true;
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -84,6 +101,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
+
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
 
   // store columns visibility
@@ -184,6 +202,23 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const handleAddToBooking = (row: InventoryItem) => {
+    const newArr = structuredClone(itemObjArr);
+    if (newArr.filter((item) => item.id === row.id).length > 0) {
+      window.alert("Item Added Already.");
+      return;
+    }
+    addToBooking([...newArr, row]);
+
+    // addToBooking((prev: InventoryItem[]) => {
+    //   if (prev.filter((item) => item.id === row.id).length > 0) {
+    //     window.alert("Item Added Already.");
+    //     return [...prev];
+    //   }
+    //   return [...prev, row];
+    // });
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -248,7 +283,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                 ``
               );
             })}
-            <TableHead className="text-center" key={"edit"}></TableHead>
+            <TableHead className="text-center" key={"addToBooking"}></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -307,12 +342,18 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                     ``
                   );
                 })}
-                <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/master-inventory/${row.id}`}>
-                    <Button variant="outline">
-                      <SquarePen className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                <TableCell className="text-center" key="addToBooking">
+                  <Button
+                    type="button"
+                    key="addbutton"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToBooking(row);
+                    }}
+                  >
+                    <CirclePlus className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -332,4 +373,4 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   );
 };
 
-export default InventoryTable;
+export default BookingInventoryTable;

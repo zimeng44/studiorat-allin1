@@ -27,7 +27,7 @@ import { useState, useEffect } from "react";
 import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Link from "next/link";
-import { InventoryItem } from "@/app/lib/definitions";
+import { InventoryItem } from "@/data/definitions";
 import { createInventoryItemAction } from "@/data/actions/inventory-actions";
 
 interface StrapiErrorsProps {
@@ -40,7 +40,7 @@ const INITIAL_STATE = {
   name: "",
 };
 
-const mTechBarcode = z.union([
+const mTechBarcodeType = z.union([
   z.string().min(12).and(z.string().max(13)),
   z.string().length(0),
 ]);
@@ -49,7 +49,7 @@ const mTechBarcode = z.union([
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  mTechBarcode: mTechBarcode,
+  mTechBarcode: mTechBarcodeType,
   make: z.string(),
   model: z.string(),
   category: z.string(),

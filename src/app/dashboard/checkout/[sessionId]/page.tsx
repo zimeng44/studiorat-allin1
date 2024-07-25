@@ -1,3 +1,4 @@
+// import EditItemForm from "@/components/forms/EditItemForm";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,18 +7,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import EditItemForm from "@/components/forms/EditItemForm";
-import { getInventoryItemById } from "@/data/loaders";
+import { getCheckoutSessionById } from "@/data/loaders";
+import EditCheckoutSessionForm from "./EditCheckoutSessionForm";
 
 interface ParamsProps {
   params: {
-    itemId: string;
+    sessionId: string;
   };
 }
 
-export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
+export default async function SingleCheckoutSessionDetails({
+  params,
+}: Readonly<ParamsProps>) {
   // console.log(params);
-  const data = await getInventoryItemById(params.itemId);
+  const data = await getCheckoutSessionById(params.sessionId);
+
+  // console.log("checkout session by ID \n", data);
 
   return (
     <div className="p-5">
@@ -32,8 +37,8 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/master-inventory">
-              Master Inventory
+            <BreadcrumbLink href="/dashboard/checkout">
+              Checkout
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -42,9 +47,9 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">Edit Item</h1>
-      <div className="flex items-center px-4">
-        <EditItemForm item={data} itemId={params.itemId} />
+      <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
+      <div className="flex items-center px-2">
+        <EditCheckoutSessionForm session={data} sessionId={params.sessionId} />
       </div>
     </div>
   );

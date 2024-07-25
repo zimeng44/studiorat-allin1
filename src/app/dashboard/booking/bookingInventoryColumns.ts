@@ -83,7 +83,7 @@ export const inventoryColumnsDefault = {
   },
   category: {
     header: "Category",
-    visible: false,
+    visible: true,
   },
   description: {
     header: "Description",
@@ -101,14 +101,14 @@ export const inventoryColumnsDefault = {
     header: "Comments",
     visible: false,
   },
-  out: {
-    header: "Out",
-    visible: true,
-  },
-  broken: {
-    header: "Broken",
-    visible: true,
-  },
+  // out: {
+  //   header: "Out",
+  //   visible: true,
+  // },
+  // broken: {
+  //   header: "Broken",
+  //   visible: true,
+  // },
 };
 
 // export default inventoryColumns;

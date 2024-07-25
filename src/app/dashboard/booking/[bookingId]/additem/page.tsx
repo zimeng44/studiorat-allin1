@@ -1,11 +1,5 @@
-// import dynamic from "next/dynamic";
-
-// const InventoryTable = dynamic(() => import("./InventoryTable"), {
-//   ssr: false,
-// });
-import React from "react";
+import BookingAddItemForm from "./BookingAddItemForm";
 import { getInventoryItems, getItemsByQuery } from "@/data/loaders";
-import InventoryPageTabs from "./InventoryPageTabs";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,29 +9,28 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    page?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    mTechBarcode?: string;
-    make?: string;
-    model?: string;
-    category?: string;
-    description?: string;
-    accessories?: string;
-    storageLocation?: string;
-    comments?: string;
-    out?: string;
-    broken?: string;
+interface ParamsProps {
+  searchParams: {
+    bookingId: string;
+    itemId: string;
+    page: string;
+    pageSize: string;
+    sort: string;
+    mTechBarcode: string;
+    make: string;
+    model: string;
+    category: string;
+    description: string;
+    accessories: string;
+    storageLocation: string;
+    comments: string;
+    out: string;
+    broken: string;
+    query: string;
   };
 }
 
-export default async function MasterInventory({
-  searchParams,
-}: Readonly<SearchParamsProps>) {
+const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
   const pageIndex = searchParams?.page ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "";
@@ -55,8 +48,6 @@ export default async function MasterInventory({
     broken: searchParams?.broken === "true" ? true : false,
   };
 
-  // console.log(filter.broken);
-
   const { data, meta } = searchParams?.query
     ? await getItemsByQuery(
         searchParams?.query,
@@ -70,10 +61,13 @@ export default async function MasterInventory({
         filter,
       );
 
-  // if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No Inventory data</p>;
+  // const dataStr = cookies().get(`tempBooking${searchParams.bookingId}`);
+  // const bookingData = dataStr ? JSON.parse(dataStr.value) : undefined;
 
-  // console.log(meta);
+  if (!data) return <div>Booking Not Found.</div>;
+  // if (!bookingData) return <div>Booking Not Found.</div>;
+
+  // console.log(searchParams.bookingId);
 
   return (
     <div className="p-5">
@@ -88,11 +82,23 @@ export default async function MasterInventory({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Master Inventory</BreadcrumbPage>
+            <BreadcrumbLink href="/dashboard/booking">Booking</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Edit</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <InventoryPageTabs data={data} meta={meta} filter={filter} />
+      <BookingAddItemForm
+        bookingId={searchParams.bookingId}
+        // bookingData={bookingData}
+        inventoryData={data}
+        inventoryMeta={meta}
+        filter={filter}
+      />
     </div>
   );
-}
+};
+
+export default BookingAddItemPage;

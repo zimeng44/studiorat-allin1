@@ -28,7 +28,7 @@ import {
   deleteItemAction,
   updateItemAction,
 } from "@/data/actions/inventory-actions";
-import { InventoryItem } from "@/app/lib/definitions";
+import { InventoryItem } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
