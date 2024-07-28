@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import InventoryTable from "@/components/custom/InventoryTable";
 import TabHeader from "./TabHeader";
+import { Grid, List } from "lucide-react";
 
 interface ViewTabsProps {
   data: any[];
@@ -50,8 +51,14 @@ const InventoryPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           <h1 className="left-content text-lg font-bold">Master Inventory</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">List</TabsTrigger>
-              <TabsTrigger value="icon">Icon</TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="mr-1 h-4 w-4" />
+                List
+              </TabsTrigger>
+              <TabsTrigger value="grid">
+                <Grid className="mr-1 h-4 w-4" />
+                Grid
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -64,7 +71,7 @@ const InventoryPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
         <TabsContent value="list">
           <InventoryTable data={data} columnsStatus={columnsStatus} />
         </TabsContent>
-        <TabsContent value="icon">
+        <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((item: InventoryItem) => (
               <LinkCard key={item.id} {...item} />

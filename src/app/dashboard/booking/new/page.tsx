@@ -1,4 +1,5 @@
 // import React from "react";
+import { cookies } from "next/headers";
 import NewBookingForm from "./NewBookingForm";
 import {
   Breadcrumb,
@@ -8,6 +9,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { BookingType } from "@/data/definitions";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { add } from "date-fns";
 
 // const INITIAL_STATE = {
 //   startTime: "",
@@ -18,7 +22,17 @@ import {
 //   notes: "",
 // };
 
-const NewBooking = () => {
+const NewBooking = async () => {
+  // console.log(await getUserMeLoader());
+  const { data: thisUser } = await getUserMeLoader();
+  const data: BookingType = {
+    bookingCreator: thisUser,
+  };
+
+  // console.log(data);
+  const { value: authToken } = cookies().get("jwt");
+  // console.log(authToken);
+
   return (
     <div className="p-5">
       <Breadcrumb>
@@ -41,8 +55,8 @@ const NewBooking = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">New Booking</h1>
-      <div className="flex items-center px-4">
-        <NewBookingForm />
+      <div className="flex items-center px-2">
+        <NewBookingForm booking={data} authToken={authToken} />
       </div>
     </div>
   );

@@ -12,6 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { checkoutColumnsDefault } from "@/data/checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
+import { flattenAttributes } from "@/lib/utils";
+import { addDays, startOfDay, subDays } from "date-fns";
+import qs from "qs";
+import { Grid, List } from "lucide-react";
 
 interface ViewTabsProps {
   data: any[];
@@ -46,6 +50,7 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState(
     structuredClone(checkoutColumnsDefault),
   );
+
   return (
     <div className="py-2">
       <Tabs defaultValue="list">
@@ -53,8 +58,14 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           <h1 className="left-content text-lg font-bold">Checkout Sessions</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">List</TabsTrigger>
-              <TabsTrigger value="icon">Icon</TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="mr-1 h-4 w-4" />
+                List
+              </TabsTrigger>
+              <TabsTrigger value="grid">
+                <Grid className="mr-1 h-4 w-4" />
+                Grid
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -63,11 +74,10 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           filter={filter}
           setColumnsStatus={setColumnsStatus}
         />
-
         <TabsContent value="list">
           <CheckoutSessionsTable data={data} columnsStatus={columnsStatus} />
         </TabsContent>
-        <TabsContent value="icon">
+        <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((item: InventoryItem) => (
               <LinkCard key={item.id} {...item} />

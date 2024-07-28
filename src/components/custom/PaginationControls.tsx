@@ -36,9 +36,11 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   const numRowsSelected = searchParams.get("numRowsSelected") ?? "0";
 
   const displayNumRows =
-    parseInt(pageIndex) === pageCount
-      ? parseInt(totalEntries % parseInt(pageSize))
-      : parseInt(pageSize);
+    pageCount === 1
+      ? totalEntries
+      : parseInt(pageIndex) === pageCount
+        ? parseInt(totalEntries % parseInt(pageSize))
+        : parseInt(pageSize);
 
   const createPageURL = (
     pageNumber: number | string,

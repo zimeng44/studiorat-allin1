@@ -1,15 +1,15 @@
 export type InventoryItem = {
   id?: number;
-  mTechBarcode: string;
-  make: string;
-  model: string;
-  category: string;
-  description: string;
-  accessories: string;
-  storageLocation: string;
-  comments: string;
-  out: boolean;
-  broken: boolean;
+  mTechBarcode?: string;
+  make?: string;
+  model?: string;
+  category?: string;
+  description?: string;
+  accessories?: string;
+  storageLocation?: string;
+  comments?: string;
+  out?: boolean;
+  broken?: boolean;
 };
 
 // export type CheckoutSessionSent = {
@@ -66,13 +66,13 @@ export type BookingType = {
 
 export type UserType = {
   id?: number;
-  stuId: string;
-  firstName: string;
-  lastName: string;
+  stuId?: string;
+  firstName?: string;
+  lastName?: string;
   lastUse?: string;
-  email: string;
+  email?: string;
   userType?: string;
-  blocked: boolean;
+  blocked?: boolean;
 };
 
 export const studioList = [
@@ -89,7 +89,7 @@ export const studioList = [
   "RLab",
 ];
 
-export const bookingLocationList = [
+export const bookingLocationList: string[] = [
   "Outside",
   "Studio A",
   "Studio B",

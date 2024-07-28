@@ -9,11 +9,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
 import BookingTabHeader from "./BookingTabHeader";
 import BookingsTable from "./BookingsTable";
+import Selectable from "./BookingCalendar";
+import moment from "moment";
+import { momentLocalizer } from "react-big-calendar";
+import BookingCalendar from "./BookingCalendar";
+import { addDays, endOfWeek, startOfDay, subDays } from "date-fns";
+import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+import qs from "qs";
+import { CalendarDays, Grid, List, Square } from "lucide-react";
 
 interface ViewTabsProps {
   data: any[];
   meta: {};
   filter: {};
+  authToken: string;
+  calendarFirstLoadData: any[];
 }
 
 function LinkCard(booking: Readonly<BookingType>) {
@@ -39,10 +49,19 @@ function LinkCard(booking: Readonly<BookingType>) {
   );
 }
 
-const BookingPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
+const BookingPageTabs = ({
+  data,
+  meta,
+  filter,
+  authToken,
+  calendarFirstLoadData,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState(
     structuredClone(bookingColumnsDefault),
   );
+
+  const localizer = momentLocalizer(moment);
+
   return (
     <div className="py-2">
       <Tabs defaultValue="list">
@@ -50,35 +69,62 @@ const BookingPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           <h1 className="left-content text-lg font-bold">Bookings</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">List</TabsTrigger>
-              <TabsTrigger value="icon">Icon</TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="mr-1 h-4 w-4" />
+                List
+              </TabsTrigger>
+              <TabsTrigger value="grid">
+                <Grid className="mr-1 h-4 w-4" />
+                Grid
+              </TabsTrigger>
+              <TabsTrigger value="calendar">
+                <CalendarDays className="mr-1 h-4 w-4" />
+                Calendar
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>
-        <BookingTabHeader
-          columnsStatus={columnsStatus}
-          filter={filter}
-          setColumnsStatus={setColumnsStatus}
-        />
 
-        <TabsContent value="list">
-          <BookingsTable data={data} columnsStatus={columnsStatus} />
+        <TabsContent value="calendar">
+          <BookingCalendar
+            localizer={localizer}
+            authToken={authToken}
+            firstLoadData={calendarFirstLoadData}
+          />
         </TabsContent>
-        <TabsContent value="icon">
+        <TabsContent value="list">
+          <BookingTabHeader
+            columnsStatus={columnsStatus}
+            filter={filter}
+            setColumnsStatus={setColumnsStatus}
+          />
+          <BookingsTable data={data} columnsStatus={columnsStatus} />
+          <div className="flex items-center justify-end space-x-2 py-2">
+            <PaginationControls
+              pageCount={meta.pagination.pageCount}
+              totalEntries={meta.pagination.total}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value="grid">
+          <BookingTabHeader
+            columnsStatus={columnsStatus}
+            filter={filter}
+            setColumnsStatus={setColumnsStatus}
+          />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((booking: BookingType) => (
               <LinkCard key={booking.id} {...booking} />
             ))}
           </div>
+          <div className="flex items-center justify-end space-x-2 py-2">
+            <PaginationControls
+              pageCount={meta.pagination.pageCount}
+              totalEntries={meta.pagination.total}
+            />
+          </div>
         </TabsContent>
       </Tabs>
-
-      <div className="flex items-center justify-end space-x-2 py-2">
-        <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
-        />
-      </div>
     </div>
   );
 };

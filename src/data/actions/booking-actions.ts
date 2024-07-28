@@ -25,21 +25,21 @@ export async function createBookingAction(newBooking: BookingType) {
   const data = await mutateData("POST", "/api/bookings", payload);
   const flattenedData = flattenAttributes(data);
   // console.log("data submited#########", flattenedData);
-  redirect("/dashboard/booking/" + flattenedData.id);
-  // redirect("/dashboard/checkout/");
+  // redirect("/dashboard/booking/" + flattenedData.id);
+  redirect("/dashboard/booking");
 }
 
 export const updateBookingAction = async (
   updatedBooking: BookingType,
   id: string,
 ) => {
-  if (updatedBooking.startTime === undefined) delete updatedBooking.startTime;
-  else
-    updatedBooking.startTime = new Date(updatedBooking.startTime).toISOString();
+  // if (updatedBooking.startTime === undefined) delete updatedBooking.startTime;
+  // else
+  //   updatedBooking.startTime = new Date(updatedBooking.startTime).toISOString();
 
-  if (updatedBooking.endTime === undefined || updatedBooking.endTime === "")
-    delete updatedBooking.endTime;
-  else updatedBooking.endTime = new Date(updatedBooking.endTime).toISOString();
+  // if (updatedBooking.endTime === undefined || updatedBooking.endTime === "")
+  //   delete updatedBooking.endTime;
+  // else updatedBooking.endTime = new Date(updatedBooking.endTime).toISOString();
 
   const payload = {
     data: updatedBooking,
@@ -68,6 +68,8 @@ export const updateBookingAction = async (
 
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/booking");
+
+  redirect("/dashboard/booking");
 
   // console.log(flattenedData);
 

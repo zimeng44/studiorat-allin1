@@ -52,7 +52,7 @@ export async function Header({ data }: Readonly<HeaderProps>) {
   return (
     <div className="flex items-center justify-between bg-white px-4 py-3 shadow-md dark:bg-gray-800">
       <Logo text={logoText.text} />
-      {user.ok && <SummaryForm />}
+      {/* {user.ok && <SummaryForm />} */}
       <div className="flex items-center gap-4">
         {user.ok ? (
           <LoggedInUser userData={user.data} />

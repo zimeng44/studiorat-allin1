@@ -254,10 +254,7 @@ const BookingInventoryTable = ({
         <TableBody>
           {data.length ? (
             data.map((row, index) => (
-              <TableRow
-                key={row.id}
-                // data-state={row.getIsSelected() && "selected"}
-              >
+              <TableRow key={row.id}>
                 {Object.entries(columnsStatus).map(([key, value]) => {
                   if (key === "out") {
                     return value.visible ? (

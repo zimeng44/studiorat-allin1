@@ -8,6 +8,7 @@ import {
   InventoryItem,
   UserType,
 } from "@/data/definitions";
+import { addDays, endOfWeek, startOfDay, startOfWeek, subDays } from "date-fns";
 
 interface InventoryFilterProps {
   mTechBarcode: string;
@@ -320,6 +321,16 @@ export async function getCheckoutSessionsByQuery(
         { creationMonitor: { $containsi: queryString } },
         { finishMonitor: { $containsi: queryString } },
         { notes: { $containsi: queryString } },
+        {
+          studio_user: {
+            $or: [
+              { firstName: { $containsi: queryString } },
+              { lastName: { $containsi: queryString } },
+              { stuId: { $containsi: queryString } },
+              { email: { $containsi: queryString } },
+            ],
+          },
+        },
       ],
     },
     pagination: {
@@ -423,13 +434,45 @@ export async function getBookingsByQuery(
     sort: ["createdAt:desc"],
     filters: {
       $or: [
-        { stuIDCheckout: { $containsi: queryString } },
-        { stuIDCheckin: { $containsi: queryString } },
-        { studio: { $containsi: queryString } },
-        { otherLocation: { $containsi: queryString } },
-        { creationMonitor: { $containsi: queryString } },
-        { finishMonitor: { $containsi: queryString } },
+        { type: { $containsi: queryString } },
+        { useLocation: { $containsi: queryString } },
         { notes: { $containsi: queryString } },
+        { useLocation: { $containsi: queryString } },
+        {
+          user: {
+            $or: [
+              { firstName: { $containsi: queryString } },
+              { lastName: { $containsi: queryString } },
+              { stuId: { $containsi: queryString } },
+              { email: { $containsi: queryString } },
+            ],
+          },
+        },
+
+        {
+          bookingCreator: {
+            $or: [
+              { firstName: { $containsi: queryString } },
+              { lastName: { $containsi: queryString } },
+              { stuId: { $containsi: queryString } },
+              { email: { $containsi: queryString } },
+            ],
+          },
+        },
+        {
+          inventory_items: {
+            $or: [
+              { mTechBarcode: { $containsi: queryString } },
+              { make: { $containsi: queryString } },
+              { model: { $containsi: queryString } },
+              { category: { $containsi: queryString } },
+              { description: { $containsi: queryString } },
+              { accessories: { $containsi: queryString } },
+              { storageLocation: { $containsi: queryString } },
+              { comments: { $containsi: queryString } },
+            ],
+          },
+        },
       ],
     },
     pagination: {
@@ -440,6 +483,22 @@ export async function getBookingsByQuery(
   const url = new URL("/api/bookings", baseUrl);
   url.search = query;
   // console.log("query data", query)
+  return fetchData(url.href);
+}
+
+export async function getBookingByDateWeek(newDate: Date) {
+  const start = startOfDay(subDays(startOfWeek(newDate), 7)).toISOString();
+  const end = startOfDay(addDays(endOfWeek(newDate), 1)).toISOString();
+
+  const query = qs.stringify({
+    populate: ["user"],
+    sort: ["createdAt:desc"],
+    filters: {
+      $and: [{ startTime: { $gte: start } }, { startTime: { $lt: end } }],
+    },
+  });
+  const url = new URL("/api/bookings", baseUrl);
+  url.search = query;
   return fetchData(url.href);
 }
 

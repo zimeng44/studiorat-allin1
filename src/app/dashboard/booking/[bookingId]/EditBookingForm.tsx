@@ -1,6 +1,5 @@
 "use client";
-import React, { useRef } from "react";
-import qs from "qs";
+import React from "react";
 import { cn } from "@/lib/utils";
 // import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
 import {
@@ -60,30 +59,22 @@ import {
   deleteBookingAction,
   updateBookingAction,
 } from "@/data/actions/booking-actions";
-
-// const config = {
-//   maxAge: 60 * 60, // 1 hour
-//   path: "/",
-//   domain: process.env.HOST ?? "localhost",
-//   // httpOnly: true,
-//   secure: process.env.NODE_ENV === "production",
-// };
+import qs from "qs";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   startDate: z.date().or(z.string()),
-  startTime: z.date().or(z.string()),
+  startTime: z.string(),
   endDate: z.date().or(z.string()),
-  endTime: z.date().or(z.string()),
+  endTime: z.string(),
   // stuIDCheckout: z.string().min(15).max(16),
-  user: z.string().min(2),
+  userName: z.string().min(2),
   // studio: z.enum(bookingLocationList),
   useLocation: z.string(),
   type: z.string(),
-  bookingCreator: z.string().min(1),
+  bookingCreatorName: z.string().min(1),
   notes: z.string().optional(),
-  scan: z.string().optional(),
-  inventory_items: z.array(z.number()).optional(),
+  // inventory_items: z.array(z.number()).optional(),
   // studio_user: z.string().optional(),
 });
 
@@ -97,14 +88,16 @@ const formSchema = z.object({
 
 const EditBookingForm = ({
   booking,
-  // tempItems,
   bookingId,
+  authToken,
 }: {
   booking: BookingType;
-  // tempItems: InventoryItem[];
   bookingId: string;
+  authToken: string;
 }) => {
   const router = useRouter();
+  const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
+  // console.log(booking.user);
   // if (typeof window !== 'undefined') {}
   // const [itemIdArray, setItemIdArray] = useState(
   //   booking.inventory_items?.data.map((item: InventoryItem) => item.id) ??
@@ -113,34 +106,6 @@ const EditBookingForm = ({
   const [itemObjArr, setItemObjArr] = useState(
     booking.inventory_items?.data ?? Array(),
   );
-
-  let localItemsObj = undefined;
-  useEffect(() => {
-    // console.log("inside");
-    const localItems =
-      localStorage.getItem(`tempBookingItems${bookingId}`) ?? "";
-
-    if (localItems) {
-      // console.log(localItems);
-      localItemsObj = localItems ? JSON.parse(localItems) : undefined;
-      // setItemIdArray(localItemsObj.map((item: InventoryItem) => item.id));
-      setItemObjArr(localItemsObj);
-    }
-    // localStorage.removeItem(`tempBookingItems${bookingId}`);
-  }, []);
-
-  useEffect(() => {
-    localStorage.removeItem(`tempBookingItems${bookingId}`);
-  }, [localItemsObj]);
-
-  // console.log(tempItems);
-  // const [tempSession, setTempSession] = useState(booking);
-  // console.log("Item Details Render!!", booking);
-  // const router = useRouter();
-  // const [data, setData] = useState(rowData);
-  // const [scan, setScan] = useState("");
-
-  // console.log("creator is ",booking.bookingCreator);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -158,129 +123,45 @@ const EditBookingForm = ({
       endTime: booking.endTime
         ? format(new Date(booking.endTime), "hh:mm a")
         : "",
-      // stuIDCheckout: booking.stuIDCheckout,
-      user: `${booking.user?.firstName} ${booking.user?.lastName}` ?? "",
-      // stuIDCheckin: booking.stuIDCheckin ?? "",
-      // studio: booking.studio,
+      userName: `${booking.user?.firstName} ${booking.user?.lastName}`,
       useLocation: booking.useLocation ?? "",
       type: booking.type ?? "",
-      bookingCreator:
+      bookingCreatorName:
         `${booking.bookingCreator?.firstName} ${booking.bookingCreator?.lastName}` ??
         "",
-      // finishMonitor: booking.finishMonitor ?? "",
       notes: booking.notes ?? "",
-      // finished: booking.finished,
       scan: "",
     },
     mode: "onChange",
+    values: tempForm,
   });
 
-  // if (isLoading) return <p>Loading...</p>;
-  // if (!data) return <p>No profile data</p>;
+  let localItemsObj = undefined;
+  useEffect(() => {
+    if (localStorage) {
+      const tempBookingStr =
+        localStorage.getItem(`tempBooking${bookingId}`) ?? undefined;
+      if (tempBookingStr !== undefined) {
+        // console.log("here");
+        const tempNewBooking = tempBookingStr
+          ? JSON.parse(tempBookingStr)
+          : undefined;
+        setTempForm(tempNewBooking);
+        localStorage.removeItem(`tempBooking${bookingId}`);
+        // console.log(tempNewBooking);
+      }
 
-  // const baseUrl = getStrapiURL();
-
-  // async function fetchData(url: string) {
-  //   // const authToken = getAuthToken();
-  //   const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
-  //   const headers = {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${authToken}`,
-  //     },
-  //   };
-
-  //   try {
-  //     const response = await fetch(url, authToken ? headers : {});
-  //     const data = await response.json();
-  //     // console.log(data);
-  //     return flattenAttributes(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     throw error; // or return null;
-  //   }
-  // }
-
-  // async function getItemByBarcode(barcode: string) {
-  //   const query = qs.stringify({
-  //     sort: ["createdAt:desc"],
-  //     filters: {
-  //       $or: [{ mTechBarcode: { $eq: barcode } }],
-  //     },
-  //   });
-  //   const url = new URL("/api/inventory-items", baseUrl);
-  //   url.search = query;
-  //   // console.log("query data", query)
-  //   return fetchData(url.href);
-  // }
-
-  // useEffect(() => {
-  //   // console.log();
-
-  //   if (scan) {
-  //     getItemByBarcode(scan).then(({ data, meta }) => {
-  //       if (data[0]) {
-  //         let newArr = [...itemIdArray];
-  //         if (newArr.includes(data[0].id)) {
-  //           // newArr = newArr.filter((id) => id !== data[0].id);
-  //           // console.log("here");
-  //           updateItemAction({ out: !data[0].out }, data[0].id);
-  //         } else {
-  //           newArr = [...itemIdArray, data[0].id];
-  //           setItemIdArray(newArr);
-  //           updateItemAction({ out: true }, data[0].id);
-  //           updateCheckoutSessionAction(
-  //             {
-  //               inventory_items: newArr,
-  //             },
-  //             booking.id,
-  //           );
-  //         }
-  //       }
-  //     });
-  //   }
-  //   setScan("");
-  //   // router.refresh();
-  //   form.setValue("scan", "");
-
-  //   // if (inputRef.current) inputRef.current.focus();
-  //   // console.log("here", inputRef.current);
-  // }, [scan]);
-
-  // const handleIdScan = useDebouncedCallback((term: string) => {
-  //   // window.alert("you did it!!");
-  //   if (term.length > 12) {
-  //     if (term) {
-  //       getItemByBarcode(term).then(({ data, meta }) => {
-  //         if (data[0]) {
-  //           let newArr = [...itemIdArray];
-  //           if (newArr.includes(data[0].id)) {
-  //             // let newItemObjArr = structuredClone(itemObjArr);
-  //             // newItemObjArr.map((item) => {
-  //             //   if (item.id === data[0].id) item.out = !item.out;
-  //             // });
-  //             // setItemObjArr(newItemObjArr);
-  //             window.alert("Item already added.");
-  //           } else {
-  //             // let newItem: InventoryItem = structuredClone(data[0]);
-  //             // newItem.out = true;
-  //             // newArr = [...itemIdArray, data[0].id];
-  //             setItemIdArray([...itemIdArray, data[0].id]);
-  //             setItemObjArr([...itemObjArr, data[0]]);
-  //           }
-  //         } else {
-  //           window.alert("Item not found.");
-  //         }
-  //       });
-  //     }
-  //   } else {
-  //     window.alert("hand typing not allowed, please use a scanner.");
-  //   }
-  //   form.setValue("scan", "");
-  //   form.setFocus("scan");
-  // }, 200);
+      const localItems =
+        localStorage.getItem(`tempBookingItems${bookingId}`) ?? "";
+      if (localItems) {
+        // console.log(localItems);
+        localItemsObj = localItems ? JSON.parse(localItems) : undefined;
+        // setItemIdArray(localItemsObj.map((item: InventoryItem) => item.id));
+        setItemObjArr(localItemsObj);
+        localStorage.removeItem(`tempBookingItems${bookingId}`);
+      }
+    }
+  }, []);
 
   function handleTypeSelect(value: string) {
     // window.alert("yes");
@@ -328,13 +209,13 @@ const EditBookingForm = ({
   function handleAddItem() {
     const tempBooking = form.getValues();
     tempBooking.inventory_items = itemObjArr;
-    tempBooking.startTime = `${form.getValues("startDate")}, ${form.getValues("startTime")}`;
-    tempBooking.endTime = `${form.getValues("endDate")}, ${form.getValues("endTime")}`;
+    // tempBooking.startTime = `${form.getValues("startDate")}, ${form.getValues("startTime")}`;
+    // tempBooking.endTime = `${form.getValues("endDate")}, ${form.getValues("endTime")}`;
     tempBooking.user = booking.user;
     tempBooking.bookingCreator = booking.bookingCreator;
-    delete tempBooking.startDate;
-    delete tempBooking.endDate;
-
+    // delete tempBooking.startDate;
+    // delete tempBooking.endDate;
+    // console.log(tempBooking);
     // setCookie(`tempBooking${bookingId}`, JSON.stringify(tempBooking), config);
     localStorage.setItem(
       `tempBooking${bookingId}`,
@@ -355,28 +236,180 @@ const EditBookingForm = ({
     // console.log("item should be removed")
   };
 
+  function time12To24(time: string) {
+    const hour = time.slice(0, 2);
+    const minute = time.slice(3, 5);
+    const ampm = time.slice(6, 8);
+    let convertedHour = "";
+    // ampm === "AM" ? hour : (parseInt(hour) + 12).toString();
+    if (hour === "12" && ampm === "AM") convertedHour = "00";
+    else if (hour === "12" && ampm === "PM") convertedHour = "12";
+    else if (ampm === "PM") convertedHour = `${parseInt(hour) + 12}`;
+    else convertedHour = hour;
+
+    return `${convertedHour}:${minute}:00`;
+  }
+
+  const baseUrl = getStrapiURL();
+
+  async function fetchData(url: string) {
+    // const authToken = getAuthToken();
+    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
+
+    const headers = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    try {
+      const response = await fetch(url, authToken ? headers : {});
+      const data = await response.json();
+      // console.log(data);
+      return flattenAttributes(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error; // or return null;
+    }
+  }
+
+  async function itemConflictCheck(booking: BookingType) {
+    const itemList =
+      booking?.inventory_items?.length > 0
+        ? [...booking?.inventory_items]
+        : [0];
+
+    // console.log(itemList);
+    const query = qs.stringify({
+      // sort: ["createdAt:desc"],
+      populate: "*",
+      filters: {
+        $and: [
+          {
+            id: { $ne: bookingId },
+          },
+          {
+            $or: [
+              {
+                startTime: {
+                  $between: [booking.startTime, booking.endTime],
+                },
+              },
+              {
+                endTime: {
+                  $between: [booking.startTime, booking.endTime],
+                },
+              },
+              {
+                $and: [
+                  { startTime: { $lte: booking.startTime } },
+                  { endTime: { $gte: booking.endTime } },
+                ],
+              },
+            ],
+          },
+          {
+            inventory_items: {
+              id: {
+                $in: [...itemList],
+              },
+            },
+          },
+        ],
+      },
+    });
+    const url = new URL("/api/bookings", baseUrl);
+    url.search = query;
+    // console.log("query data", query)
+    return fetchData(url.href);
+  }
+
+  async function locationConflictCheck(booking: BookingType) {
+    const query = qs.stringify({
+      // sort: ["createdAt:desc"],
+      // populate: "*",
+      filters: {
+        $and: [
+          {
+            id: { $ne: bookingId },
+          },
+          {
+            $or: [
+              {
+                startTime: {
+                  $between: [booking.startTime, booking.endTime],
+                },
+              },
+              {
+                endTime: {
+                  $between: [booking.startTime, booking.endTime],
+                },
+              },
+              {
+                $and: [
+                  { startTime: { $lte: booking.startTime } },
+                  { endTime: { $gte: booking.endTime } },
+                ],
+              },
+            ],
+          },
+          {
+            useLocation: { $eq: booking.useLocation },
+          },
+        ],
+      },
+    });
+    const url = new URL("/api/bookings", baseUrl);
+    url.search = query;
+    // console.log("query data", query)
+    return fetchData(url.href);
+  }
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     // setItemIdArray(itemObjArr.map((item) => item.id));
-    values.inventory_items = itemObjArr.map((item) => item.id);
-    values.startTime = `${values.startDate}, ${values.startTime}`;
-    values.endTime = `${values.endDate}, ${values.endTime}`;
+    values.inventory_items = itemObjArr.map((item: InventoryItem) => item.id);
+    values.user = booking?.user?.id;
+    values.bookingCreator = booking?.bookingCreator?.id;
+    values.startTime = new Date(
+      `${format(new Date(form.getValues("startDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
+    ).toISOString();
+    values.endTime = new Date(
+      `${format(new Date(form.getValues("endDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
+    ).toISOString();
     delete values.startDate;
     delete values.endDate;
-    delete values.bookingCreator;
-    delete values.user;
+    delete values.bookingCreatorName;
+    delete values.userName;
 
-    updateBookingAction(values, bookingId);
-    // deleteCookie(`tempBookingItems${bookingId}`);
-    localStorage?.removeItem(`tempBookingItems${bookingId}`);
-    // console.log("##############################", new Date(values.startTime).toISOString());
-    // itemObjArr.map((itemObj) =>
-    //   updateItemAction({ out: itemObj.out }, itemObj.id),
-    // );
-    router.refresh();
-    toast.success("Booking Saved.");
+    // console.log(values);
+    if (values.startTime >= values.endTime) {
+      window.alert("End Date and Time can't be less than Start Date and Time.");
+      return;
+    }
+
+    itemConflictCheck(values).then(({ data, meta }) => {
+      // console.log(data);
+      if (data.length !== 0) {
+        window.alert("Item Conflict Found.");
+      } else {
+        locationConflictCheck(values).then(({ data, meta }) => {
+          // console.log(data);
+          if (data.length !== 0) {
+            // locationConflict = true;
+            window.alert("Location Conflict Found.");
+          } else {
+            updateBookingAction(values, bookingId).then(() =>
+              toast.success("Booking Saved Successfully."),
+            );
+          }
+        });
+      }
+    });
   }
 
   return (
@@ -398,7 +431,8 @@ const EditBookingForm = ({
                     field.onChange(value);
                     handleTypeSelect(value);
                   }}
-                  defaultValue={field.value}
+                  // defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -420,10 +454,10 @@ const EditBookingForm = ({
           />
           <FormField
             control={form.control}
-            name="user"
+            name="userName"
             render={({ field }) => (
               <FormItem className="col-span-2">
-                <FormLabel>User</FormLabel>
+                <FormLabel>User Name</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -490,7 +524,8 @@ const EditBookingForm = ({
                   <FormLabel>Start Time</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    // defaultValue={field.value}
+                    value={field.value}
                     className={cn(
                       " pl-3 text-left font-normal",
                       !field.value && "text-muted-foreground",
@@ -571,7 +606,8 @@ const EditBookingForm = ({
                   <FormLabel>End Time</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    // defaultValue={field.value}
+                    value={field.value}
                     className={cn(
                       " pl-3 text-left font-normal",
                       !field.value && "text-muted-foreground",
@@ -601,74 +637,7 @@ const EditBookingForm = ({
               )}
             />
           </div>
-          {/* <FormField
-            control={form.control}
-            name="endTime"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>End Time</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          {/* <FormField
-            control={form.control}
-            name="stuIDCheckout"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Checkout ID</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
 
-          {/* <FormField
-            control={form.control}
-            name="stuIDCheckin"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Checkin ID</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="studio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Studio</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a stuido" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {bookingLocationList.map((studio, index) => (
-                      <SelectItem
-                        key={index}
-                        value={`${studio}`}
-                      >{`${studio}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="useLocation"
@@ -677,7 +646,8 @@ const EditBookingForm = ({
                 <FormLabel>Use Location</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  // defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -700,7 +670,7 @@ const EditBookingForm = ({
 
           <FormField
             control={form.control}
-            name="bookingCreator"
+            name="bookingCreatorName"
             render={({ field }) => (
               <FormItem className="col-span-2">
                 <FormLabel>Created by</FormLabel>
@@ -805,7 +775,7 @@ const EditBookingForm = ({
             type="button"
             onClick={(e) => {
               // deleteCookie(`tempBookingItems${bookingId}`);
-              localStorage.removeItem(`tempBookingItems${bookingId}`);
+              // localStorage.removeItem(`tempBookingItems${bookingId}`);
               router.push("/dashboard/booking");
               // router.refresh();
             }}

@@ -7,8 +7,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { getBookings, getBookingsByQuery } from "@/data/loaders";
+import {
+  getBookingByDateWeek,
+  getBookings,
+  getBookingsByQuery,
+} from "@/data/loaders";
 import BookingPageTabs from "./BookingPageTabs";
+import { cookies } from "next/headers";
+import { BookingType } from "@/data/definitions";
 
 interface SearchParamsProps {
   searchParams?: {
@@ -69,6 +75,21 @@ export default async function CheckoutSessions({
         filter,
       );
 
+  const { data: calendarFirstLoadData, meta: calendarFirstMeta } =
+    await getBookingByDateWeek(new Date());
+
+  const calendarLoadEvents = calendarFirstLoadData.map(
+    (booking: BookingType) => {
+      return {
+        id: booking.id,
+        title: `${booking.user?.firstName} ${booking.user?.lastName}`,
+        start: new Date(booking?.startTime ?? ``),
+        end: new Date(booking?.endTime ?? ``),
+      };
+    },
+  );
+
+  const { value: authToken } = cookies().get("jwt");
   // console.log(data);
 
   // if (isLoading) return <p>Loading...</p>;
@@ -93,7 +114,13 @@ export default async function CheckoutSessions({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <BookingPageTabs data={data} meta={meta} filter={filter} />
+      <BookingPageTabs
+        data={data}
+        meta={meta}
+        filter={filter}
+        authToken={authToken}
+        calendarFirstLoadData={calendarLoadEvents}
+      />
     </div>
   );
 }

@@ -22,6 +22,7 @@ export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
   const data = await getBookingById(params.bookingId);
+  const { value: authToken } = cookies().get("jwt");
   // const temp = cookies().get(`tempBookingItems${params.bookingId}`) ?? "";
   // const tempItems = temp?.value ? JSON.parse(temp.value) : undefined;
   // console.log(data);
@@ -51,8 +52,8 @@ export default async function BookingDetails({
       <div className="flex items-center px-2">
         <EditBookingForm
           booking={data}
-          // tempItems={tempItems}
           bookingId={params.bookingId}
+          authToken={authToken}
         />
       </div>
     </div>

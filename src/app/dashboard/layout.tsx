@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Barcode, BarcodeIcon, BookPlus, Vault } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -38,26 +39,26 @@ export default function DashboardLayout({
 
               <Link
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                href="/dashboard/master-inventory"
+                href="/dashboard/booking"
               >
-                <ViewIcon className="h-4 w-4" />
-                Master Inventory
+                <BookPlus className="h-4 w-4" />
+                Booking
               </Link>
 
               <Link
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                 href="/dashboard/checkout"
               >
-                <ViewIcon className="h-4 w-4" />
+                <Barcode className="h-4 w-4" />
                 Checkout
               </Link>
 
               <Link
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                href="/dashboard/booking"
+                href="/dashboard/master-inventory"
               >
-                <ViewIcon className="h-4 w-4" />
-                Booking
+                <Vault className="h-4 w-4" />
+                Master Inventory
               </Link>
             </nav>
           </div>

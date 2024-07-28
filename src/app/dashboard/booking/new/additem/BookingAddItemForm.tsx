@@ -13,22 +13,14 @@ import BookingAddItemEmbededTable from "./BookingAddItemEmbededTable";
 import Link from "next/link";
 import { ArrowLeftToLine } from "lucide-react";
 
-const config = {
-  maxAge: 60 * 60, // 1 hour
-  path: "/",
-  domain: process.env.HOST ?? "localhost",
-  // httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-};
-
 const BookingAddItemForm = ({
-  bookingId,
+  // bookingId,
   // bookingData,
   inventoryData,
   inventoryMeta,
   filter,
 }: {
-  bookingId: string;
+  // bookingId: string;
   // bookingData: BookingType;
   inventoryData: InventoryItem[];
   inventoryMeta: {};
@@ -37,7 +29,7 @@ const BookingAddItemForm = ({
   const router = useRouter();
 
   // if (typeof window !== "undefined") {
-  const temp2 = localStorage.getItem(`tempBooking${bookingId}`) ?? undefined;
+  const temp2 = localStorage.getItem(`tempNewBooking`) ?? undefined;
   const bookingData2 = temp2 ? JSON.parse(temp2) : "";
   // console.log(bookingData2);
   // }
@@ -59,13 +51,10 @@ const BookingAddItemForm = ({
     // );
     // deleteCookie(`tempBooking${bookingId}`);
 
-    localStorage.setItem(
-      `tempBookingItems${bookingId}`,
-      JSON.stringify(itemObjArr),
-    );
-    // localStorage.removeItem(`tempBooking${bookingId}`);
+    localStorage.setItem(`tempNewBookingItems`, JSON.stringify(itemObjArr));
+    // localStorage.removeItem(`tempNewBooking`);
 
-    router.push(`/dashboard/booking/${bookingId}`);
+    router.push(`/dashboard/booking/new`);
     router.refresh();
   };
 
@@ -80,25 +69,26 @@ const BookingAddItemForm = ({
             handleBackToBooking();
           }}
         >
-          <ArrowLeftToLine className="h-4 w-4" />
-          Back to Booking
+          <ArrowLeftToLine className="h-4 w-4" /> Back to Booking
         </Button>
       </div>
-      <p className="mb-2 font-bold">Added Items</p>
-      <BookingAddItemEmbededTable
-        data={itemObjArr}
-        columns={inventoryColumns}
-        itemObjArr={itemObjArr}
-        setItemObjArr={setItemObjArr}
-      />
-      <p className="py-5 font-bold">Available Items</p>
-      <BookingAddItemPageTabs
-        data={inventoryData}
-        meta={inventoryMeta}
-        filter={filter}
-        itemObjArr={itemObjArr}
-        addToBooking={setItemObjArr}
-      />
+      <div>
+        <p className="mb-2 font-bold">Added Items</p>
+        <BookingAddItemEmbededTable
+          data={itemObjArr}
+          columns={inventoryColumns}
+          itemObjArr={itemObjArr}
+          setItemObjArr={setItemObjArr}
+        />
+        <p className="py-5 font-bold">Available Items</p>
+        <BookingAddItemPageTabs
+          data={inventoryData}
+          meta={inventoryMeta}
+          filter={filter}
+          itemObjArr={itemObjArr}
+          addToBooking={setItemObjArr}
+        />
+      </div>
     </div>
   );
 };
