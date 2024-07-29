@@ -322,7 +322,7 @@ export async function getCheckoutSessionsByQuery(
         { finishMonitor: { $containsi: queryString } },
         { notes: { $containsi: queryString } },
         {
-          studio_user: {
+          user: {
             $or: [
               { firstName: { $containsi: queryString } },
               { lastName: { $containsi: queryString } },

@@ -31,6 +31,7 @@ import {
   CheckoutSessionType,
   InventoryItem,
   studioList,
+  UserType,
 } from "@/data/definitions";
 import { inventoryColumns } from "@/data/inventoryColumns";
 import {
@@ -43,19 +44,6 @@ import qs from "qs";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { updateItemAction } from "@/data/actions/inventory-actions";
-
-// const NEW_CHECKOUT = {
-//   creationTime: `${new Date().toLocaleString()}`,
-//   stuIDCheckout: "",
-//   stuIDCheckin: "",
-//   studio: "",
-//   otherLocation: "",
-//   creationMonitor: "",
-//   finishMonitor: "",
-//   finishTime: "",
-//   notes: "",
-//   finished: false,
-// };
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -89,33 +77,39 @@ const FormUserType = z
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   creationTime: z.date().or(z.string()),
-  finishTime: z.date().or(z.string()).optional(),
+  // finishTime: z.date().or(z.string()).optional(),
   stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().optional(),
-  stuIDCheckin: z.string().optional(),
+  // stuIDCheckin: z.string().optional(),
   studio: z.enum(studioList),
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
-  finishMonitor: z.string().optional(),
+  // finishMonitor: z.string().optional(),
   notes: z.string().optional(),
-  finished: z.boolean(),
+  // finished: z.boolean(),
   scan: z.string().optional(),
-  inventory_items: z.number().array().optional(),
-  studio_user: z.string().optional(),
+  // inventory_items: z.number().array().optional(),
+  // user: z.string().optional(),
 });
 
-const NewCheckoutForm = () => {
+const NewCheckoutForm = ({
+  thisMonitor,
+  authToken,
+}: {
+  thisMonitor: UserType;
+  authToken: string;
+}) => {
   const [data, setData] = useState({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
-    stuIDCheckin: "",
+    // stuIDCheckin: "",
     studio: "",
     otherLocation: "",
-    creationMonitor: "",
-    finishMonitor: "",
-    finishTime: "",
+    creationMonitor: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
+    // finishMonitor: "",
+    // finishTime: "",
     notes: "",
-    finished: false,
+    // finished: false,
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
@@ -127,84 +121,29 @@ const NewCheckoutForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       creationTime: data.creationTime,
-      finishTime: undefined,
+      // finishTime: undefined,
       stuIDCheckout: data.stuIDCheckout,
       userName: "",
-      stuIDCheckin: data.stuIDCheckin,
+      // stuIDCheckin: data.stuIDCheckin,
       studio: data.studio ?? "",
       otherLocation: data.otherLocation ? data.otherLocation : "",
       creationMonitor: data.creationMonitor,
-      finishMonitor: data.finishMonitor,
+      // finishMonitor: data.finishMonitor,
       notes: data.notes ? data.notes : "",
-      finished: data.finished,
-      inventory_items: [],
-      studio_user: undefined,
+      // finished: data.finished,
+      // inventory_items: [],
+      // user: undefined,
     },
     mode: "onChange",
+    values: data,
   });
 
-  const [stuIDCheckout, setstuIDCheckout] = useState("");
+  // const [stuIDCheckout, setstuIDCheckout] = useState("");
   const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
+  // const [userName, setUserName] = useState("");
   const [itemIdArray, setItemIdArray] = useState(Array());
   const [itemObjArr, setItemObjArr] = useState(Array());
 
-  useEffect(() => {
-    // console.log(stuIDCheckout);
-    const baseUrl = getStrapiURL();
-
-    async function fetchData(url: string) {
-      // const authToken = getAuthToken();
-      const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
-      const headers = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
-
-      try {
-        const response = await fetch(url, authToken ? headers : {});
-        const data = await response.json();
-        // console.log(data);
-        return flattenAttributes(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        throw error; // or return null;
-      }
-    }
-
-    async function getStudioUserByStuId(stuId: string) {
-      const query = qs.stringify({
-        sort: ["createdAt:desc"],
-        filters: {
-          $or: [{ stuId: { $eqi: stuId } }],
-        },
-      });
-      const url = new URL("/api/studio-users", baseUrl);
-      url.search = query;
-      // console.log("query data", query)
-      return fetchData(url.href);
-    }
-
-    if (stuIDCheckout) {
-      getStudioUserByStuId(stuIDCheckout).then(({ data, meta }) => {
-        // console.log(data);
-        if (data[0]) {
-          setUserId(data[0].id ?? "");
-          setUserName(`${data[0].firstName} ${data[0].lastName}`);
-          form.setValue("userName", `${data[0].firstName} ${data[0].lastName}`);
-        } else {
-          form.setValue("userName", "");
-          console.log("User Not Found");
-        }
-        // console.log(data[0].id);
-      });
-    }
-    // console.log(data);
-  }, [stuIDCheckout]);
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
@@ -214,7 +153,7 @@ const NewCheckoutForm = () => {
 
   async function fetchData(url: string) {
     // const authToken = getAuthToken();
-    const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
+    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
 
     const headers = {
       method: "GET",
@@ -234,6 +173,38 @@ const NewCheckoutForm = () => {
       throw error; // or return null;
     }
   }
+
+  async function getStudioUserByStuId(stuId: string) {
+    const query = qs.stringify({
+      sort: ["createdAt:desc"],
+      filters: {
+        $or: [{ stuId: { $eqi: stuId } }],
+      },
+    });
+    const url = new URL("/api/users", baseUrl);
+    url.search = query;
+    // console.log("query data", query)
+    return fetchData(url.href);
+  }
+
+  const handleStuIdInput = useDebouncedCallback((term: string) => {
+    if (term.length > 15) {
+      getStudioUserByStuId(term).then((data) => {
+        // console.log(data);
+        if (data[0]) {
+          setUserId(data[0].id ?? "");
+          // setUserName(`${data[0].firstName} ${data[0].lastName}`);
+          form.setValue("userName", `${data[0].firstName} ${data[0].lastName}`);
+        } else {
+          form.setValue("userName", "");
+          window.alert("User not found.");
+        }
+      });
+    } else {
+      window.alert("hand typing not allowed, please use a scanner.");
+    }
+    // console.log(params.toString());
+  }, 200);
 
   async function getItemByBarcode(barcode: string) {
     const query = qs.stringify({
@@ -288,8 +259,9 @@ const NewCheckoutForm = () => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    values.studio_user = userId;
+    values.user = userId;
     values.inventory_items = itemIdArray;
+    delete values.userName;
 
     try {
       //update the out status of the items in the master inventory
@@ -338,7 +310,7 @@ const NewCheckoutForm = () => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="finishTime"
             render={({ field }) => (
@@ -350,7 +322,7 @@ const NewCheckoutForm = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="stuIDCheckout"
@@ -359,7 +331,7 @@ const NewCheckoutForm = () => {
                 <FormLabel>Checkout ID</FormLabel>
                 <FormControl
                   onChange={(e) => {
-                    setstuIDCheckout(e.target.value);
+                    handleStuIdInput(e.target.value);
                   }}
                 >
                   <Input
@@ -390,7 +362,7 @@ const NewCheckoutForm = () => {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="stuIDCheckin"
             render={({ field }) => (
@@ -402,7 +374,7 @@ const NewCheckoutForm = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="studio"
@@ -449,27 +421,27 @@ const NewCheckoutForm = () => {
             name="creationMonitor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Creation Monitor</FormLabel>
+                <FormLabel>Created by</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} disabled></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="finishMonitor"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Finish Monitor</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} disabled></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             control={form.control}

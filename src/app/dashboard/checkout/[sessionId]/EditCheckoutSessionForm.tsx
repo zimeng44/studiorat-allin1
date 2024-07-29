@@ -5,6 +5,7 @@ import {
   CheckoutSessionType,
   InventoryItem,
   studioList,
+  UserType,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +57,7 @@ const formSchema = z.object({
   finished: z.boolean(),
   scan: z.string().optional(),
   inventory_items: z.string().optional(),
-  studio_user: z.string().optional(),
+  user: z.string().optional(),
 });
 
 // const getIdArray: number[] = (session: CheckoutSessionType) => {
@@ -70,9 +71,13 @@ const formSchema = z.object({
 const EditCheckoutSessionForm = ({
   session,
   sessionId,
+  thisMonitor,
+  authToken,
 }: {
   session: CheckoutSessionType;
   sessionId: string;
+  thisMonitor: UserType;
+  authToken: string;
 }) => {
   const router = useRouter();
   // const [tempSession, setTempSession] = useState(session);
@@ -98,7 +103,7 @@ const EditCheckoutSessionForm = ({
         ? new Date(session.finishTime).toLocaleString()
         : "",
       stuIDCheckout: session.stuIDCheckout,
-      userName: `${session.studio_user?.firstName} ${session.studio_user?.lastName}`,
+      userName: `${session.user?.firstName} ${session.user?.lastName}`,
       stuIDCheckin: session.stuIDCheckin ?? "",
       studio: session.studio ?? "",
       otherLocation: session.otherLocation ?? "",
@@ -118,7 +123,7 @@ const EditCheckoutSessionForm = ({
 
   async function fetchData(url: string) {
     // const authToken = getAuthToken();
-    const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
+    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
 
     const headers = {
       method: "GET",
@@ -151,39 +156,6 @@ const EditCheckoutSessionForm = ({
     // console.log("query data", query)
     return fetchData(url.href);
   }
-
-  // useEffect(() => {
-  //   // console.log();
-
-  //   if (scan) {
-  //     getItemByBarcode(scan).then(({ data, meta }) => {
-  //       if (data[0]) {
-  //         let newArr = [...itemIdArray];
-  //         if (newArr.includes(data[0].id)) {
-  //           // newArr = newArr.filter((id) => id !== data[0].id);
-  //           // console.log("here");
-  //           updateItemAction({ out: !data[0].out }, data[0].id);
-  //         } else {
-  //           newArr = [...itemIdArray, data[0].id];
-  //           setItemIdArray(newArr);
-  //           updateItemAction({ out: true }, data[0].id);
-  //           updateCheckoutSessionAction(
-  //             {
-  //               inventory_items: newArr,
-  //             },
-  //             session.id,
-  //           );
-  //         }
-  //       }
-  //     });
-  //   }
-  //   setScan("");
-  //   // router.refresh();
-  //   form.setValue("scan", "");
-
-  //   // if (inputRef.current) inputRef.current.focus();
-  //   // console.log("here", inputRef.current);
-  // }, [scan]);
 
   const handleIdScan = useDebouncedCallback((term: string) => {
     // window.alert("you did it!!");
@@ -230,6 +202,33 @@ const EditCheckoutSessionForm = ({
     );
     router.refresh();
     toast.success("Session Saved.");
+    router.push("/dashboard/checkout");
+  }
+
+  function handleFinish() {
+    if (form.getValues("stuIDCheckin") === "") {
+      window.alert("Checkin ID needed.");
+      return;
+    }
+    // console.log(itemObjArr.filter((item) => item.out === false));
+    if (itemObjArr.filter((item) => item.out === true).length > 0) {
+      window.alert("Unreturned item(s)");
+      return;
+    }
+    const confirm = window.confirm(
+      "Editing after finishing will be forbidden.",
+    );
+    if (!confirm) {
+      return;
+    }
+    // window.alert("finished");
+    form.setValue("finishTime", new Date().toISOString());
+    form.setValue(
+      "finishMonitor",
+      `${thisMonitor.firstName} ${thisMonitor.lastName}`,
+    );
+    form.setValue("finished", true);
+    onSubmit(form.getValues());
   }
 
   return (
@@ -306,7 +305,7 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Checkin ID</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} disabled={session.finished}></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -319,8 +318,12 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Studio</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    if (value !== "Other") form.setValue("otherLocation", "");
+                  }}
+                  value={field.value}
+                  disabled={session.finished}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -347,7 +350,12 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Other Location</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input
+                    {...field}
+                    disabled={
+                      form.getValues("studio") !== "Other" || session.finished
+                    }
+                  ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -360,7 +368,7 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Creation Monitor</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} disabled={session.finished}></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -373,7 +381,7 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Finish Monitor</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} disabled></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -393,27 +401,27 @@ const EditCheckoutSessionForm = ({
               </FormItem>
             )}
           />
-          <div className="col-span-1 flex content-center gap-10 bg-slate-300">
-            <FormField
-              control={form.control}
-              name="finished"
-              render={({ field }) => (
-                <FormItem className="mb-1">
-                  <FormLabel className="ml-1">Finished</FormLabel>
-                  <FormControl>
-                    {/* <Input placeholder={"Broken"} {...field}></Input> */}
+
+          {/* <FormField
+            control={form.control}
+            name="finished"
+            render={({ field }) => (
+              <FormItem className="mb-1">
+                <FormLabel className="ml-1">Finished</FormLabel>
+                <FormControl>
+                  <div className="col-span-1 h-10 rounded-md border-2 bg-slate-300">
                     <Checkbox
-                      className="ml-2"
-                      // disabled
+                      className="ml-20 mt-3"
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
 
           <FormField
             control={form.control}
@@ -436,6 +444,7 @@ const EditCheckoutSessionForm = ({
                     className="bg-indigo-100"
                     placeholder={"Scan a barcode"}
                     {...field}
+                    disabled={session.finished}
                   ></Input>
                 </FormControl>
                 <FormMessage />
@@ -444,23 +453,38 @@ const EditCheckoutSessionForm = ({
           />
 
           <div className="col-span-2 flex w-[550px]  gap-10">
-            <EmbededTable data={itemObjArr} columns={inventoryColumns} />
+            <EmbededTable
+              data={itemObjArr}
+              columns={inventoryColumns}
+              disabled={session.finished ?? false}
+            />
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
           <Button className="align-right" type="submit">
             Save
           </Button>
-
-          <Link href="/dashboard/checkout">
+          <div className="col-span-1">
             <Button
-              className="hover:bg-slate-200 active:bg-slate-300"
-              type="button"
               variant="secondary"
+              className="w-max hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              onClick={() => {
+                handleFinish();
+              }}
             >
-              Cancel
+              Finish
             </Button>
-          </Link>
+            <Link href="/dashboard/checkout">
+              <Button
+                className="ml-2 hover:bg-slate-200 active:bg-slate-300"
+                type="button"
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </Link>
+          </div>
         </form>
       </Form>
     </div>

@@ -23,6 +23,10 @@ import {
   startOfDay,
   endOfWeek,
   lastDayOfWeek,
+  addHours,
+  subHours,
+  compareDesc,
+  compareAsc,
 } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { BookingType } from "@/data/definitions";
@@ -70,10 +74,24 @@ export default function BookingCalendar({
 
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
-      const title = window.prompt("New Event name");
-      if (title) {
-        setEvents((prev) => [...prev, { start, end, title }]);
+      // const title = window.prompt("New Event name");
+      // if (title) {
+      //   setEvents((prev) => [...prev, { start, end, title }]);
+      // }
+      const eightAM = addHours(startOfDay(start), 8);
+      const elevenPM = addHours(startOfDay(start), 23);
+      if (
+        compareAsc(eightAM, start) === 1 ||
+        compareDesc(elevenPM, start) !== -1
+      ) {
+        window.alert("Our office hours are 8AM to 11PM");
+        // console.log(compareAsc(eightAM, start));
+        return;
       }
+      const confirm = window.confirm("Creating a new booking?");
+
+      if (confirm)
+        router.push(`/dashboard/booking/new?startTime=${start.toISOString()}`);
     },
     [setEvents],
   );

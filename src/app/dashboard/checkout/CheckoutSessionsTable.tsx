@@ -68,15 +68,15 @@ const CheckoutSessionsTable = ({
   data,
   columnsStatus,
 }: CheckoutSessionsTableProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const params = new URLSearchParams(searchParams);
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const pathname = usePathname();
+  // const params = new URLSearchParams(searchParams);
 
-  const sort = searchParams.get("sort") ?? "";
+  // const sort = searchParams.get("sort") ?? "";
   // let filterOpen = searchParams.get("filterOpen") === "true";
-  const pageIndex = searchParams.get("page") ?? "1";
-  const pageSize = searchParams.get("pageSize") ?? "10";
+  // const pageIndex = searchParams.get("page") ?? "1";
+  // const pageSize = searchParams.get("pageSize") ?? "10";
   // const isAllSelected = searchParams.get("isAllSelected") === "true";
   // const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
@@ -239,7 +239,7 @@ const CheckoutSessionsTable = ({
                   if (key === "userName") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap p-1" key={key}>
-                        {`${row.studio_user.firstName} ${row.studio_user.lastName}`}
+                        {`${row.user.firstName} ${row.user.lastName}`}
                       </TableCell>
                     ) : (
                       ``

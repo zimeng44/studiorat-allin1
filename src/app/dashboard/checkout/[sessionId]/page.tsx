@@ -9,6 +9,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getCheckoutSessionById } from "@/data/loaders";
 import EditCheckoutSessionForm from "./EditCheckoutSessionForm";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { cookies } from "next/headers";
+import { Badge } from "@/components/ui/badge";
 
 interface ParamsProps {
   params: {
@@ -21,6 +24,8 @@ export default async function SingleCheckoutSessionDetails({
 }: Readonly<ParamsProps>) {
   // console.log(params);
   const data = await getCheckoutSessionById(params.sessionId);
+  const { value: authToken } = cookies().get("jwt");
+  const { data: thisMonitor } = await getUserMeLoader();
 
   // console.log("checkout session by ID \n", data);
 
@@ -37,9 +42,7 @@ export default async function SingleCheckoutSessionDetails({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/checkout">
-              Checkout
-            </BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/checkout">Checkout</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -47,9 +50,21 @@ export default async function SingleCheckoutSessionDetails({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
+      <div className="flex items-center">
+        <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
+        {data.finished ? (
+          <Badge variant="secondary">Finished</Badge>
+        ) : (
+          <Badge variant="default">Ongoing</Badge>
+        )}
+      </div>
       <div className="flex items-center px-2">
-        <EditCheckoutSessionForm session={data} sessionId={params.sessionId} />
+        <EditCheckoutSessionForm
+          session={data}
+          sessionId={params.sessionId}
+          thisMonitor={thisMonitor}
+          authToken={authToken}
+        />
       </div>
     </div>
   );

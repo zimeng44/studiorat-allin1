@@ -242,7 +242,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
               </FormItem>
             )}
           />
-          <div className="col-span-1 flex gap-12 bg-slate-300">
+          {/* <div className="col-span-1 flex gap-12 bg-slate-300">
             <FormField
               control={form.control}
               name="out"
@@ -268,7 +268,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
                 <FormItem className="mb-1">
                   <FormLabel className="ml-1">Broken</FormLabel>
                   <FormControl>
-                    {/* <Input placeholder={"Broken"} {...field}></Input> */}
+                    
                     <Checkbox
                       className="ml-2"
                       disabled
@@ -280,9 +280,9 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
                 </FormItem>
               )}
             />
-          </div>
+          </div> */}
 
-          <div className="col-span-1 grid grid-cols-subgrid gap-4"></div>
+          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
           <Button className="align-right" type="submit">
             Add

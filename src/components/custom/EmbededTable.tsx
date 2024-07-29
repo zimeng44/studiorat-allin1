@@ -24,9 +24,10 @@ const MAX_TEXT_LEN = 20;
 interface InventoryTableProps {
   data: any[];
   columns: any[];
+  disabled: boolean;
 }
 
-const InventoryTable = ({ data, columns }: InventoryTableProps) => {
+const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
   // console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -247,6 +248,7 @@ const InventoryTable = ({ data, columns }: InventoryTableProps) => {
                         onCheckedChange={(checked) => {
                           updateItemAction({ broken: !row.broken }, row.id);
                         }}
+                        disabled={disabled}
                       />
                     </TableCell>
                   ) : (

@@ -6,6 +6,7 @@ import { Logo } from "@/components/custom/Logo";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./LogoutButton";
 import { SummaryForm } from "@/components/forms/SummaryForm";
+import { User } from "lucide-react";
 
 interface HeaderProps {
   data: {
@@ -25,6 +26,8 @@ interface HeaderProps {
 interface AuthUserProps {
   username: string;
   email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export function LoggedInUser({
@@ -33,12 +36,14 @@ export function LoggedInUser({
   readonly userData: AuthUserProps;
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-4">
       <Link
         href="/dashboard/account"
-        className="font-semibold hover:text-primary"
+        className=" flex gap-2 font-semibold hover:text-primary"
       >
-        {userData.username}
+        <User className="h-6 w-6" />
+        {/* {userData.username} */}
+        {`${userData.firstName} ${userData.lastName}`}
       </Link>
       <LogoutButton />
     </div>

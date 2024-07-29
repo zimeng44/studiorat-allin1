@@ -34,7 +34,7 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
         </CardHeader>
         <CardContent>
           <p className="mb-2 w-full leading-5">
-            {`${session.studio_user?.firstName} ${session.studio_user?.lastName}` ||
+            {`${session.user?.firstName} ${session.user?.lastName}` ||
               "User Name Unknown"}
           </p>
           <p className="mb-4 w-full leading-5">

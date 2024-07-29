@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { BookingType } from "@/data/definitions";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import { add } from "date-fns";
+import { add, addDays, addHours, startOfDay } from "date-fns";
 
 // const INITIAL_STATE = {
 //   startTime: "",
@@ -21,12 +21,38 @@ import { add } from "date-fns";
 //   createMonitor: "",
 //   notes: "",
 // };
+interface SearchParamsProps {
+  searchParams?: {
+    startTime?: string;
+    // query?: string;
+    // page?: number;
+    // pageSize?: number;
+    // sort?: string;
+    // filterOpen?: boolean;
+    // creationTimeFrom?: string;
+    // creationTimeTo?: string;
+    // finishTimeFrom?: string;
+    // finishTimeTo?: string;
+    // stuIDCheckout?: string;
+    // stuIDCheckin?: string;
+    // studio?: string;
+    // otherLocation?: string;
+    // creationMonitor?: string;
+    // finishMonitor?: string;
+    // notes?: string;
+    // finished?: string;
+    // userName?: string;
+  };
+}
 
-const NewBooking = async () => {
+const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   // console.log(await getUserMeLoader());
   const { data: thisUser } = await getUserMeLoader();
   const data: BookingType = {
     bookingCreator: thisUser,
+    startTime:
+      searchParams?.startTime ??
+      addHours(startOfDay(addDays(new Date(), 1)), 12).toISOString(),
   };
 
   // console.log(data);

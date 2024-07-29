@@ -80,7 +80,7 @@ export default async function CheckoutSessions({
         filter,
       );
 
-  // console.log(data);
+  // console.log(data[0]);
 
   // if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No Checkout Sessions data</p>;

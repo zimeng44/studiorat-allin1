@@ -44,7 +44,7 @@ export type CheckoutSessionType = {
     | number[]
     | undefined
     | { data: InventoryItem[] };
-  studio_user?: UserType;
+  user?: UserType;
 };
 
 export type BookingType = {

@@ -1,4 +1,5 @@
 // import React from "react";
+import { cookies } from "next/headers";
 import NewCheckoutForm from "./NewCheckoutForm";
 import {
   Breadcrumb,
@@ -8,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 // const INITIAL_STATE = {
 //   creationTime: `${new Date().toLocaleString()}`,
@@ -22,7 +24,11 @@ import {
 //   finished: false,
 // };
 
-const NewCheckoutSession = () => {
+const NewCheckoutSession = async () => {
+  const { value: authToken } = cookies().get("jwt");
+  const { data: thisMonitor } = await getUserMeLoader();
+  // console.log(thisMonitor);
+
   return (
     <div className="p-5">
       <Breadcrumb>
@@ -46,7 +52,7 @@ const NewCheckoutSession = () => {
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">New Checkout</h1>
       <div className="flex items-center px-4">
-        <NewCheckoutForm />
+        <NewCheckoutForm thisMonitor={thisMonitor} authToken={authToken} />
       </div>
     </div>
   );

@@ -41,6 +41,7 @@ import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
 import { inventoryColumnsDefault } from "@/data/inventoryColumns";
+import XInput from "@/components/custom/XInput";
 type ColumnKey =
   | "creationTime"
   | "stuIDCheckout"

@@ -227,23 +227,19 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "user") {
+                  if (key === "user" || key === "bookingCreator") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row.user.firstName} ${row.user.lastName}`}
+                        {`${row[key].firstName} ${row[key].lastName}`}
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-                  // if (key === "finished") {
+                  // if (key === "bookingCreator") {
                   //   return value.visible ? (
                   //     <TableCell className="whitespace-nowrap" key={key}>
-                  //       {row.finished ? (
-                  //         <Badge variant="secondary">Finished</Badge>
-                  //       ) : (
-                  //         <Badge variant="default">Ongoing</Badge>
-                  //       )}
+                  //       {`${row.bookingCreator.firstName} ${row.bookingCreator.lastName}`}
                   //     </TableCell>
                   //   ) : (
                   //     ``

@@ -23,6 +23,7 @@ import {
   nextFriday,
   isFriday,
   add,
+  addHours,
 } from "date-fns";
 import {
   Form,
@@ -76,12 +77,12 @@ const formSchema = z.object({
   // username: z.string().min(2).max(50),
   type: z.string(),
   startDate: z.date().or(z.string()),
-  startTime: z.string(),
+  startTime: z.string().min(1),
   endDate: z.date().or(z.string()),
-  endTime: z.string(),
+  endTime: z.string().min(4),
   // user: z.string().min(2),
   netId: z.string().optional(),
-  userName: z.string().optional(),
+  userName: z.string().min(1),
   useLocation: z.enum([
     "Outside",
     "Studio A",
@@ -121,12 +122,14 @@ const NewBookingForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Same Day",
-      startDate: format(new Date().toLocaleString(), "MM/dd/yyyy") ?? "",
-      startTime: "12:00 PM",
-      endDate:
-        format(add(new Date(), { hours: 1 }).toLocaleString(), "MM/dd/yyyy") ??
-        "",
-      endTime: "01:00 PM",
+      startDate: format(booking?.startTime ?? new Date(), "MM/dd/yyyy"),
+      startTime: booking?.startTime
+        ? format(new Date(booking.startTime), "hh:mm a")
+        : "12:00 PM",
+      endDate: format(booking?.startTime ?? new Date(), "MM/dd/yyyy"),
+      endTime: booking?.startTime
+        ? format(addHours(new Date(booking.startTime), 1), "hh:mm a")
+        : "01:00 PM",
       netId: "",
       userName: "",
       useLocation: "Outside",
@@ -138,6 +141,8 @@ const NewBookingForm = ({
     mode: "onChange",
     values: tempForm,
   });
+
+  // console.log(form.getValues("startTime"));
   // if (typeof window !== 'undefined') {}
   // const [itemIdArray, setItemIdArray] = useState(
   //   booking.inventory_items?.data.map((item: InventoryItem) => item.id) ??
@@ -178,14 +183,6 @@ const NewBookingForm = ({
       }
     }
   }, []);
-
-  // useEffect(() => {
-  //   localStorage.removeItem(`tempNewBookingItems`);
-  // }, [localItemsObj]);
-
-  //Load user with id
-
-  // console.log(tempBookingObj);
 
   function handleTypeSelect(value: string) {
     // window.alert("yes");
@@ -317,6 +314,7 @@ const NewBookingForm = ({
             console.log(data);
             window.alert("User not found.");
             form.setValue("userName", "");
+            form.setValue("netId", "");
           }
         });
     }
@@ -410,15 +408,24 @@ const NewBookingForm = ({
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const updatedStart = new Date(
+      `${format(new Date(form.getValues("startDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
+    ).toISOString();
+    const updatedEnd = new Date(
+      `${format(new Date(form.getValues("endDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
+    ).toISOString();
+
+    if (updatedStart >= updatedEnd) {
+      window.alert("Save Failed: End Time should be larger than Start Time");
+      return;
+    }
+
     values.inventory_items = itemObjArr.map((item) => item.id);
     values.user = user?.id;
     values.bookingCreator = booking.bookingCreator.id;
-    values.startTime = new Date(
-      `${format(new Date(form.getValues("startDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
-    ).toISOString();
-    values.endTime = new Date(
-      `${format(new Date(form.getValues("endDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
-    ).toISOString();
+    values.startTime = updatedStart;
+    values.endTime = updatedEnd;
+
     delete values.startDate;
     delete values.endDate;
     delete values.netId;

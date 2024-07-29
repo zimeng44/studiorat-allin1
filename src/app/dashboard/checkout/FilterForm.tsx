@@ -85,7 +85,7 @@ const formSchema = z.object({
   notes: z.string().optional(),
   finished: z.string().optional(),
   inventory_items: z.string().optional(),
-  studio_user: z.string().optional(),
+  user: z.string().optional(),
   // username: z.string().min(2).max(50),
 });
 

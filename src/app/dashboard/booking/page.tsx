@@ -90,7 +90,7 @@ export default async function CheckoutSessions({
   );
 
   const { value: authToken } = cookies().get("jwt");
-  // console.log(data);
+  // console.log(authToken);
 
   // if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No Checkout Sessions data</p>;
