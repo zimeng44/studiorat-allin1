@@ -89,7 +89,18 @@ export default async function CheckoutSessions({
     },
   );
 
-  const { value: authToken } = cookies().get("jwt");
+  // const { value: authToken } = cookies().get("jwt");
+
+  const jwtCookie = cookies().get("jwt");
+
+  if (jwtCookie) {
+    const { value: authToken } = jwtCookie;
+    // You can now use authToken safely here
+    console.log(authToken);
+  } else {
+    // Handle the case where the cookie is not found
+    console.error("JWT cookie not found");
+  }
   // console.log(authToken);
 
   // if (isLoading) return <p>Loading...</p>;
@@ -118,7 +129,7 @@ export default async function CheckoutSessions({
         data={data}
         meta={meta}
         filter={filter}
-        authToken={authToken}
+        authToken={jwtCookie?.value??""}
         calendarFirstLoadData={calendarLoadEvents}
       />
     </div>

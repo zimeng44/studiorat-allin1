@@ -60,9 +60,26 @@ import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 
 const MAX_TEXT_LEN = 20;
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  description: TableFieldStatus;
+  category: TableFieldStatus;
+  accessories: TableFieldStatus;
+  comments: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  out: TableFieldStatus;
+  broken: TableFieldStatus;
+}
+
 interface InventoryTableProps {
   data: any[];
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
 }
 
 const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
@@ -261,7 +278,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                 <TableCell key="select">
                   <Checkbox
                     checked={rowsSelected[index]}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={(checked:boolean) =>
                       handleRowSelection(index, checked)
                     }
                     // checked={row.getIsSelected()}

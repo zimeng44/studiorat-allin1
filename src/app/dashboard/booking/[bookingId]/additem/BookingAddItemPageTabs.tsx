@@ -16,9 +16,24 @@ import TabHeader from "./TabHeader";
 import BookingInventoryTable from "./BookingInventoryTable";
 import { CirclePlus } from "lucide-react";
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  category: TableFieldStatus;
+  description: TableFieldStatus;
+  accessories: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  comments: TableFieldStatus;
+}
+
 interface ViewTabsProps {
   data: any[];
-  meta: {};
+  meta: {pagination:{pageCount:number, total: number}};
   filter: {};
   itemObjArr: InventoryItem[];
   addToBooking: Function;
@@ -58,7 +73,7 @@ function LinkCard({
       </CardHeader>
       <CardContent>
         <p className="mb-4 w-full leading-7">
-          {item.description.slice(0, 50) + "... [read more]"}
+          {item.description?.slice(0, 50) + "... [read more]"}
           <CirclePlus className="h-4 w-4 content-end" />
         </p>
       </CardContent>
@@ -73,7 +88,7 @@ const BookingAddItemPageTabs = ({
   itemObjArr,
   addToBooking,
 }: ViewTabsProps) => {
-  const [columnsStatus, setColumnsStatus] = useState(
+  const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(inventoryColumnsDefault),
   );
   return (

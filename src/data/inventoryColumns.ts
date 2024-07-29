@@ -5,14 +5,10 @@ export type InventoryColumnFields = {
   description: string;
   category: string;
   accessories: string;
-  serialNumber: string;
   comments: string;
   storageLocation: string;
   out: boolean;
   broken: boolean;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 };
 
 export const inventoryColumns = [

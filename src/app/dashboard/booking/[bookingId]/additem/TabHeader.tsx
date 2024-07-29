@@ -42,21 +42,38 @@ import Link from "next/link";
 import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
 // import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
-type ColumnKey =
-  | "creationTime"
-  | "stuIDCheckout"
-  | "stuIDCheckin"
-  | "userName"
-  | "finished"
-  | "studio"
-  | "otherLocation"
-  | "creationMonitor"
-  | "finishMonitor"
-  | "finishTime"
-  | "notes";
+// type ColumnKey =
+//   | "creationTime"
+//   | "stuIDCheckout"
+//   | "stuIDCheckin"
+//   | "userName"
+//   | "finished"
+//   | "studio"
+//   | "otherLocation"
+//   | "creationMonitor"
+//   | "finishMonitor"
+//   | "finishTime"
+//   | "notes";
+
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  category: TableFieldStatus;
+  description: TableFieldStatus;
+  accessories: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  comments: TableFieldStatus;
+}
+
+type ColumnKey = keyof TableColumnStatus;
 
 interface TableHeaderProps {
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
 }
@@ -72,8 +89,9 @@ const TabHeader = ({
   let filterOpen = searchParams.get("filterOpen") === "true";
 
   const setColumnsVisibility = (key: ColumnKey, checked: boolean) => {
+    const keyType = key as ColumnKey;
     let newState = structuredClone(columnsStatus);
-    newState[key].visible = checked;
+    newState[keyType].visible = checked;
     setColumnsStatus(newState);
   };
 
@@ -123,13 +141,14 @@ const TabHeader = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {Object.entries(columnsStatus).map(([key, value]) => {
+            const keyType = key as ColumnKey;
             return (
               <DropdownMenuCheckboxItem
-                key={key}
+                key={keyType}
                 className="capitalize"
                 checked={value.visible}
                 onCheckedChange={(checked) =>
-                  setColumnsVisibility(key, checked)
+                  setColumnsVisibility(keyType, checked)
                 }
                 onSelect={(e) => e.preventDefault()}
               >

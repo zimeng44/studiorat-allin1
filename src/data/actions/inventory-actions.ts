@@ -5,7 +5,8 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { InventoryItem } from "@/app/lib/definitions";
+// import { InventoryItem } from "@/app/lib/definitions";
+import { InventoryItem } from "../definitions";
 
 // interface Payload {
 //   data: {

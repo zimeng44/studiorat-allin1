@@ -40,18 +40,35 @@ import {
 import FilterForm from "./FilterForm";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
+// import { bookingColumnsDefault } from "@/data/bookingColumns";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
-type ColumnKeys =
-  | "startTime"
-  | "endTime"
-  | "user"
-  | "type"
-  | "useLocation"
-  | "bookingCreator"
-  | "notes";
+
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  startTime: TableFieldStatus;
+  endTime: TableFieldStatus;
+  user: TableFieldStatus;
+  type: TableFieldStatus;
+  useLocation: TableFieldStatus;
+  bookingCreator: TableFieldStatus;
+  notes: TableFieldStatus;
+}
+
+// type ColumnKeys =
+//   | "startTime"
+//   | "endTime"
+//   | "user"
+//   | "type"
+//   | "useLocation"
+//   | "bookingCreator"
+//   | "notes";
+type ColumnKeys = keyof TableColumnStatus;
 
 interface TableHeaderProps {
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
 }
@@ -70,7 +87,7 @@ const BookingTabHeader = ({
 
   const setColumnsVisibility = (key: ColumnKeys, checked: boolean) => {
     // console.log("yes!!!!!!!!!!!!!!!!!!!!!!!");
-    let newState = structuredClone(bookingColumnsDefault);
+    let newState:TableColumnStatus = structuredClone(bookingColumnsDefault);
     newState[key].visible = checked;
     setColumnsStatus(newState);
   };
@@ -128,13 +145,14 @@ const BookingTabHeader = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {Object.entries(columnsStatus).map(([key, value]) => {
+            const typedKey = key as ColumnKeys; //type assertion
             return (
               <DropdownMenuCheckboxItem
-                key={key}
+                key={typedKey}
                 className="capitalize"
                 checked={value.visible}
                 onCheckedChange={(checked) =>
-                  setColumnsVisibility(key, checked)
+                  setColumnsVisibility(typedKey, checked)
                 }
                 onSelect={(e) => e.preventDefault()}
               >

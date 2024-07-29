@@ -59,9 +59,26 @@ import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 
 const MAX_TEXT_LEN = 8;
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  creationTime: TableFieldStatus;
+  stuIDCheckout: TableFieldStatus;
+  stuIDCheckin: TableFieldStatus;
+  studio: TableFieldStatus;
+  otherLocation: TableFieldStatus;
+  creationMonitor: TableFieldStatus;
+  finishMonitor: TableFieldStatus;
+  finishTime: TableFieldStatus;
+  notes: TableFieldStatus;
+  finished: TableFieldStatus;
+}
+
 interface CheckoutSessionsTableProps {
   data: any[];
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
 }
 
 const CheckoutSessionsTable = ({

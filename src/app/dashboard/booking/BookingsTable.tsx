@@ -53,9 +53,23 @@ import { bookingColumnsDefault } from "@/data/bookingColumns";
 
 const MAX_TEXT_LEN = 8;
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  startTime: TableFieldStatus;
+  endTime: TableFieldStatus;
+  user: TableFieldStatus;
+  type: TableFieldStatus;
+  useLocation: TableFieldStatus;
+  bookingCreator: TableFieldStatus;
+  notes: TableFieldStatus;
+}
+
 interface BookingsTableProps {
   data: any[];
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
 }
 
 const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
@@ -192,6 +206,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
               </Popover>
             </TableHead>
             {Object.entries(columnsStatus).map(([key, value]) => {
+              // const typedValue = value as ;
               return value.visible ? (
                 <TableHead className="whitespace-nowrap" key={key}>
                   {value.header}
@@ -218,7 +233,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                 <TableCell key="select">
                   <Checkbox
                     checked={rowsSelected[index]}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={(checked:boolean) =>
                       handleRowSelection(index, checked)
                     }
                     // checked={row.getIsSelected()}

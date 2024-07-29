@@ -41,7 +41,7 @@ const BookingEmbededTable = ({
   const pathname = usePathname();
 
   let numRowsSelected = searchParams.get("numRowsSelected")
-    ? parseInt(searchParams.get("numRowsSelected"))
+    ? parseInt(searchParams.get("numRowsSelected")??"")
     : 0;
   // console.log(numRowsSelected);
 

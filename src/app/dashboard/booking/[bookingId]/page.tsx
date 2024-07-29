@@ -22,7 +22,16 @@ export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
   const data = await getBookingById(params.bookingId);
-  const { value: authToken } = cookies().get("jwt");
+  const jwtCookie = cookies().get("jwt");
+
+  if (jwtCookie) {
+    const { value: authToken } = jwtCookie;
+    // You can now use authToken safely here
+    console.log(authToken);
+  } else {
+    // Handle the case where the cookie is not found
+    console.error("JWT cookie not found");
+  }
   // const temp = cookies().get(`tempBookingItems${params.bookingId}`) ?? "";
   // const tempItems = temp?.value ? JSON.parse(temp.value) : undefined;
   // console.log(data);
@@ -53,7 +62,7 @@ export default async function BookingDetails({
         <EditBookingForm
           booking={data}
           bookingId={params.bookingId}
-          authToken={authToken}
+          authToken={jwtCookie?.value??""}
         />
       </div>
     </div>

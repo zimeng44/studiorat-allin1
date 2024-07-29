@@ -67,7 +67,7 @@ export function Search() {
   );
 }
 
-function XIcon(props) {
+function XIcon(props:any) {
   return (
     <svg
       {...props}

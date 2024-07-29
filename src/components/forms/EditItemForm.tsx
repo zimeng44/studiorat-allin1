@@ -120,7 +120,7 @@ const EditItemForm = ({
     // setDialogOpen(false);
   }
 
-  function handleDelete(e) {
+  function handleDelete(e:any) {
     const confirm = window.confirm(
       "Are you sure you want to delete this item?",
     );

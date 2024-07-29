@@ -14,9 +14,26 @@ import InventoryTable from "@/components/custom/InventoryTable";
 import TabHeader from "./TabHeader";
 import { Grid, List } from "lucide-react";
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  description: TableFieldStatus;
+  category: TableFieldStatus;
+  accessories: TableFieldStatus;
+  comments: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  out: TableFieldStatus;
+  broken: TableFieldStatus;
+}
+
 interface ViewTabsProps {
   data: any[];
-  meta: {};
+  meta: {pagination:{pageCount:number, total: number}};
   filter: {};
 }
 
@@ -32,7 +49,7 @@ function LinkCard(item: Readonly<InventoryItem>) {
         </CardHeader>
         <CardContent>
           <p className="mb-4 w-full leading-7">
-            {item.description.slice(0, 50) + "... [read more]"}
+            {item.description?.slice(0, 50) + "... [read more]"}
           </p>
         </CardContent>
       </Card>
@@ -41,7 +58,7 @@ function LinkCard(item: Readonly<InventoryItem>) {
 }
 
 const InventoryPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
-  const [columnsStatus, setColumnsStatus] = useState(
+  const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(inventoryColumnsDefault),
   );
   return (

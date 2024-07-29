@@ -47,6 +47,26 @@ export type CheckoutSessionType = {
   user?: UserType;
 };
 
+export type CheckoutSessionTypePost = {
+  id?: number;
+  creationTime: Date | string;
+  stuIDCheckout: string;
+  stuIDCheckin?: string;
+  studio: string;
+  otherLocation?: string;
+  creationMonitor: string;
+  finishTime?: Date | string;
+  finishMonitor?: string;
+  finished: boolean;
+  notes: string;
+  inventory_items:(number|undefined)[];
+  user: number;
+};
+
+export interface RetrievedItems {
+  data: InventoryItem[];
+}
+
 export type BookingType = {
   id?: number;
   startTime?: Date | string;
@@ -57,12 +77,19 @@ export type BookingType = {
   type?: string;
   bookingCreator?: UserType;
   notes?: string;
-  inventory_items?:
-    | InventoryItem[]
-    | number[]
-    | undefined
-    | { data: InventoryItem[] };
+  inventory_items?: InventoryItem[] | number[] | undefined | RetrievedItems;
 };
+
+export interface BookingTypePost {
+  startTime: Date | string;
+  endTime: Date | string;
+  user: number;
+  useLocation: string;
+  type: string;
+  bookingCreator: number;
+  notes?: string;
+  inventory_items?: (number| undefined)[];
+}
 
 export type UserType = {
   id?: number;

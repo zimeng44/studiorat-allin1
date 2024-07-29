@@ -23,7 +23,7 @@ const BookingAddItemForm = ({
   // bookingId: string;
   // bookingData: BookingType;
   inventoryData: InventoryItem[];
-  inventoryMeta: {};
+  inventoryMeta: {pagination:{pageCount:number, total: number}};
   filter: {};
 }) => {
   const router = useRouter();

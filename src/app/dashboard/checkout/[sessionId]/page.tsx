@@ -24,8 +24,18 @@ export default async function SingleCheckoutSessionDetails({
 }: Readonly<ParamsProps>) {
   // console.log(params);
   const data = await getCheckoutSessionById(params.sessionId);
-  const { value: authToken } = cookies().get("jwt");
+  // const { value: authToken } = cookies().get("jwt");
   const { data: thisMonitor } = await getUserMeLoader();
+  const jwtCookie = cookies().get("jwt");
+
+  if (jwtCookie) {
+    const { value: authToken } = jwtCookie;
+    // You can now use authToken safely here
+    console.log(authToken);
+  } else {
+    // Handle the case where the cookie is not found
+    console.error("JWT cookie not found");
+  }
 
   // console.log("checkout session by ID \n", data);
 
@@ -63,7 +73,7 @@ export default async function SingleCheckoutSessionDetails({
           session={data}
           sessionId={params.sessionId}
           thisMonitor={thisMonitor}
-          authToken={authToken}
+          authToken={jwtCookie?.value??""}
         />
       </div>
     </div>

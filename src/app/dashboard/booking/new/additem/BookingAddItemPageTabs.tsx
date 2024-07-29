@@ -18,7 +18,7 @@ import { CirclePlus } from "lucide-react";
 
 interface ViewTabsProps {
   data: any[];
-  meta: {};
+  meta: {pagination:{pageCount:number, total: number}};
   filter: {};
   itemObjArr: InventoryItem[];
   addToBooking: Function;
@@ -58,7 +58,7 @@ function LinkCard({
       </CardHeader>
       <CardContent>
         <p className="mb-4 w-full leading-7">
-          {item.description.slice(0, 50) + "... [read more]"}
+          {item.description?.slice(0, 50) + "... [read more]"}
           <CirclePlus className="h-4 w-4 content-end" />
         </p>
       </CardContent>

@@ -68,9 +68,24 @@ import { InventoryItem } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 20;
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  category: TableFieldStatus;
+  description: TableFieldStatus;
+  accessories: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  comments: TableFieldStatus;
+}
+
 interface InventoryTableProps {
   data: any[];
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
   itemObjArr: InventoryItem[];
   addToBooking: Function;
 }

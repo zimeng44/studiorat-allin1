@@ -5,18 +5,16 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { BookingType } from "@/data/definitions";
+import { BookingType, BookingTypePost } from "@/data/definitions";
 
-export async function createBookingAction(newBooking: BookingType) {
+export async function createBookingAction(newBooking: BookingTypePost) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
   // console.log(newBooking.finishTime);
-  if (newBooking.startTime === undefined) delete newBooking.startTime;
-  else newBooking.startTime = new Date(newBooking.startTime).toISOString();
+  newBooking.startTime = new Date(newBooking.startTime).toISOString();
 
-  if (newBooking.endTime === undefined) delete newBooking.endTime;
-  else newBooking.endTime = new Date(newBooking.endTime).toISOString();
+  newBooking.endTime = new Date(newBooking.endTime).toISOString();
 
   const payload = {
     data: newBooking,
@@ -30,7 +28,7 @@ export async function createBookingAction(newBooking: BookingType) {
 }
 
 export const updateBookingAction = async (
-  updatedBooking: BookingType,
+  updatedBooking: BookingTypePost,
   id: string,
 ) => {
   // if (updatedBooking.startTime === undefined) delete updatedBooking.startTime;

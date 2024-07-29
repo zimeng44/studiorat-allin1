@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import {
   CheckoutSessionType,
+  CheckoutSessionTypePost,
   InventoryItem,
   studioList,
   UserType,
@@ -81,7 +82,7 @@ const formSchema = z.object({
   stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().optional(),
   // stuIDCheckin: z.string().optional(),
-  studio: z.enum(studioList),
+  studio: z.string(),
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
   // finishMonitor: z.string().optional(),
@@ -259,9 +260,24 @@ const NewCheckoutForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    values.user = userId;
-    values.inventory_items = itemIdArray;
-    delete values.userName;
+    let formValue:CheckoutSessionTypePost={
+      creationTime: values.creationTime,
+      stuIDCheckout: values.stuIDCheckout,
+      stuIDCheckin: "",
+      studio: values.studio,
+      otherLocation: values.otherLocation,
+      creationMonitor: values.creationMonitor,
+      finishTime: "",
+      finishMonitor: "",
+      finished: false,
+      notes: values.notes??"",
+      inventory_items:itemIdArray??[0],
+      user: parseInt(userId),
+    }
+
+    // values.user = userId;
+    // values.inventory_items = itemIdArray;
+    // delete values.userName;
 
     try {
       //update the out status of the items in the master inventory
@@ -269,7 +285,7 @@ const NewCheckoutForm = ({
         updateItemAction({ out: itemObj.out }, itemObj.id),
       );
       //create the session in the checkout
-      await createCheckoutSessionAction(values);
+      await createCheckoutSessionAction(formValue);
     } catch (error) {
       toast.error("Error Creating New Checkout Session");
       setError({
@@ -304,6 +320,7 @@ const NewCheckoutForm = ({
                     disabled
                     placeholder={"This is the time"}
                     {...field}
+                    value={field.value?.toLocaleString()}
                   ></Input>
                 </FormControl>
                 <FormMessage />
@@ -330,9 +347,10 @@ const NewCheckoutForm = ({
               <FormItem>
                 <FormLabel>Checkout ID</FormLabel>
                 <FormControl
-                  onChange={(e) => {
-                    handleStuIdInput(e.target.value);
-                  }}
+                  // onChange={(e) => {
+                  //   handleStuIdInput(e.target.value);
+                  // }}
+                  onChange={(e) => handleStuIdInput((e.target as HTMLInputElement).value)}
                 >
                   <Input
                     {...field}
@@ -471,7 +489,8 @@ const NewCheckoutForm = ({
                   //   e.preventDefault();
                   //   return false;
                   // }}
-                  onChange={(e) => handleIdScan(e.target.value)}
+                  // onChange={(e) => handleIdScan(e.target.value)}
+                  onChange={(e) => handleIdScan((e.target as HTMLInputElement).value)}
                 >
                   <Input
                     className="bg-indigo-100"
@@ -484,7 +503,7 @@ const NewCheckoutForm = ({
             )}
           />
           <div className="col-span-2 flex w-[550px]  gap-10">
-            <EmbededTable data={itemObjArr} columns={inventoryColumns} />
+            <EmbededTable data={itemObjArr} columns={inventoryColumns} disabled={false} />
           </div>
 
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4">what</div> */}

@@ -35,11 +35,13 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   const pageSize = searchParams.get("pageSize") ?? "10";
   const numRowsSelected = searchParams.get("numRowsSelected") ?? "0";
 
+  const pageSizeInt =  parseInt(pageSize);
+
   const displayNumRows =
     pageCount === 1
       ? totalEntries
       : parseInt(pageIndex) === pageCount
-        ? parseInt(totalEntries % parseInt(pageSize))
+        ? parseInt(`${totalEntries % pageSizeInt}`)
         : parseInt(pageSize);
 
   const createPageURL = (

@@ -19,8 +19,26 @@ import { Grid, List } from "lucide-react";
 
 interface ViewTabsProps {
   data: any[];
-  meta: {};
+  meta: {pagination:{pageCount:number, total: number}};
   filter: {};
+}
+
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  creationTime: TableFieldStatus;
+  stuIDCheckout: TableFieldStatus;
+  stuIDCheckin: TableFieldStatus;
+  userName: TableFieldStatus;
+  studio: TableFieldStatus;
+  otherLocation: TableFieldStatus;
+  creationMonitor: TableFieldStatus;
+  finishMonitor: TableFieldStatus;
+  finishTime: TableFieldStatus;
+  notes: TableFieldStatus;
+  finished: TableFieldStatus;
 }
 
 function LinkCard(session: Readonly<CheckoutSessionType>) {
@@ -47,7 +65,7 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
 }
 
 const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
-  const [columnsStatus, setColumnsStatus] = useState(
+  const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(checkoutColumnsDefault),
   );
 

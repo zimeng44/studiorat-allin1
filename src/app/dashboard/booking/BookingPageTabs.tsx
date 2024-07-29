@@ -18,13 +18,28 @@ import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import { CalendarDays, Grid, List, Square } from "lucide-react";
 
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  startTime: TableFieldStatus;
+  endTime: TableFieldStatus;
+  user: TableFieldStatus;
+  type: TableFieldStatus;
+  useLocation: TableFieldStatus;
+  bookingCreator: TableFieldStatus;
+  notes: TableFieldStatus;
+}
+
 interface ViewTabsProps {
   data: any[];
-  meta: {};
+  meta: {pagination:{pageCount:number, total: number}};
   filter: {};
   authToken: string;
   calendarFirstLoadData: any[];
 }
+
 
 function LinkCard(booking: Readonly<BookingType>) {
   return (
@@ -56,7 +71,7 @@ const BookingPageTabs = ({
   authToken,
   calendarFirstLoadData,
 }: ViewTabsProps) => {
-  const [columnsStatus, setColumnsStatus] = useState(
+  const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(bookingColumnsDefault),
   );
 

@@ -45,6 +45,10 @@ export default function BookingCalendar({
   localizer,
   authToken,
   firstLoadData,
+}:{
+  localizer: any;
+  authToken: string;
+  firstLoadData: any;
 }) {
   const router = useRouter();
   const [date, setDate] = useState(new Date());
@@ -52,7 +56,7 @@ export default function BookingCalendar({
   const [myEvents, setEvents] = useState(firstLoadData);
 
   const onNavigate = useCallback(
-    (newDate) => {
+    (newDate:Date) => {
       setDate(newDate);
       // window.alert(newDate);
       getDateData(newDate).then(({ data, meta }) =>
@@ -70,10 +74,10 @@ export default function BookingCalendar({
     },
     [setDate],
   );
-  const onView = useCallback((newView) => setView(newView), [setView]);
+  const onView = useCallback((newView:any) => setView(newView), [setView]);
 
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
+    ({ start, end }:{start:Date, end:Date}) => {
       // const title = window.prompt("New Event name");
       // if (title) {
       //   setEvents((prev) => [...prev, { start, end, title }]);
@@ -97,7 +101,7 @@ export default function BookingCalendar({
   );
 
   const handleSelectEvent = useCallback(
-    (event) => router.push(`/dashboard/booking/${event.id}`),
+    (event:any) => router.push(`/dashboard/booking/${event.id}`),
     [],
   );
 
@@ -105,7 +109,7 @@ export default function BookingCalendar({
     () => ({
       // defaultDate: new Date(2015, 3, 12),
       defaultDate: new Date(),
-      // scrollToTime: new Date(1970, 1, 1, 6),
+      scrollToTime: new Date(1970, 1, 1, 6),
       views: {
         month: false,
         week: true,

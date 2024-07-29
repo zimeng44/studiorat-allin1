@@ -66,14 +66,14 @@ interface CheckoutFilterFormProps {
 const formSchema = z.object({
   creationTime: z
     .object({
-      from: z.date().optional(),
-      to: z.date().optional(),
+      from: z.date(),
+      to: z.date(),
     })
     .optional(),
   finishTime: z
     .object({
-      from: z.date().optional(),
-      to: z.date().optional(),
+      from: z.date(),
+      to: z.date(),
     })
     .optional(),
   stuIDCheckout: z.string().optional(),

@@ -10,6 +10,8 @@ import {
   bookingLocationList,
   bookingTypeList,
   UserType,
+  RetrievedItems,
+  BookingTypePost,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,9 +78,9 @@ import {
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   type: z.string(),
-  startDate: z.date().or(z.string()),
+  startDate: z.date(),
   startTime: z.string().min(1),
-  endDate: z.date().or(z.string()),
+  endDate: z.date(),
   endTime: z.string().min(4),
   // user: z.string().min(2),
   netId: z.string().optional(),
@@ -122,11 +124,11 @@ const NewBookingForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Same Day",
-      startDate: format(booking?.startTime ?? new Date(), "MM/dd/yyyy"),
+      startDate: new Date(booking?.startTime??""),
       startTime: booking?.startTime
         ? format(new Date(booking.startTime), "hh:mm a")
         : "12:00 PM",
-      endDate: format(booking?.startTime ?? new Date(), "MM/dd/yyyy"),
+      endDate: new Date(booking?.startTime??""),
       endTime: booking?.startTime
         ? format(addHours(new Date(booking.startTime), 1), "hh:mm a")
         : "01:00 PM",
@@ -149,9 +151,11 @@ const NewBookingForm = ({
   //     Array(),
   // );
   // const [tempBookingObj, setTempBookingObj] = useState(booking);
+  const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(
-    booking.inventory_items?.data ?? Array(),
+    inventoryItems.data ?? Array(),
   );
+  
   const [user, setUser] = useState<UserType>();
   // const [netId, setNetId] = useState("");
 
@@ -202,7 +206,7 @@ const NewBookingForm = ({
     }
   }
 
-  function handleStartDateSelect(value: string) {
+  function handleStartDateSelect(value: Date) {
     // window.alert(value);
     if (form.getValues("type") === "Same Day") {
       form.setValue("endDate", new Date(value));
@@ -240,7 +244,7 @@ const NewBookingForm = ({
   }
 
   function handleAddItem() {
-    const tempBooking = form.watch();
+    const tempBooking:BookingType = form.watch();
 
     tempBooking.inventory_items = itemObjArr;
     tempBooking.user = user;
@@ -322,11 +326,13 @@ const NewBookingForm = ({
     // console.log(params.toString());
   }, 1000);
 
-  async function itemConflictCheck(booking: BookingType) {
+  async function itemConflictCheck(booking: BookingTypePost) {
+    const inventoryItems = booking?.inventory_items as InventoryItem[]
     const itemList =
-      booking?.inventory_items?.length > 0
-        ? [...booking?.inventory_items]
+      inventoryItems.length > 0
+        ? [...inventoryItems]
         : [0];
+
     const query = qs.stringify({
       // sort: ["createdAt:desc"],
       populate: "*",
@@ -368,7 +374,7 @@ const NewBookingForm = ({
     return fetchData(url.href);
   }
 
-  async function locationConflictCheck(booking: BookingType) {
+  async function locationConflictCheck(booking: BookingTypePost) {
     const query = qs.stringify({
       // sort: ["createdAt:desc"],
       // populate: "*",
@@ -420,35 +426,46 @@ const NewBookingForm = ({
       return;
     }
 
-    values.inventory_items = itemObjArr.map((item) => item.id);
-    values.user = user?.id;
-    values.bookingCreator = booking.bookingCreator.id;
-    values.startTime = updatedStart;
-    values.endTime = updatedEnd;
+    const formValue: BookingTypePost = {
+      type: form.getValues("type"),
+      startTime: updatedStart,
+      endTime: updatedEnd,
+      user: user?.id ?? 0,
+      useLocation: form.getValues("useLocation")??"",
+      bookingCreator: booking?.bookingCreator?.id ?? 0,
+      notes: form.getValues("notes") ?? "",
+      inventory_items: itemObjArr.map((item: InventoryItem) => item.id),
+    };
 
-    delete values.startDate;
-    delete values.endDate;
-    delete values.netId;
-    delete values.userName;
-    delete values.bookingCreatorName;
+    // values.inventory_items = itemObjArr.map((item) => item.id);
+    // values.user = user?.id;
+    // values.bookingCreator = booking.bookingCreator.id;
+    // values.startTime = updatedStart;
+    // values.endTime = updatedEnd;
+
+    // delete values.startDate;
+    // delete values.endDate;
+    // delete values.netId;
+    // delete values.userName;
+    // delete values.bookingCreatorName;
 
     // console.log(values);
     // delete values.bookingCreator;
-    if (values.startTime >= values.endTime) {
+    if (formValue.startTime >= formValue.endTime) {
       window.alert("End Date and Time can't be less than Start Date and Time.");
       return;
     }
 
-    // console.log(values);
-    itemConflictCheck(values).then(({ data, meta }) => {
+    // console.log(formValue);
+    itemConflictCheck(formValue).then(({ data, meta }) => {
       if (data.length !== 0) {
         window.alert("Item Conflict Found.");
       } else {
-        locationConflictCheck(values).then(({ data, meta }) => {
+        locationConflictCheck(formValue).then(({ data, meta }) => {
           if (data.length !== 0) {
             window.alert("Location Conflict Found.");
           } else {
-            createBookingAction(values).then(() =>
+            createBookingAction(formValue).then(() =>
               toast.success("Booking Created Successfully."),
             );
             // router.refresh();
@@ -503,7 +520,7 @@ const NewBookingForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>NetID</FormLabel>
-                  <FormControl onChange={(e) => handleGetUser(e.target.value)}>
+                  <FormControl onChange={(e) => handleGetUser((e.target as HTMLInputElement).value)}>
                     <Input
                       placeholder="Type in a NetID Here"
                       {...field}
@@ -568,9 +585,11 @@ const NewBookingForm = ({
                         <Calendar
                           mode="single"
                           selected={field.value}
-                          onSelect={(value) => {
-                            field.onChange(value);
-                            handleStartDateSelect(value);
+                          onSelect={(value: Date | undefined) => {
+                             if (value) {
+                              field.onChange(value);
+                              handleStartDateSelect(value);
+                            }
                           }}
                           disabled={(date) => date < new Date()}
                           initialFocus
@@ -585,16 +604,17 @@ const NewBookingForm = ({
                 control={form.control}
                 name="startTime"
                 render={({ field }) => (
-                  <FormItem className="w-[125px] px-2">
+                  <FormItem className={cn(
+                        "w-[125px] px-2",
+                        " pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground",
+                      )}>
                     <FormLabel>Start Time</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
-                      className={cn(
-                        " pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
+                      
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -667,17 +687,17 @@ const NewBookingForm = ({
                 control={form.control}
                 name="endTime"
                 render={({ field }) => (
-                  <FormItem className="w-[125px] px-2">
+                  <FormItem className={cn(
+                        "w-[125px] px-2",
+                        " pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground",
+                      )}>
                     <FormLabel>End Time</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
-                      className={cn(
-                        " pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                      value={field.value}
+                    
                       disabled={
                         form.getValues("type") === "Overnight" ||
                         form.getValues("type") === "Weekend"

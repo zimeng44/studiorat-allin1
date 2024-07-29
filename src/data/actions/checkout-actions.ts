@@ -5,17 +5,19 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { CheckoutSessionType } from "@/data/definitions";
+import { CheckoutSessionType, CheckoutSessionTypePost } from "@/data/definitions";
 
 export async function createCheckoutSessionAction(
-  newSession: CheckoutSessionType,
+  newSession: CheckoutSessionTypePost,
 ) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
   // console.log(newSession.finishTime);
-  if (newSession.creationTime === undefined) delete newSession.creationTime;
-  else
+  if (newSession.creationTime === undefined){ 
+    // delete newSession.creationTime;
+    newSession.creationTime="";
+  }else
     newSession.creationTime = new Date(newSession.creationTime).toISOString();
 
   if (newSession.finishTime === undefined) delete newSession.finishTime;
@@ -33,11 +35,12 @@ export async function createCheckoutSessionAction(
 }
 
 export const updateCheckoutSessionAction = async (
-  updatedSession: CheckoutSessionType,
+  updatedSession: CheckoutSessionTypePost,
   id: string,
 ) => {
   if (updatedSession.creationTime === undefined)
-    delete updatedSession.creationTime;
+    // delete updatedSession?.creationTime;
+    updatedSession.creationTime="";
   else
     updatedSession.creationTime = new Date(
       updatedSession.creationTime,

@@ -3,7 +3,9 @@ import React, { useRef } from "react";
 import qs from "qs";
 import {
   CheckoutSessionType,
+  CheckoutSessionTypePost,
   InventoryItem,
+  RetrievedItems,
   studioList,
   UserType,
 } from "@/data/definitions";
@@ -49,7 +51,7 @@ const formSchema = z.object({
   stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().optional(),
   stuIDCheckin: z.string(),
-  studio: z.enum(studioList),
+  studio: z.string(),
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
   finishMonitor: z.string().optional(),
@@ -85,11 +87,16 @@ const EditCheckoutSessionForm = ({
   // const router = useRouter();
   // const [data, setData] = useState(rowData);
   // const [scan, setScan] = useState("");
+  const inventoryItems = session.inventory_items as RetrievedItems;
+  // const [itemObjArr, setItemObjArr] = useState(
+  //   inventoryItems.data ?? Array(),
+  // );
+
   const [itemIdArray, setItemIdArray] = useState(
-    session.inventory_items?.data.map((item: InventoryItem) => item.id),
+    inventoryItems?.data.map((item: InventoryItem) => item.id),
   );
   const [itemObjArr, setItemObjArr] = useState(
-    session.inventory_items?.data ?? Array(),
+    inventoryItems?.data ?? Array(),
   );
 
   // 1. Define your form.
@@ -194,11 +201,28 @@ const EditCheckoutSessionForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    values.inventory_items = itemIdArray;
-    delete values.userName;
-    updateCheckoutSessionAction(values, sessionId);
+    let formValue:CheckoutSessionTypePost={
+      creationTime: values.creationTime,
+      stuIDCheckout: values.stuIDCheckout,
+      stuIDCheckin: values.stuIDCheckin,
+      studio: values.studio,
+      otherLocation: values.otherLocation,
+      creationMonitor: values.creationMonitor,
+      finishTime: values.finishTime,
+      finishMonitor: values.finishMonitor,
+      finished: values.finished,
+      notes: values.notes??"",
+      inventory_items:itemIdArray??[0],
+      user: session.user?.id??0,
+    }
+    
+    // {...values, inventory_items: itemIdArray}
+
+    // values.inventory_items = itemIdArray;
+    // delete values.userName;
+    updateCheckoutSessionAction(formValue, sessionId);
     itemObjArr.map((itemObj) =>
-      updateItemAction({ out: itemObj.out }, itemObj.id),
+      updateItemAction({ out: itemObj.out }, itemObj.id?.toString()??""),
     );
     router.refresh();
     toast.success("Session Saved.");
@@ -249,6 +273,7 @@ const EditCheckoutSessionForm = ({
                     disabled
                     placeholder={"This is the time"}
                     {...field}
+                    value={field.value?.toLocaleString()}
                   ></Input>
                 </FormControl>
                 <FormMessage />
@@ -262,7 +287,7 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Finish Time</FormLabel>
                 <FormControl>
-                  <Input disabled {...field}></Input>
+                  <Input disabled {...field} value={field.value?.toLocaleString()}></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -438,7 +463,8 @@ const EditCheckoutSessionForm = ({
                   //   e.preventDefault();
                   //   return false;
                   // }}
-                  onChange={(e) => handleIdScan(e.target.value)}
+                  onChange={(e) => handleIdScan((e.target as HTMLInputElement).value)}
+                  // onChange={(e) => handleIdScan(e.target.value)}
                 >
                   <Input
                     className="bg-indigo-100"

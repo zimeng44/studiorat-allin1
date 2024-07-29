@@ -41,21 +41,40 @@ import FilterForm from "./FilterForm";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 import { checkoutColumnsDefault } from "@/data/checkoutColumns";
-type ColumnKey =
-  | "creationTime"
-  | "stuIDCheckout"
-  | "stuIDCheckin"
-  | "userName"
-  | "finished"
-  | "studio"
-  | "otherLocation"
-  | "creationMonitor"
-  | "finishMonitor"
-  | "finishTime"
-  | "notes";
+// type ColumnKey =
+//   | "creationTime"
+//   | "stuIDCheckout"
+//   | "stuIDCheckin"
+//   | "userName"
+//   | "finished"
+//   | "studio"
+//   | "otherLocation"
+//   | "creationMonitor"
+//   | "finishMonitor"
+//   | "finishTime"
+//   | "notes";
+
+  interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  creationTime: TableFieldStatus;
+  stuIDCheckout: TableFieldStatus;
+  stuIDCheckin: TableFieldStatus;
+  userName: TableFieldStatus;
+  studio: TableFieldStatus;
+  otherLocation: TableFieldStatus;
+  creationMonitor: TableFieldStatus;
+  finishMonitor: TableFieldStatus;
+  finishTime: TableFieldStatus;
+  notes: TableFieldStatus;
+  finished: TableFieldStatus;
+}
+type ColumnKeys = keyof TableColumnStatus;
 
 interface TableHeaderProps {
-  columnsStatus: {};
+  columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
 }
@@ -70,7 +89,7 @@ const TabHeader = ({
   const pathname = usePathname();
   let filterOpen = searchParams.get("filterOpen") === "true";
 
-  const setColumnsVisibility = (key: ColumnKey, checked: boolean) => {
+  const setColumnsVisibility = (key: ColumnKeys, checked: boolean) => {
     let newState = structuredClone(columnsStatus);
     newState[key].visible = checked;
     setColumnsStatus(newState);
@@ -129,13 +148,14 @@ const TabHeader = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {Object.entries(columnsStatus).map(([key, value]) => {
+            const typedKey = key as ColumnKeys;
             return (
               <DropdownMenuCheckboxItem
-                key={key}
+                key={typedKey}
                 className="capitalize"
                 checked={value.visible}
                 onCheckedChange={(checked) =>
-                  setColumnsVisibility(key, checked)
+                  setColumnsVisibility(typedKey, checked)
                 }
                 onSelect={(e) => e.preventDefault()}
               >

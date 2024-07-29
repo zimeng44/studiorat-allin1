@@ -51,13 +51,23 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   const data: BookingType = {
     bookingCreator: thisUser,
     startTime:
-      searchParams?.startTime ??
-      addHours(startOfDay(addDays(new Date(), 1)), 12).toISOString(),
+      searchParams?.startTime? new Date(searchParams?.startTime):
+      addHours(startOfDay(addDays(new Date(), 1)), 12),
   };
 
   // console.log(data);
-  const { value: authToken } = cookies().get("jwt");
+  // const { value: authToken } = cookies().get("jwt");
   // console.log(authToken);
+  const jwtCookie = cookies().get("jwt");
+
+  if (jwtCookie) {
+    const { value: authToken } = jwtCookie;
+    // You can now use authToken safely here
+    console.log(authToken);
+  } else {
+    // Handle the case where the cookie is not found
+    console.error("JWT cookie not found");
+  }
 
   return (
     <div className="p-5">
@@ -82,7 +92,7 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">New Booking</h1>
       <div className="flex items-center px-2">
-        <NewBookingForm booking={data} authToken={authToken} />
+        <NewBookingForm booking={data} authToken={jwtCookie?.value??""} />
       </div>
     </div>
   );
