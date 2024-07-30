@@ -281,7 +281,7 @@ const NewBookingForm = ({
     try {
       const response = await fetch(url, authToken ? headers : {});
       const data = await response.json();
-      // console.log(data);
+      // console.log(url);
       return flattenAttributes(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -298,7 +298,7 @@ const NewBookingForm = ({
     });
     const url = new URL("/api/users", baseUrl);
     url.search = query;
-    // console.log("query data", query)
+    // console.log("query data", url.href);
     return fetchData(url.href);
   }
 
