@@ -153,7 +153,7 @@ const NewBookingForm = ({
   // const [tempBookingObj, setTempBookingObj] = useState(booking);
   const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(
-    inventoryItems.data ?? Array(),
+    inventoryItems?.data ?? Array(),
   );
   
   const [user, setUser] = useState<UserType>();
