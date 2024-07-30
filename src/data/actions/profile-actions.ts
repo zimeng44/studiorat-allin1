@@ -161,6 +161,7 @@ export async function uploadProfileImageAction(
     payload,
   );
   const flattenedData = flattenAttributes(updateImageResponse);
+  revalidatePath("/dashboard/account");
 
   return {
     ...prevState,
