@@ -46,7 +46,6 @@ export function flattenAttributes(data: any): any {
 }
 
 export function getStrapiURL() {
-  console.log(process.env.STRAPI_URL);
   return process.env.STRAPI_URL ?? "http://localhost:1337";
 }
 
