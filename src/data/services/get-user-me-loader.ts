@@ -3,7 +3,10 @@ import { getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 
 const query = qs.stringify({
-  populate: { image: { fields: ["url", "alternativeText"] } },
+  populate: {
+    image: { fields: ["url", "alternativeText"] },
+    role: { fields: ["name"] },
+  },
 });
 
 export async function getUserMeLoader() {

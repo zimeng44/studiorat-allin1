@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { Barcode, BarcodeIcon, BookPlus, Vault } from "lucide-react";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   readonly children: React.ReactNode;
 }) {
+  const { data: thisUser } = await getUserMeLoader();
+  const currentRole = thisUser.role?.name;
+  // console.log(thisUser);
+  // if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  //   return <p>User Access Forbidden</p>;
+  // }
   return (
     <div className="grid h-screen grid-cols-[240px_1fr]">
       <nav className="hidden border-r bg-gray-100/40 dark:bg-gray-800/40 sm:block">
@@ -21,13 +28,13 @@ export default function DashboardLayout({
           </div>
           <div className="flex-1 overflow-auto py-2">
             <nav className="grid items-start px-4 text-sm font-medium">
-              <Link
+              {/* <Link
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                 href="/dashboard/summaries"
               >
                 <ViewIcon className="h-4 w-4" />
                 Summaries
-              </Link>
+              </Link> */}
 
               <Link
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
@@ -45,21 +52,29 @@ export default function DashboardLayout({
                 Booking
               </Link>
 
-              <Link
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                href="/dashboard/checkout"
-              >
-                <Barcode className="h-4 w-4" />
-                Checkout
-              </Link>
+              {currentRole === "Admin" || currentRole === "Monitor" ? (
+                <Link
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                  href="/dashboard/checkout"
+                >
+                  <Barcode className="h-4 w-4" />
+                  Checkout
+                </Link>
+              ) : (
+                ``
+              )}
 
-              <Link
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                href="/dashboard/master-inventory"
-              >
-                <Vault className="h-4 w-4" />
-                Master Inventory
-              </Link>
+              {currentRole === "Admin" || currentRole === "InventoryManager" ? (
+                <Link
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                  href="/dashboard/master-inventory"
+                >
+                  <Vault className="h-4 w-4" />
+                  Master Inventory
+                </Link>
+              ) : (
+                ``
+              )}
             </nav>
           </div>
         </div>

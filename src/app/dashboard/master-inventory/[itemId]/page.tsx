@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import EditItemForm from "@/components/forms/EditItemForm";
 import { getInventoryItemById } from "@/data/loaders";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface ParamsProps {
   params: {
@@ -16,6 +17,14 @@ interface ParamsProps {
 }
 
 export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
+  if (
+    thisUser.role.name !== "Admin" &&
+    thisUser.role.name !== "InventoryManager"
+  ) {
+    return <p>User Access Forbidden</p>;
+  }
   // console.log(params);
   const data = await getInventoryItemById(params.itemId);
 

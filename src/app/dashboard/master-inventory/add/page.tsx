@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 const INITIAL_STATE = {
   mTechBarcode: "",
@@ -22,7 +23,16 @@ const INITIAL_STATE = {
   broken: false,
 };
 
-const AddItem = () => {
+const AddItem = async () => {
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
+  if (
+    thisUser.role.name !== "Admin" &&
+    thisUser.role.name !== "InventoryManager"
+  ) {
+    return <p>User Access Forbidden</p>;
+  }
+
   return (
     <div className="p-5">
       <Breadcrumb>

@@ -14,6 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface SearchParamsProps {
   searchParams?: {
@@ -38,6 +39,15 @@ interface SearchParamsProps {
 export default async function MasterInventory({
   searchParams,
 }: Readonly<SearchParamsProps>) {
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
+  if (
+    thisUser.role.name !== "Admin" &&
+    thisUser.role.name !== "InventoryManager"
+  ) {
+    return <p>User Access Forbidden</p>;
+  }
+
   const pageIndex = searchParams?.page ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "";

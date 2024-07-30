@@ -26,14 +26,18 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 const NewCheckoutSession = async () => {
   // const { value: authToken } = cookies().get("jwt");
-  const { data: thisMonitor } = await getUserMeLoader();
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
+  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+    return <p>User Access Forbidden</p>;
+  }
 
   const jwtCookie = cookies().get("jwt");
 
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
     // You can now use authToken safely here
-    console.log(authToken);
+    // console.log(authToken);
   } else {
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");
@@ -63,7 +67,10 @@ const NewCheckoutSession = async () => {
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">New Checkout</h1>
       <div className="flex items-center px-4">
-        <NewCheckoutForm thisMonitor={thisMonitor} authToken={jwtCookie?.value??""} />
+        <NewCheckoutForm
+          thisMonitor={thisUser}
+          authToken={jwtCookie?.value ?? ""}
+        />
       </div>
     </div>
   );

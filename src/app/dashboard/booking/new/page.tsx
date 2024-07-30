@@ -63,7 +63,7 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
     // You can now use authToken safely here
-    console.log(authToken);
+    // console.log(authToken);
   } else {
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");

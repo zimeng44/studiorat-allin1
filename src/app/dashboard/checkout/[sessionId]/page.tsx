@@ -23,15 +23,21 @@ export default async function SingleCheckoutSessionDetails({
   params,
 }: Readonly<ParamsProps>) {
   // console.log(params);
-  const data = await getCheckoutSessionById(params.sessionId);
   // const { value: authToken } = cookies().get("jwt");
-  const { data: thisMonitor } = await getUserMeLoader();
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
+  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+    return <p>User Access Forbidden</p>;
+  }
+
+  const data = await getCheckoutSessionById(params.sessionId);
+
   const jwtCookie = cookies().get("jwt");
 
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
     // You can now use authToken safely here
-    console.log(authToken);
+    // console.log(authToken);
   } else {
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");
@@ -72,8 +78,8 @@ export default async function SingleCheckoutSessionDetails({
         <EditCheckoutSessionForm
           session={data}
           sessionId={params.sessionId}
-          thisMonitor={thisMonitor}
-          authToken={jwtCookie?.value??""}
+          thisMonitor={thisUser}
+          authToken={jwtCookie?.value ?? ""}
         />
       </div>
     </div>
