@@ -1,36 +1,19 @@
-import React, {
-  Fragment,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { Fragment, useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
-import {
-  Calendar,
-  Views,
-  DateLocalizer,
-  momentLocalizer,
-} from "react-big-calendar";
-import moment from "moment";
+import { Calendar, Views, DateLocalizer } from "react-big-calendar";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import {
-  format,
   addDays,
-  endOfDay,
   subDays,
   startOfDay,
-  endOfWeek,
-  lastDayOfWeek,
   addHours,
-  subHours,
   compareDesc,
   compareAsc,
 } from "date-fns";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import "!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css";
 import { BookingType } from "@/data/definitions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // const mLocalizer = momentLocalizer(moment);
 

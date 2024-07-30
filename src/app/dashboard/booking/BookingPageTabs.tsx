@@ -9,13 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
 import BookingTabHeader from "./BookingTabHeader";
 import BookingsTable from "./BookingsTable";
-import Selectable from "./BookingCalendar";
 import moment from "moment";
 import { momentLocalizer } from "react-big-calendar";
 import BookingCalendar from "./BookingCalendar";
-import { addDays, endOfWeek, startOfDay, subDays } from "date-fns";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
-import qs from "qs";
 import { CalendarDays, Grid, List, Square } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 

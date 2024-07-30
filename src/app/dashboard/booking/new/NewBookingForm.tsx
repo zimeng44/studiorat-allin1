@@ -127,13 +127,13 @@ const NewBookingForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Same Day",
-      startDate: new Date(booking?.startTime ?? ""),
+      startDate: new Date(booking?.startTime ?? ``),
       startTime: booking?.startTime
-        ? format(new Date(booking.startTime), "hh:mm a")
+        ? format(new Date(booking?.startTime ?? ``), "hh:mm a")
         : "12:00 PM",
-      endDate: new Date(booking?.startTime ?? ""),
+      endDate: new Date(booking?.startTime ?? ``),
       endTime: booking?.startTime
-        ? format(addHours(new Date(booking.startTime), 1), "hh:mm a")
+        ? format(addHours(new Date(booking?.startTime ?? ``), 1), "hh:mm a")
         : "01:00 PM",
       netId: "",
       userName: "",
