@@ -17,6 +17,7 @@ import { addDays, endOfWeek, startOfDay, subDays } from "date-fns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import { CalendarDays, Grid, List, Square } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface TableFieldStatus {
   header: string;
@@ -34,12 +35,11 @@ interface TableColumnStatus {
 
 interface ViewTabsProps {
   data: any[];
-  meta: {pagination:{pageCount:number, total: number}};
+  meta: { pagination: { pageCount: number; total: number } };
   filter: {};
   authToken: string;
   calendarFirstLoadData: any[];
 }
-
 
 function LinkCard(booking: Readonly<BookingType>) {
   return (
@@ -76,10 +76,22 @@ const BookingPageTabs = ({
   );
 
   const localizer = momentLocalizer(moment);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const view = searchParams.get("view") ?? "calendar";
+  const params = new URLSearchParams(searchParams);
 
   return (
     <div className="py-2">
-      <Tabs defaultValue="list">
+      <Tabs
+        value={`${view}`}
+        onValueChange={(value) => {
+          params.set("view", value);
+          router.replace(`${pathname}?${params.toString()}`);
+          // console.log(value);
+        }}
+      >
         <div className="flex items-center justify-between">
           <h1 className="left-content text-lg font-bold">Bookings</h1>
           <div className="right-content">

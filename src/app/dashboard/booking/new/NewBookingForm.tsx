@@ -48,7 +48,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { inventoryColumns } from "@/data/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
@@ -118,17 +118,20 @@ const NewBookingForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view") ?? "calendar";
+
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Same Day",
-      startDate: new Date(booking?.startTime??""),
+      startDate: new Date(booking?.startTime ?? ""),
       startTime: booking?.startTime
         ? format(new Date(booking.startTime), "hh:mm a")
         : "12:00 PM",
-      endDate: new Date(booking?.startTime??""),
+      endDate: new Date(booking?.startTime ?? ""),
       endTime: booking?.startTime
         ? format(addHours(new Date(booking.startTime), 1), "hh:mm a")
         : "01:00 PM",
@@ -152,10 +155,8 @@ const NewBookingForm = ({
   // );
   // const [tempBookingObj, setTempBookingObj] = useState(booking);
   const inventoryItems = booking.inventory_items as RetrievedItems;
-  const [itemObjArr, setItemObjArr] = useState(
-    inventoryItems?.data ?? Array(),
-  );
-  
+  const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
+
   const [user, setUser] = useState<UserType>();
   // const [netId, setNetId] = useState("");
 
@@ -244,7 +245,7 @@ const NewBookingForm = ({
   }
 
   function handleAddItem() {
-    const tempBooking:BookingType = form.watch();
+    const tempBooking: BookingType = form.watch();
 
     tempBooking.inventory_items = itemObjArr;
     tempBooking.user = user;
@@ -327,11 +328,8 @@ const NewBookingForm = ({
   }, 1000);
 
   async function itemConflictCheck(booking: BookingTypePost) {
-    const inventoryItems = booking?.inventory_items as InventoryItem[]
-    const itemList =
-      inventoryItems.length > 0
-        ? [...inventoryItems]
-        : [0];
+    const inventoryItems = booking?.inventory_items as InventoryItem[];
+    const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
 
     const query = qs.stringify({
       // sort: ["createdAt:desc"],
@@ -431,7 +429,7 @@ const NewBookingForm = ({
       startTime: updatedStart,
       endTime: updatedEnd,
       user: user?.id ?? 0,
-      useLocation: form.getValues("useLocation")??"",
+      useLocation: form.getValues("useLocation") ?? "",
       bookingCreator: booking?.bookingCreator?.id ?? 0,
       notes: form.getValues("notes") ?? "",
       inventory_items: itemObjArr.map((item: InventoryItem) => item.id),
@@ -460,16 +458,23 @@ const NewBookingForm = ({
     itemConflictCheck(formValue).then(({ data, meta }) => {
       if (data.length !== 0) {
         window.alert("Item Conflict Found.");
+        return;
+      }
+      if (formValue.useLocation === "Outside") {
+        createBookingAction(formValue).then(() => {
+          toast.success("Booking Created Successfully.");
+          router.push(`/dashboard/booking?view=${view}`);
+        });
       } else {
         locationConflictCheck(formValue).then(({ data, meta }) => {
           if (data.length !== 0) {
             window.alert("Location Conflict Found.");
-          } else {
-            createBookingAction(formValue).then(() =>
-              toast.success("Booking Created Successfully."),
-            );
-            // router.refresh();
+            return;
           }
+          createBookingAction(formValue).then(() => {
+            toast.success("Booking Created Successfully.");
+            router.push(`/dashboard/booking?view=${view}`);
+          });
         });
       }
     });
@@ -520,7 +525,11 @@ const NewBookingForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>NetID</FormLabel>
-                  <FormControl onChange={(e) => handleGetUser((e.target as HTMLInputElement).value)}>
+                  <FormControl
+                    onChange={(e) =>
+                      handleGetUser((e.target as HTMLInputElement).value)
+                    }
+                  >
                     <Input
                       placeholder="Type in a NetID Here"
                       {...field}
@@ -586,7 +595,7 @@ const NewBookingForm = ({
                           mode="single"
                           selected={field.value}
                           onSelect={(value: Date | undefined) => {
-                             if (value) {
+                            if (value) {
                               field.onChange(value);
                               handleStartDateSelect(value);
                             }
@@ -604,17 +613,18 @@ const NewBookingForm = ({
                 control={form.control}
                 name="startTime"
                 render={({ field }) => (
-                  <FormItem className={cn(
-                        "w-[125px]",
-                        " pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}>
+                  <FormItem
+                    className={cn(
+                      "w-[125px]",
+                      " pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground",
+                    )}
+                  >
                     <FormLabel>Start Time</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
-                      
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -687,17 +697,18 @@ const NewBookingForm = ({
                 control={form.control}
                 name="endTime"
                 render={({ field }) => (
-                  <FormItem className={cn(
-                        "w-[125px]",
-                        " pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}>
+                  <FormItem
+                    className={cn(
+                      "w-[125px]",
+                      " pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground",
+                    )}
+                  >
                     <FormLabel>End Time</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
-                    
                       disabled={
                         form.getValues("type") === "Overnight" ||
                         form.getValues("type") === "Weekend"
@@ -909,7 +920,7 @@ const NewBookingForm = ({
             className="hover:bg-slate-200 active:bg-slate-300"
             type="button"
             onClick={(e) => {
-              router.push("/dashboard/booking");
+              router.push(`/dashboard/booking?view=${view}`);
               // router.refresh();
             }}
           >

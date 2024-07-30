@@ -77,6 +77,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
+  const view = searchParams.get("view") ?? "calendar";
 
   const sort = searchParams.get("sort") ?? "";
   // let filterOpen = searchParams.get("filterOpen") === "true";
@@ -233,7 +234,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                 <TableCell key="select">
                   <Checkbox
                     checked={rowsSelected[index]}
-                    onCheckedChange={(checked:boolean) =>
+                    onCheckedChange={(checked: boolean) =>
                       handleRowSelection(index, checked)
                     }
                     // checked={row.getIsSelected()}
@@ -272,7 +273,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/booking/${row.id}`}>
+                  <Link href={`/dashboard/booking/${row.id}?view=${view}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>

@@ -10,6 +10,7 @@ import {
   fileDeleteService,
   fileUploadService,
 } from "@/data/services/file-service";
+import { revalidatePath } from "next/cache";
 
 export async function updateProfileAction(
   userId: string,
@@ -51,6 +52,7 @@ export async function updateProfileAction(
   }
 
   const flattenedData = flattenAttributes(responseData);
+  revalidatePath("/dashboard/account");
 
   return {
     ...prevState,

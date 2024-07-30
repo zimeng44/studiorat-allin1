@@ -30,7 +30,7 @@ import {
 } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { BookingType } from "@/data/definitions";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // const mLocalizer = momentLocalizer(moment);
 
@@ -45,18 +45,21 @@ export default function BookingCalendar({
   localizer,
   authToken,
   firstLoadData,
-}:{
+}: {
   localizer: any;
   authToken: string;
   firstLoadData: any;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageView = searchParams.get("view") ?? "calendar";
+
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState(Views.WEEK);
   const [myEvents, setEvents] = useState(firstLoadData);
 
   const onNavigate = useCallback(
-    (newDate:Date) => {
+    (newDate: Date) => {
       setDate(newDate);
       // window.alert(newDate);
       getDateData(newDate).then(({ data, meta }) =>
@@ -74,10 +77,10 @@ export default function BookingCalendar({
     },
     [setDate],
   );
-  const onView = useCallback((newView:any) => setView(newView), [setView]);
+  const onView = useCallback((newView: any) => setView(newView), [setView]);
 
   const handleSelectSlot = useCallback(
-    ({ start, end }:{start:Date, end:Date}) => {
+    ({ start, end }: { start: Date; end: Date }) => {
       // const title = window.prompt("New Event name");
       // if (title) {
       //   setEvents((prev) => [...prev, { start, end, title }]);
@@ -95,13 +98,16 @@ export default function BookingCalendar({
       const confirm = window.confirm("Creating a new booking?");
 
       if (confirm)
-        router.push(`/dashboard/booking/new?startTime=${start.toISOString()}`);
+        router.push(
+          `/dashboard/booking/new?startTime=${start.toISOString()}&view=${pageView}`,
+        );
     },
     [setEvents],
   );
 
   const handleSelectEvent = useCallback(
-    (event:any) => router.push(`/dashboard/booking/${event.id}`),
+    (event: any) =>
+      router.push(`/dashboard/booking/${event.id}?view=${pageView}`),
     [],
   );
 

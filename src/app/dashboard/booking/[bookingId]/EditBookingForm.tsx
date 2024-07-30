@@ -44,7 +44,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { inventoryColumns } from "@/data/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
@@ -99,6 +99,13 @@ const EditBookingForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // const pathname = usePathname();
+  const view = searchParams.get("view") ?? "calendar";
+  // const params = new URLSearchParams(searchParams);
+
+  // console.log(view);
+
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
   // console.log(booking.user);
   // if (typeof window !== 'undefined') {}
@@ -107,23 +114,17 @@ const EditBookingForm = ({
   //     Array(),
   // );
   const inventoryItems = booking.inventory_items as RetrievedItems;
-  const [itemObjArr, setItemObjArr] = useState(
-    inventoryItems.data ?? Array(),
-  );
+  const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      startDate: booking.startTime
-        ? new Date(booking.startTime)
-        : new Date(),
+      startDate: booking.startTime ? new Date(booking.startTime) : new Date(),
       startTime: booking.startTime
         ? format(new Date(booking.startTime), "hh:mm a")
         : "",
-      endDate: booking.endTime
-        ? new Date(booking.endTime)
-        : new Date(),
+      endDate: booking.endTime ? new Date(booking.endTime) : new Date(),
       endTime: booking.endTime
         ? format(new Date(booking.endTime), "hh:mm a")
         : "",
@@ -211,7 +212,7 @@ const EditBookingForm = ({
   }
 
   function handleAddItem() {
-    const tempBooking:BookingType = form.getValues();
+    const tempBooking: BookingType = form.getValues();
     tempBooking.inventory_items = itemObjArr;
     // tempBooking.startTime = `${form.getValues("startDate")}, ${form.getValues("startTime")}`;
     // tempBooking.endTime = `${form.getValues("endDate")}, ${form.getValues("endTime")}`;
@@ -226,7 +227,7 @@ const EditBookingForm = ({
       JSON.stringify(tempBooking),
     );
     router.push(
-      `/dashboard/booking/${bookingId}/additem?bookingId=${bookingId}`,
+      `/dashboard/booking/${bookingId}/additem?bookingId=${bookingId}&view=${view}`,
     );
 
     // console.log(tempBooking);
@@ -280,11 +281,8 @@ const EditBookingForm = ({
   }
 
   async function itemConflictCheck(booking: BookingTypePost) {
-    const inventoryItems = booking?.inventory_items as InventoryItem[]
-    const itemList =
-      inventoryItems.length > 0
-        ? [...inventoryItems]
-        : [0];
+    const inventoryItems = booking?.inventory_items as InventoryItem[];
+    const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
 
     // console.log(itemList);
     const query = qs.stringify({
@@ -401,17 +399,24 @@ const EditBookingForm = ({
       // console.log(data);
       if (data.length !== 0) {
         window.alert("Item Conflict Found.");
+        return;
+      }
+      if (formValue.useLocation === "Outside") {
+        updateBookingAction(formValue, bookingId).then(() => {
+          toast.success("Booking Saved Successfully.");
+          router.push(`/dashboard/booking?view=${view}`);
+        });
       } else {
         locationConflictCheck(formValue).then(({ data, meta }) => {
           // console.log(data);
           if (data.length !== 0) {
-            // locationConflict = true;
             window.alert("Location Conflict Found.");
-          } else {
-            updateBookingAction(formValue, bookingId).then(() =>
-              toast.success("Booking Saved Successfully."),
-            );
+            return;
           }
+          updateBookingAction(formValue, bookingId).then(() => {
+            toast.success("Booking Saved Successfully.");
+            router.push(`/dashboard/booking?view=${view}`);
+          });
         });
       }
     });
@@ -527,16 +532,15 @@ const EditBookingForm = ({
               control={form.control}
               name="startTime"
               render={({ field }) => (
-                <FormItem className={cn(
-                      "col-span-1 w-[120px]",
-                      " pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground",
-                    )}>
+                <FormItem
+                  className={cn(
+                    "col-span-1 w-[120px]",
+                    " pl-3 text-left font-normal",
+                    !field.value && "text-muted-foreground",
+                  )}
+                >
                   <FormLabel>Start Time</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a time" />
@@ -608,11 +612,13 @@ const EditBookingForm = ({
               control={form.control}
               name="endTime"
               render={({ field }) => (
-                <FormItem className={cn(
-                      "w-[120px]",
-                      " pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground",
-                    )}>
+                <FormItem
+                  className={cn(
+                    "w-[120px]",
+                    " pl-3 text-left font-normal",
+                    !field.value && "text-muted-foreground",
+                  )}
+                >
                   <FormLabel>End Time</FormLabel>
                   <Select
                     onValueChange={field.onChange}
@@ -766,7 +772,7 @@ const EditBookingForm = ({
               const res = deleteBookingAction(bookingId);
               if (!res) {
                 toast.success("Booking Deleted");
-                router.push("/dashboard/booking");
+                router.push(`/dashboard/booking?view=${view}`);
               }
             }}
             variant="destructive"
@@ -780,7 +786,7 @@ const EditBookingForm = ({
             onClick={(e) => {
               // deleteCookie(`tempBookingItems${bookingId}`);
               // localStorage.removeItem(`tempBookingItems${bookingId}`);
-              router.push("/dashboard/booking");
+              router.push(`/dashboard/booking?view=${view}`);
               // router.refresh();
             }}
           >

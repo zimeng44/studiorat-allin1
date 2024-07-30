@@ -81,13 +81,14 @@ const BookingTabHeader = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const view = searchParams.get("view") ?? "calendar";
   let filterOpen = searchParams.get("filterOpen") === "true";
 
   // console.log("yes!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
   const setColumnsVisibility = (key: ColumnKeys, checked: boolean) => {
     // console.log("yes!!!!!!!!!!!!!!!!!!!!!!!");
-    let newState:TableColumnStatus = structuredClone(bookingColumnsDefault);
+    let newState: TableColumnStatus = structuredClone(bookingColumnsDefault);
     newState[key].visible = checked;
     setColumnsStatus(newState);
   };
@@ -129,7 +130,7 @@ const BookingTabHeader = ({
         <Search />
       </div>
       <div className="item-end ml-auto">
-        <Link href="/dashboard/booking/new">
+        <Link href={`/dashboard/booking/new?view=${view}`}>
           <Button variant="outline" className="h10 ml-5">
             <PlusCircle className="mr-2 h-4 w-4" />
             New

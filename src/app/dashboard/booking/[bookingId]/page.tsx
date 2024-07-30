@@ -27,7 +27,7 @@ export default async function BookingDetails({
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
     // You can now use authToken safely here
-    console.log(authToken);
+    // console.log(authToken);
   } else {
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");
@@ -62,7 +62,7 @@ export default async function BookingDetails({
         <EditBookingForm
           booking={data}
           bookingId={params.bookingId}
-          authToken={jwtCookie?.value??""}
+          authToken={jwtCookie?.value ?? ""}
         />
       </div>
     </div>
