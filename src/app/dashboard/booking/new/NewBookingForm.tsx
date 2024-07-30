@@ -605,7 +605,7 @@ const NewBookingForm = ({
                 name="startTime"
                 render={({ field }) => (
                   <FormItem className={cn(
-                        "w-[125px] px-2",
+                        "w-[125px]",
                         " pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground",
                       )}>
@@ -688,7 +688,7 @@ const NewBookingForm = ({
                 name="endTime"
                 render={({ field }) => (
                   <FormItem className={cn(
-                        "w-[125px] px-2",
+                        "w-[125px]",
                         " pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground",
                       )}>
