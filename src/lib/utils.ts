@@ -46,7 +46,7 @@ export function flattenAttributes(data: any): any {
 }
 
 export function getStrapiURL() {
-  return process.env.STRAPI_URL ?? "http://localhost:1337";
+  return process.env.NEXT_PUBLIC_SR_BACKEND_API_URL ?? "http://localhost:1337";
 }
 
 export function getStrapiMedia(url: string | null) {

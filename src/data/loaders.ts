@@ -58,6 +58,7 @@ interface BookingsFilterProps {
 }
 
 const baseUrl = getStrapiURL();
+// console.log(baseUrl);
 
 async function fetchData(url: string) {
   const authToken = await getAuthToken();

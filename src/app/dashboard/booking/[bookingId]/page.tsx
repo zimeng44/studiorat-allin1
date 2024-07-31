@@ -10,7 +10,7 @@ import {
 import { getBookingById } from "@/data/loaders";
 import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
-import { getCookie } from "cookies-next";
+// import { getCookie } from "cookies-next";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface ParamsProps {
