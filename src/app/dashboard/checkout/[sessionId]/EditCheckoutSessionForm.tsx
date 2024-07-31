@@ -82,6 +82,7 @@ const EditCheckoutSessionForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  // router.refresh();
   // const [tempSession, setTempSession] = useState(session);
   // console.log("Item Details Render!!", session);
   // const router = useRouter();
@@ -95,7 +96,7 @@ const EditCheckoutSessionForm = ({
   const [itemIdArray, setItemIdArray] = useState(
     inventoryItems?.data.map((item: InventoryItem) => item.id),
   );
-  const [itemObjArr, setItemObjArr] = useState(
+  const [itemObjArr, setItemObjArr] = useState<InventoryItem[]>(
     inventoryItems?.data ?? Array(),
   );
 
@@ -164,34 +165,33 @@ const EditCheckoutSessionForm = ({
     return fetchData(url.href);
   }
 
-  const handleIdScan = useDebouncedCallback((term: string) => {
+  const handleScan = useDebouncedCallback((term: string) => {
     // window.alert("you did it!!");
-    if (term.length > 12) {
-      if (term) {
-        getItemByBarcode(term).then(({ data, meta }) => {
-          if (data[0]) {
-            let newArr = [...itemIdArray];
-            if (newArr.includes(data[0].id)) {
-              let newItemObjArr = structuredClone(itemObjArr);
-              newItemObjArr.map((item) => {
-                if (item.id === data[0].id) item.out = !item.out;
-              });
-              setItemObjArr(newItemObjArr);
-            } else {
-              let newItem: InventoryItem = data[0];
-              newItem.out = true;
-              newArr = [...itemIdArray, data[0].id];
-              setItemIdArray(newArr);
-              setItemObjArr([...itemObjArr, newItem]);
-            }
+    if (term.length > 9) {
+      getItemByBarcode(term).then(({ data, meta }) => {
+        if (data[0]) {
+          let newArr = [...itemIdArray];
+          if (newArr.includes(data[0].id)) {
+            let newItemObjArr = structuredClone(itemObjArr);
+            newItemObjArr.map((item) => {
+              if (item.id === data[0].id) item.out = !item.out;
+            });
+            setItemObjArr(newItemObjArr);
           } else {
-            window.alert("Item not found.");
+            let newItem: InventoryItem = data[0];
+            newItem.out = true;
+            newArr = [...itemIdArray, data[0].id];
+            setItemIdArray(newArr);
+            setItemObjArr([...itemObjArr, newItem]);
           }
-        });
-      }
+        } else {
+          window.alert("Item not found.");
+        }
+      });
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
     }
+
     form.setValue("scan", "");
     form.setFocus("scan");
   }, 200);
@@ -201,32 +201,38 @@ const EditCheckoutSessionForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    let formValue:CheckoutSessionTypePost={
-      creationTime: values.creationTime,
+    let formValue: CheckoutSessionTypePost = {
+      creationTime: new Date(values.creationTime).toISOString(),
       stuIDCheckout: values.stuIDCheckout,
       stuIDCheckin: values.stuIDCheckin,
       studio: values.studio,
       otherLocation: values.otherLocation,
       creationMonitor: values.creationMonitor,
-      finishTime: values.finishTime,
+      finishTime: values.finishTime === "" ? undefined : values.finishTime,
       finishMonitor: values.finishMonitor,
       finished: values.finished,
-      notes: values.notes??"",
-      inventory_items:itemIdArray??[0],
-      user: session.user?.id??0,
-    }
-    
-    // {...values, inventory_items: itemIdArray}
+      notes: values.notes ?? "",
+      inventory_items: itemIdArray ?? [0],
+      user: session.user?.id ?? 0,
+    };
 
     // values.inventory_items = itemIdArray;
     // delete values.userName;
-    updateCheckoutSessionAction(formValue, sessionId);
-    itemObjArr.map((itemObj) =>
-      updateItemAction({ out: itemObj.out }, itemObj.id?.toString()??""),
+    updateCheckoutSessionAction(formValue, sessionId).then((res) =>
+      itemObjArr.map((item) => {
+        // console.log(item);
+        const id = item.id as number;
+        updateItemAction(
+          { out: item.out, broken: item.broken },
+          id.toString(),
+        ).then((res) => {
+          toast.success("Session Saved.");
+          router.push("/dashboard/checkout");
+          router.refresh();
+        });
+      }),
     );
-    router.refresh();
-    toast.success("Session Saved.");
-    router.push("/dashboard/checkout");
+    // router.refresh();
   }
 
   function handleFinish() {
@@ -287,7 +293,11 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Finish Time</FormLabel>
                 <FormControl>
-                  <Input disabled {...field} value={field.value?.toLocaleString()}></Input>
+                  <Input
+                    disabled
+                    {...field}
+                    value={field.value?.toLocaleString()}
+                  ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -463,8 +473,10 @@ const EditCheckoutSessionForm = ({
                   //   e.preventDefault();
                   //   return false;
                   // }}
-                  onChange={(e) => handleIdScan((e.target as HTMLInputElement).value)}
-                  // onChange={(e) => handleIdScan(e.target.value)}
+                  onChange={(e) =>
+                    handleScan((e.target as HTMLInputElement).value)
+                  }
+                  // onChange={(e) => handleScan(e.target.value)}
                 >
                   <Input
                     className="bg-indigo-100"
@@ -481,6 +493,7 @@ const EditCheckoutSessionForm = ({
           <div className="col-span-2 flex w-[550px]  gap-10">
             <EmbededTable
               data={itemObjArr}
+              setItemObjArr={setItemObjArr}
               columns={inventoryColumns}
               disabled={session.finished ?? false}
             />
@@ -501,15 +514,19 @@ const EditCheckoutSessionForm = ({
             >
               Finish
             </Button>
-            <Link href="/dashboard/checkout">
-              <Button
-                className="ml-2 hover:bg-slate-200 active:bg-slate-300"
-                type="button"
-                variant="secondary"
-              >
-                Cancel
-              </Button>
-            </Link>
+            {/* <Link href="/dashboard/checkout"> */}
+            <Button
+              className="ml-2 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              variant="secondary"
+              onClick={(e) => {
+                router.push("/dashboard/checkout");
+                router.refresh();
+              }}
+            >
+              Cancel
+            </Button>
+            {/* </Link> */}
           </div>
         </form>
       </Form>

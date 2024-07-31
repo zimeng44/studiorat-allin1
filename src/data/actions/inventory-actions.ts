@@ -35,6 +35,8 @@ export const updateItemAction = async (
   updatedItem: InventoryItem,
   id: string,
 ) => {
+  console.log(id);
+
   const payload = {
     data: updatedItem,
   };
@@ -60,6 +62,8 @@ export const updateItemAction = async (
       message: "Failed to update summary.",
     };
   }
+
+  // console.log(responseData);
 
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/master-inventory");

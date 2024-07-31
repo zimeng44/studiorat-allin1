@@ -18,32 +18,39 @@ import {
   updateItemAction,
 } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { InventoryItem } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 20;
 
 interface InventoryTableProps {
-  data: any[];
+  data: InventoryItem[];
+  setItemObjArr: Function;
   columns: any[];
   disabled: boolean;
 }
 
-const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
+const InventoryTable = ({
+  data,
+  setItemObjArr,
+  columns,
+  disabled,
+}: InventoryTableProps) => {
   // console.log(data);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const pathname = usePathname();
 
-  let numRowsSelected = searchParams.get("numRowsSelected")
-    ? parseInt(searchParams.get("numRowsSelected")??"0")
-    : 0;
+  // let numRowsSelected = searchParams.get("numRowsSelected")
+  //   ? parseInt(searchParams.get("numRowsSelected") ?? "0")
+  //   : 0;
   // console.log(numRowsSelected);
 
-  const pageIndex = searchParams.get("page") ?? "1";
-  const pageSize = searchParams.get("pageSize") ?? "10";
+  // const pageIndex = searchParams.get("page") ?? "1";
+  // const pageSize = searchParams.get("pageSize") ?? "10";
 
   // remember the current page and page size to tell if navigated to a new page or set a new page size
-  const [currentPage, setCurrentPage] = useState("1");
-  const [currentPageSize, setCurrentPageSize] = useState("10");
+  // const [currentPage, setCurrentPage] = useState("1");
+  // const [currentPageSize, setCurrentPageSize] = useState("10");
 
   // store columns visibility
   const [columnsVisible, setColumnsVisible] = useState(
@@ -53,21 +60,21 @@ const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
   );
 
   //store row selection
-  const [rowsSelected, setRowsSelected] = useState(
-    Array(data.length).fill(false),
-  );
+  // const [rowsSelected, setRowsSelected] = useState(
+  //   Array(data.length).fill(false),
+  // );
 
   // clear the row selections when moving to a new page or setting a new page size
-  if (pageIndex !== currentPage || pageSize !== currentPageSize) {
-    setCurrentPage(pageIndex);
-    setCurrentPageSize(pageSize);
-    setRowsSelected(Array(data.length).fill(false));
-    const params = new URLSearchParams(searchParams);
-    params.delete("numRowsSelected");
-    params.delete("isBatchOpOpen");
-    params.delete("isAllSelected");
-    router.replace(`${pathname}?${params.toString()}`);
-  }
+  // if (pageIndex !== currentPage || pageSize !== currentPageSize) {
+  //   setCurrentPage(pageIndex);
+  //   setCurrentPageSize(pageSize);
+  //   setRowsSelected(Array(data.length).fill(false));
+  //   const params = new URLSearchParams(searchParams);
+  //   params.delete("numRowsSelected");
+  //   params.delete("isBatchOpOpen");
+  //   params.delete("isAllSelected");
+  //   router.replace(`${pathname}?${params.toString()}`);
+  // }
 
   // store keys of columns
   const header = Array(columns.length)
@@ -175,45 +182,45 @@ const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
                       className="whitespace-nowrap p-4"
                       key={header[1]}
                     >
-                      {row.make.length > MAX_TEXT_LEN
-                        ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.make}`}
+                      {row.make?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.make?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.make ?? ""}`}
                     </TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[2] ? (
                     <TableCell className="whitespace-nowrap" key={header[2]}>
-                      {row.model.length > MAX_TEXT_LEN
-                        ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.model}`}
+                      {row.model?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.model?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.model ?? ""}`}
                     </TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[3] ? (
                     <TableCell className="whitespace-nowrap" key={header[3]}>
-                      {row.category.length > MAX_TEXT_LEN
-                        ? `${row.category.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.category}`}
+                      {row.category?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.category?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.category ?? ""}`}
                     </TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[4] ? (
                     <TableCell className="whitespace-nowrap" key={header[4]}>
-                      {row.description.length > MAX_TEXT_LEN
-                        ? `${row.description.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.description}`}
+                      {row.description?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.description?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.description ?? ""}`}
                     </TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[5] ? (
                     <TableCell key={header[5]}>
-                      {row.accessories.length > MAX_TEXT_LEN
-                        ? `${row.accessories.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.accessories}`}
+                      {row.accessories?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.accessories?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.accessories ?? ""}`}
                     </TableCell>
                   ) : (
                     ``
@@ -227,16 +234,20 @@ const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
                   )}
                   {columnsVisible[7] ? (
                     <TableCell className="whitespace-nowrap" key={header[7]}>
-                      {row.comments.length > MAX_TEXT_LEN
-                        ? `${row.comments.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.comments}`}
+                      {row.comments?.length ?? 0 > MAX_TEXT_LEN
+                        ? `${row.comments?.substring(0, MAX_TEXT_LEN)}...`
+                        : `${row.comments ?? 0}`}
                     </TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[8] ? (
                     <TableCell className="p-1 text-center" key={header[8]}>
-                      <Checkbox disabled checked={row.out} />
+                      <Checkbox
+                        disabled
+                        checked={row.out}
+                        className={`${disabled ? "invisible" : ""}`}
+                      />
                     </TableCell>
                   ) : (
                     ``
@@ -245,10 +256,21 @@ const InventoryTable = ({ data, columns, disabled }: InventoryTableProps) => {
                     <TableCell className="text-center" key={header[9]}>
                       <Checkbox
                         checked={row.broken}
-                        onCheckedChange={(checked) => {
-                          updateItemAction({ broken: !row.broken }, row.id);
-                        }}
+                        // onCheckedChange={(checked) => {
+                        //   updateItemAction({ broken: !row.broken }, row.id);
+                        // }}
+
+                        onCheckedChange={(checked: boolean) =>
+                          setItemObjArr((prev: InventoryItem[]) =>
+                            prev.map((item) => {
+                              item.broken =
+                                item.id === row.id ? checked : item.broken;
+                              return item;
+                            }),
+                          )
+                        }
                         disabled={disabled}
+                        className={`${disabled ? "invisible" : ""}`}
                       />
                     </TableCell>
                   ) : (

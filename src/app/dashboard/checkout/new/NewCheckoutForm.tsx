@@ -197,12 +197,17 @@ const NewCheckoutForm = ({
           // setUserName(`${data[0].firstName} ${data[0].lastName}`);
           form.setValue("userName", `${data[0].firstName} ${data[0].lastName}`);
         } else {
-          form.setValue("userName", "");
           window.alert("User not found.");
+          form.setValue("userName", "");
+          form.setValue("stuIDCheckout", "");
+          form.setFocus("stuIDCheckout");
         }
       });
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
+      form.setValue("userName", "");
+      form.setValue("stuIDCheckout", "");
+      form.setFocus("stuIDCheckout");
     }
     // console.log(params.toString());
   }, 200);
@@ -220,8 +225,8 @@ const NewCheckoutForm = ({
     return fetchData(url.href);
   }
 
-  const handleIdScan = useDebouncedCallback((term: string) => {
-    if (term.length > 12) {
+  const handleScan = useDebouncedCallback((term: string) => {
+    if (term.length > 9) {
       getItemByBarcode(term).then(({ data, meta }) => {
         if (data[0]) {
           let newArr = [...itemIdArray];
@@ -245,10 +250,14 @@ const NewCheckoutForm = ({
           }
         } else {
           window.alert("Item not found.");
+          form.setValue("scan", "");
+          form.setFocus("scan");
         }
       });
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
+      form.setValue("scan", "");
+      form.setFocus("scan");
     }
     form.setValue("scan", "");
     form.setFocus("scan");
@@ -260,20 +269,20 @@ const NewCheckoutForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    let formValue:CheckoutSessionTypePost={
-      creationTime: values.creationTime,
+    let formValue: CheckoutSessionTypePost = {
+      creationTime: new Date(values.creationTime).toISOString(),
       stuIDCheckout: values.stuIDCheckout,
       stuIDCheckin: "",
       studio: values.studio,
       otherLocation: values.otherLocation,
       creationMonitor: values.creationMonitor,
-      finishTime: "",
+      // finishTime: ,
       finishMonitor: "",
       finished: false,
-      notes: values.notes??"",
-      inventory_items:itemIdArray??[0],
+      notes: values.notes ?? "",
+      inventory_items: itemIdArray ?? [0],
       user: parseInt(userId),
-    }
+    };
 
     // values.user = userId;
     // values.inventory_items = itemIdArray;
@@ -350,7 +359,9 @@ const NewCheckoutForm = ({
                   // onChange={(e) => {
                   //   handleStuIdInput(e.target.value);
                   // }}
-                  onChange={(e) => handleStuIdInput((e.target as HTMLInputElement).value)}
+                  onChange={(e) =>
+                    handleStuIdInput((e.target as HTMLInputElement).value)
+                  }
                 >
                   <Input
                     {...field}
@@ -401,7 +412,8 @@ const NewCheckoutForm = ({
                 <FormLabel>Studio</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  // defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="">
@@ -428,7 +440,10 @@ const NewCheckoutForm = ({
               <FormItem>
                 <FormLabel>Other Location</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input
+                    {...field}
+                    disabled={form.getValues("studio") !== "Other"}
+                  ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -489,8 +504,10 @@ const NewCheckoutForm = ({
                   //   e.preventDefault();
                   //   return false;
                   // }}
-                  // onChange={(e) => handleIdScan(e.target.value)}
-                  onChange={(e) => handleIdScan((e.target as HTMLInputElement).value)}
+                  // onChange={(e) => handleScan(e.target.value)}
+                  onChange={(e) =>
+                    handleScan((e.target as HTMLInputElement).value)
+                  }
                 >
                   <Input
                     className="bg-indigo-100"
@@ -503,7 +520,11 @@ const NewCheckoutForm = ({
             )}
           />
           <div className="col-span-2 flex w-[550px]  gap-10">
-            <EmbededTable data={itemObjArr} columns={inventoryColumns} disabled={false} />
+            <EmbededTable
+              data={itemObjArr}
+              columns={inventoryColumns}
+              disabled={false}
+            />
           </div>
 
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4">what</div> */}

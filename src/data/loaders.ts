@@ -428,6 +428,7 @@ export async function getBookingById(bookingId: string) {
     populate: {
       user: { populate: "role" },
       bookingCreator: { populate: "*" },
+      inventory_items: { populate: "*" },
     },
   });
   const url = new URL(`/api/bookings/${bookingId}`, baseUrl);
