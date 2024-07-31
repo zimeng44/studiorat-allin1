@@ -916,6 +916,7 @@ const NewBookingForm = ({
               data={itemObjArr}
               columns={inventoryColumns}
               handleRemoveFromBooking={handleRemoveFromBooking}
+              isPast={false}
             />
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
