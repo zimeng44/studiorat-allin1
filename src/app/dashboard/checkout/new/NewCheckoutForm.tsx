@@ -522,6 +522,7 @@ const NewCheckoutForm = ({
           <div className="col-span-2 flex w-[550px]  gap-10">
             <EmbededTable
               data={itemObjArr}
+              setItemObjArr={setItemObjArr}
               columns={inventoryColumns}
               disabled={false}
             />
