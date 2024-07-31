@@ -59,7 +59,7 @@ export type CheckoutSessionTypePost = {
   finishMonitor?: string;
   finished: boolean;
   notes: string;
-  inventory_items:(number|undefined)[];
+  inventory_items: (number | undefined)[];
   user: number;
 };
 
@@ -88,7 +88,7 @@ export interface BookingTypePost {
   type: string;
   bookingCreator: number;
   notes?: string;
-  inventory_items?: (number| undefined)[];
+  inventory_items?: (number | undefined)[];
 }
 
 export type UserType = {
@@ -100,6 +100,12 @@ export type UserType = {
   email?: string;
   userType?: string;
   blocked?: boolean;
+  role?: UserRole;
+};
+
+export type UserRole = {
+  id?: number;
+  name?: string;
 };
 
 export const studioList = [

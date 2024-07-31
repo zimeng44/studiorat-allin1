@@ -420,8 +420,21 @@ export async function getBookings(
 }
 
 export async function getBookingById(bookingId: string) {
-  // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/bookings/${bookingId}?populate=*`);
+  // console.log(
+  //   `${baseUrl}/api/bookings/${bookingId}?populate=[user][populate]=role`,
+  // );
+  const query = qs.stringify({
+    populate: {
+      user: { populate: "role" },
+      bookingCreator: { populate: "*" },
+    },
+  });
+  const url = new URL(`/api/bookings/${bookingId}`, baseUrl);
+  url.search = query;
+
+  // console.log(url.href);
+
+  return fetchData(url.href);
 }
 
 export async function getBookingsByQuery(

@@ -136,7 +136,10 @@ const NewBookingForm = ({
         ? format(addHours(new Date(booking?.startTime ?? ``), 1), "hh:mm a")
         : "01:00 PM",
       netId: "",
-      userName: "",
+      userName:
+        booking.user?.role?.name === "Authenticated"
+          ? `${booking.user.firstName} ${booking.user.lastName}`
+          : "",
       useLocation: "Outside",
       bookingCreatorName:
         `${booking.bookingCreator?.firstName} ${booking.bookingCreator?.lastName}` ??
@@ -157,7 +160,7 @@ const NewBookingForm = ({
   const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
 
-  const [user, setUser] = useState<UserType>();
+  const [user, setUser] = useState<UserType>(booking.user ?? {});
   // const [netId, setNetId] = useState("");
 
   let localItemsObj = undefined;
@@ -172,7 +175,9 @@ const NewBookingForm = ({
         const tempNewBooking = tempBookingStr
           ? JSON.parse(tempBookingStr)
           : undefined;
-
+        // console.log(tempNewBooking.startDate);
+        tempNewBooking.startDate = new Date(tempNewBooking.startDate);
+        tempNewBooking.endDate = new Date(tempNewBooking.endDate);
         setTempForm(tempNewBooking);
         setUser(tempNewBooking.user);
         localStorage.removeItem(`tempNewBooking`);
@@ -519,27 +524,31 @@ const NewBookingForm = ({
             )}
           />
           <div className="col-span-4 flex">
-            <FormField
-              control={form.control}
-              name="netId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NetID</FormLabel>
-                  <FormControl
-                    onChange={(e) =>
-                      handleGetUser((e.target as HTMLInputElement).value)
-                    }
-                  >
-                    <Input
-                      placeholder="Type in a NetID Here"
-                      {...field}
-                      // onChange={(e) => setUserId(e.target.value)}
-                    ></Input>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {booking.user?.role?.name !== "Authenticated" ? (
+              <FormField
+                control={form.control}
+                name="netId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NetID</FormLabel>
+                    <FormControl
+                      onChange={(e) =>
+                        handleGetUser((e.target as HTMLInputElement).value)
+                      }
+                    >
+                      <Input
+                        placeholder="Type in a NetID Here"
+                        {...field}
+                        // onChange={(e) => setUserId(e.target.value)}
+                      ></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              ``
+            )}
             <FormField
               control={form.control}
               name="userName"

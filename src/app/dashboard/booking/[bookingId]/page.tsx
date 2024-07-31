@@ -11,6 +11,7 @@ import { getBookingById } from "@/data/loaders";
 import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
 import { getCookie } from "cookies-next";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface ParamsProps {
   params: {
@@ -22,6 +23,9 @@ export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
   const data = await getBookingById(params.bookingId);
+  const { data: currentUser } = await getUserMeLoader();
+  // console.log(data);
+
   const jwtCookie = cookies().get("jwt");
 
   if (jwtCookie) {
@@ -62,6 +66,7 @@ export default async function BookingDetails({
         <EditBookingForm
           booking={data}
           bookingId={params.bookingId}
+          currentUser={currentUser}
           authToken={jwtCookie?.value ?? ""}
         />
       </div>

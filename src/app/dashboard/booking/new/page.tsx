@@ -50,6 +50,7 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   const { data: thisUser } = await getUserMeLoader();
 
   const data: BookingType = {
+    user: thisUser.role.name === "Authenticated" ? thisUser : undefined,
     bookingCreator: thisUser,
     startTime: searchParams?.startTime
       ? new Date(searchParams?.startTime)

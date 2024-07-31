@@ -10,6 +10,7 @@ import {
   bookingTypeList,
   RetrievedItems,
   BookingTypePost,
+  UserType,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,7 +46,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+// import Link from "next/link";
 import { inventoryColumns } from "@/data/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
@@ -92,10 +93,12 @@ const formSchema = z.object({
 const EditBookingForm = ({
   booking,
   bookingId,
+  currentUser,
   authToken,
 }: {
   booking: BookingType;
   bookingId: string;
+  currentUser: UserType;
   authToken: string;
 }) => {
   const router = useRouter();
@@ -104,17 +107,10 @@ const EditBookingForm = ({
   const view = searchParams.get("view") ?? "calendar";
   // const params = new URLSearchParams(searchParams);
 
-  // console.log(view);
-
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
-  // console.log(booking.user);
-  // if (typeof window !== 'undefined') {}
-  // const [itemIdArray, setItemIdArray] = useState(
-  //   booking.inventory_items?.data.map((item: InventoryItem) => item.id) ??
-  //     Array(),
-  // );
   const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
+  const [bookingType, setBookingType] = useState(booking.type);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -148,10 +144,13 @@ const EditBookingForm = ({
         localStorage.getItem(`tempBooking${bookingId}`) ?? undefined;
       if (tempBookingStr !== undefined) {
         // console.log("here");
-        const tempNewBooking = tempBookingStr
+        const tempBooking = tempBookingStr
           ? JSON.parse(tempBookingStr)
           : undefined;
-        setTempForm(tempNewBooking);
+
+        tempBooking.startDate = new Date(tempBooking.startDate);
+        tempBooking.endDate = new Date(tempBooking.endDate);
+        setTempForm(tempBooking);
         localStorage.removeItem(`tempBooking${bookingId}`);
         // console.log(tempNewBooking);
       }
@@ -170,6 +169,13 @@ const EditBookingForm = ({
 
   function handleTypeSelect(value: string) {
     // window.alert("yes");
+
+    if (value === "Exception" && currentUser.role?.name !== "Admin") {
+      window.alert(
+        "Admin approval required, please contact admin to make exceptions.",
+      );
+      form.setValue("type", bookingType ?? "Same Day");
+    }
     if (value === "Same Day") {
       form.setValue("endDate", form.getValues("startDate"));
     }
@@ -184,7 +190,7 @@ const EditBookingForm = ({
       form.setValue("endTime", "12:00 PM");
       // form.setValue("endDate", form.getValues("startDate"));
     }
-
+    setBookingType(value);
     // console.log(form.getValues("type"));
   }
 
