@@ -8,7 +8,9 @@ import { revalidatePath } from "next/cache";
 import {
   CheckoutSessionType,
   CheckoutSessionTypePost,
+  InventoryItem,
 } from "@/data/definitions";
+import { updateItemAction } from "./inventory-actions";
 
 export async function createCheckoutSessionAction(
   newSession: CheckoutSessionTypePost,
@@ -43,24 +45,6 @@ export const updateCheckoutSessionAction = async (
   updatedSession: CheckoutSessionTypePost,
   id: string,
 ) => {
-  // if (updatedSession.creationTime === undefined)
-  //   // delete updatedSession?.creationTime;
-  //   updatedSession.creationTime = "";
-  // else
-  //   updatedSession.creationTime = new Date(
-  //     updatedSession.creationTime,
-  //   ).toISOString();
-
-  // if (
-  //   updatedSession.finishTime === undefined ||
-  //   updatedSession.finishTime === ""
-  // )
-  //   delete updatedSession.finishTime;
-  // else
-  //   updatedSession.finishTime = new Date(
-  //     updatedSession.finishTime,
-  //   ).toISOString();
-
   const payload = {
     data: updatedSession,
   };
@@ -89,6 +73,68 @@ export const updateCheckoutSessionAction = async (
   }
 
   const flattenedData = flattenAttributes(responseData);
+  revalidatePath("/dashboard/checkout");
+
+  // console.log(flattenedData);
+
+  return {
+    // ...prevState,
+    message: "Summary updated successfully",
+    data: flattenedData,
+    strapiErrors: null,
+  };
+};
+
+export const updateCheckoutSessionActionWithItems = async (
+  updatedSession: CheckoutSessionTypePost,
+  id: string,
+  items: InventoryItem[],
+) => {
+  const payload = {
+    data: updatedSession,
+  };
+
+  const responseData = await mutateData(
+    "PUT",
+    `/api/checkout-sessions/${id}`,
+    payload,
+  );
+
+  if (!responseData) {
+    return {
+      // ...prevState,
+      strapiErrors: null,
+      message: "Oops! Something went wrong. Please try again.",
+    };
+  }
+
+  if (responseData.error) {
+    // console.log("responseData.error", responseData.error);
+    return {
+      // ...prevState,
+      strapiErrors: responseData.error,
+      message: "Failed to update summary.",
+    };
+  }
+
+  const flattenedData = flattenAttributes(responseData);
+
+  let itemsResponses = Array(items.length);
+
+  try {
+    items.map((item, index) => {
+      // console.log(item);
+      const id = item.id as number;
+      itemsResponses[index] = updateItemAction(
+        { out: item.out, broken: item.broken },
+        id.toString(),
+      );
+    });
+  } catch (error) {
+    console.log(itemsResponses);
+    return { itemsError: itemsResponses };
+  }
+
   revalidatePath("/dashboard/checkout");
 
   // console.log(flattenedData);

@@ -34,7 +34,10 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { updateCheckoutSessionAction } from "@/data/actions/checkout-actions";
+import {
+  updateCheckoutSessionAction,
+  updateCheckoutSessionActionWithItems,
+} from "@/data/actions/checkout-actions";
 import Link from "next/link";
 import { inventoryColumns } from "@/data/inventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
@@ -197,7 +200,7 @@ const EditCheckoutSessionForm = ({
   }, 200);
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
@@ -216,22 +219,35 @@ const EditCheckoutSessionForm = ({
       user: session.user?.id ?? 0,
     };
 
+    try {
+      await updateCheckoutSessionActionWithItems(
+        formValue,
+        sessionId,
+        itemObjArr,
+      );
+    } catch (error) {
+      toast.error("Error Updating Checkout Session");
+      // setError({
+      //   ...INITIAL_STATE,
+      //   message: "Error Creating Summary",
+      //   name: "Summary Error",
+      // });
+      // setLoading(false);
+      return;
+    }
+
     // values.inventory_items = itemIdArray;
     // delete values.userName;
-    updateCheckoutSessionAction(formValue, sessionId).then((res) =>
-      itemObjArr.map((item) => {
-        // console.log(item);
-        const id = item.id as number;
-        updateItemAction(
-          { out: item.out, broken: item.broken },
-          id.toString(),
-        ).then((res) => {
-          toast.success("Session Saved.");
-          router.push("/dashboard/checkout");
-          router.refresh();
-        });
-      }),
-    );
+    // updateCheckoutSessionAction(formValue, sessionId).then((res) =>
+    //   itemObjArr.map((item) => {
+    //     // console.log(item);
+    //     const id = item.id as number;
+    //     updateItemAction({ out: item.out, broken: item.broken }, id.toString());
+    //   }),
+    // );
+    toast.success("Session Saved.");
+    router.push("/dashboard/checkout");
+    router.refresh();
     // router.refresh();
   }
 
@@ -403,7 +419,7 @@ const EditCheckoutSessionForm = ({
               <FormItem>
                 <FormLabel>Creation Monitor</FormLabel>
                 <FormControl>
-                  <Input {...field} disabled={session.finished}></Input>
+                  <Input {...field} disabled></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -506,7 +522,7 @@ const EditCheckoutSessionForm = ({
           <div className="col-span-1">
             <Button
               variant="secondary"
-              className="w-max hover:bg-slate-200 active:bg-slate-300"
+              className={`${session.finished ? "invisible" : ""} w-max hover:bg-slate-200 active:bg-slate-300`}
               type="button"
               onClick={() => {
                 handleFinish();

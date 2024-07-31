@@ -105,6 +105,10 @@ const EditBookingForm = ({
   const searchParams = useSearchParams();
   // const pathname = usePathname();
   const view = searchParams.get("view") ?? "calendar";
+  const isPast =
+    new Date().toISOString() >=
+    (booking?.startTime ?? new Date().toISOString());
+  // console.log(isPast);
   // const params = new URLSearchParams(searchParams);
 
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
@@ -449,6 +453,7 @@ const EditBookingForm = ({
                   }}
                   // defaultValue={field.value}
                   value={field.value}
+                  disabled={isPast}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -501,6 +506,7 @@ const EditBookingForm = ({
                             "pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
+                          disabled={isPast}
                         >
                           {field.value ? (
                             format(field.value, "LL/dd/y")
@@ -546,7 +552,11 @@ const EditBookingForm = ({
                   )}
                 >
                   <FormLabel>Start Time</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isPast}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a time" />
@@ -582,7 +592,9 @@ const EditBookingForm = ({
                             " pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
-                          disabled={form.getValues("type") !== "Exception"}
+                          disabled={
+                            form.getValues("type") !== "Exception" || isPast
+                          }
                         >
                           {field.value ? (
                             format(field.value, "LL/dd/y")
@@ -620,8 +632,7 @@ const EditBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "w-[120px]",
-                    " pl-3 text-left font-normal",
+                    "w-[120px] pl-3 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -631,7 +642,8 @@ const EditBookingForm = ({
                     value={field.value}
                     disabled={
                       form.getValues("type") === "Overnight" ||
-                      form.getValues("type") === "Weekend"
+                      form.getValues("type") === "Weekend" ||
+                      isPast
                     }
                   >
                     <FormControl>
@@ -664,6 +676,7 @@ const EditBookingForm = ({
                   onValueChange={field.onChange}
                   // defaultValue={field.value}
                   value={field.value}
+                  disabled={isPast}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -747,10 +760,11 @@ const EditBookingForm = ({
             )}
           /> */}
           <Button
-            className="hover:bg-slate-200 active:bg-slate-300"
+            className={`hover:bg-slate-200 active:bg-slate-300 ${isPast ? "invisible" : ""}`}
             type="button"
             onClick={(e) => handleAddItem()}
             variant="secondary"
+            disabled={isPast}
           >
             Add Item
           </Button>
@@ -759,6 +773,7 @@ const EditBookingForm = ({
               data={itemObjArr}
               columns={inventoryColumns}
               handleRemoveFromBooking={handleRemoveFromBooking}
+              isPast={isPast}
             />
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
@@ -768,7 +783,7 @@ const EditBookingForm = ({
           </Button>
 
           <Button
-            className="hover:bg-red-300 active:bg-red-400"
+            className={`hover:bg-red-300 active:bg-red-400 ${isPast && currentUser.role?.name !== "Admin" ? "invisible" : ""}`}
             type="button"
             onClick={(e) => {
               const confirm = window.confirm(

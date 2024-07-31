@@ -26,14 +26,15 @@ const MAX_TEXT_LEN = 25;
 interface InventoryTableProps {
   data: any[];
   columns: any[];
-  
   handleRemoveFromBooking: Function;
+  isPast: boolean;
 }
 
 const BookingEmbededTable = ({
   data,
   columns,
   handleRemoveFromBooking,
+  isPast,
 }: InventoryTableProps) => {
   // console.log(data);
   const router = useRouter();
@@ -41,7 +42,7 @@ const BookingEmbededTable = ({
   const pathname = usePathname();
 
   let numRowsSelected = searchParams.get("numRowsSelected")
-    ? parseInt(searchParams.get("numRowsSelected")??"")
+    ? parseInt(searchParams.get("numRowsSelected") ?? "")
     : 0;
   // console.log(numRowsSelected);
 
@@ -269,6 +270,7 @@ const BookingEmbededTable = ({
                         // e.preventDefault();
                         handleRemoveFromBooking(row);
                       }}
+                      disabled={isPast}
                     >
                       <CircleMinus className="h-4 w-4" />
                     </Button>
