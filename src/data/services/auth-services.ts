@@ -1,4 +1,5 @@
 import { getStrapiURL } from "@/lib/utils";
+import { getAuthToken } from "./get-token";
 
 interface RegisterUserProps {
   username: string;
@@ -15,12 +16,14 @@ const baseUrl = getStrapiURL();
 
 export async function registerUserService(userData: RegisterUserProps) {
   const url = new URL("/api/auth/local/register", baseUrl);
+  const authToken = await getAuthToken();
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify({ ...userData }),
       cache: "no-cache",
