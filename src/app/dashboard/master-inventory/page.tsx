@@ -3,7 +3,7 @@
 // const InventoryTable = dynamic(() => import("./InventoryTable"), {
 //   ssr: false,
 // });
-import React from "react";
+import React, { Suspense } from "react";
 import { getInventoryItems, getItemsByQuery } from "@/data/loaders";
 import InventoryPageTabs from "./InventoryPageTabs";
 import {
@@ -15,6 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import Loading from "@/app/loading";
 
 interface SearchParamsProps {
   searchParams?: {
@@ -102,7 +103,9 @@ export default async function MasterInventory({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <InventoryPageTabs data={data} meta={meta} filter={filter} />
+      <Suspense fallback={<h1>Loading . . .</h1>}>
+        <InventoryPageTabs data={data} meta={meta} filter={filter} />
+      </Suspense>
     </div>
   );
 }

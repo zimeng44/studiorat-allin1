@@ -63,6 +63,7 @@ import {
   updateBookingAction,
 } from "@/data/actions/booking-actions";
 import qs from "qs";
+import { SubmitButton } from "@/components/custom/SubmitButton";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -778,9 +779,14 @@ const EditBookingForm = ({
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          <Button className="align-right col-span-2" type="submit">
+          {/* <Button className="align-right col-span-2" type="submit">
             Save
-          </Button>
+          </Button> */}
+          <SubmitButton
+            text="Save"
+            loadingText="Saving Booking"
+            loading={form.formState.isSubmitting}
+          />
 
           <Button
             className={`hover:bg-red-300 active:bg-red-400 ${isPast && currentUser.role?.name !== "Admin" ? "invisible" : ""}`}

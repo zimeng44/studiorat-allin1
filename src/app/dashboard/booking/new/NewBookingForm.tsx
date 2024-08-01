@@ -66,6 +66,7 @@ import {
   deleteBookingAction,
   updateBookingAction,
 } from "@/data/actions/booking-actions";
+import { SubmitButton } from "@/components/custom/SubmitButton";
 
 // const config = {
 //   maxAge: 60 * 60, // 1 hour
@@ -921,9 +922,15 @@ const NewBookingForm = ({
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          <Button className="align-right col-span-2" type="submit">
+          {/* <Button className="align-right col-span-2" type="submit">
             Save
-          </Button>
+          </Button> */}
+
+          <SubmitButton
+            text="Save"
+            loadingText="Saving Booking"
+            loading={form.formState.isSubmitting}
+          />
 
           <Button
             variant="secondary"

@@ -21,14 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { DialogClose } from "@/components/ui/dialog";
+import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { InventoryItem } from "@/data/definitions";
 import { createInventoryItemAction } from "@/data/actions/inventory-actions";
+import { SubmitButton } from "../custom/SubmitButton";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -49,9 +48,9 @@ const mTechBarcodeType = z.union([
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  mTechBarcode: mTechBarcodeType,
-  make: z.string(),
-  model: z.string(),
+  mTechBarcode: z.string().min(12).and(z.string().max(13)),
+  make: z.string().min(2),
+  model: z.string().min(2),
   category: z.string(),
   description: z.string(),
   accessories: z.string(),
@@ -284,9 +283,14 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
 
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          <Button className="align-right" type="submit">
+          {/* <Button className="align-right" type="submit">
             Add
-          </Button>
+          </Button> */}
+          <SubmitButton
+            text="Save"
+            loadingText="Saving"
+            loading={form.formState.isSubmitting}
+          />
           <Link href="/dashboard/master-inventory">
             <Button
               className="hover:bg-slate-200 active:bg-slate-300"

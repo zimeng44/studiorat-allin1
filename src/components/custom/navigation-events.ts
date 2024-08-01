@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
 
 export function NavigationEvents() {
   const pathname = usePathname();

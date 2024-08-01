@@ -45,6 +45,7 @@ import qs from "qs";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { updateItemAction } from "@/data/actions/inventory-actions";
+import { SubmitButton } from "@/components/custom/SubmitButton";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -530,9 +531,14 @@ const NewCheckoutForm = ({
 
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4">what</div> */}
 
-          <Button className="align-right" type="submit">
+          {/* <Button className="align-right" type="submit">
             Add
-          </Button>
+          </Button> */}
+          <SubmitButton
+            text="Save"
+            loadingText="Saving Session"
+            loading={form.formState.isSubmitting}
+          />
 
           <Link href="/dashboard/checkout">
             <Button

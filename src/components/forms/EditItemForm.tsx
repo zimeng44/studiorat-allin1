@@ -22,8 +22,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { useFormState } from "react-dom";
 import {
   deleteItemAction,
   updateItemAction,
@@ -32,6 +30,7 @@ import { InventoryItem } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { SubmitButton } from "../custom/SubmitButton";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -46,9 +45,9 @@ const mTechBarcode = z.union([
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  mTechBarcode: mTechBarcode,
-  make: z.string(),
-  model: z.string(),
+  mTechBarcode: z.string().min(12).and(z.string().max(13)),
+  make: z.string().min(2),
+  model: z.string().min(2),
   category: z.string(),
   description: z.string(),
   accessories: z.string(),
@@ -120,7 +119,7 @@ const EditItemForm = ({
     // setDialogOpen(false);
   }
 
-  function handleDelete(e:any) {
+  function handleDelete(e: any) {
     const confirm = window.confirm(
       "Are you sure you want to delete this item?",
     );
@@ -305,9 +304,14 @@ const EditItemForm = ({
           </div>
           <div className="col-span-1 grid grid-cols-subgrid gap-4"></div>
 
-          <Button className="align-right" type="submit">
+          {/* <Button className="align-right" type="submit">
             Save
-          </Button>
+          </Button> */}
+          <SubmitButton
+            text="Save"
+            loadingText="Saving"
+            loading={form.formState.isSubmitting}
+          />
           <div className="ml-10 flex space-x-5">
             <Button
               type="button"

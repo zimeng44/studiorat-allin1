@@ -44,6 +44,7 @@ import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { updateItemAction } from "@/data/actions/inventory-actions";
 import { useDebouncedCallback } from "use-debounce";
+import { SubmitButton } from "@/components/custom/SubmitButton";
 
 // import { useRouter } from "next/navigation";
 
@@ -203,6 +204,8 @@ const EditCheckoutSessionForm = ({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+
+    // console.log(form.formState.isSubmitting);
 
     let formValue: CheckoutSessionTypePost = {
       creationTime: new Date(values.creationTime).toISOString(),
@@ -516,9 +519,14 @@ const EditCheckoutSessionForm = ({
           </div>
           {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          <Button className="align-right" type="submit">
+          {/* <Button className="align-right" type="submit">
             Save
-          </Button>
+          </Button> */}
+          <SubmitButton
+            text="Save"
+            loadingText="Saving Session"
+            loading={form.formState.isSubmitting}
+          />
           <div className="col-span-1">
             <Button
               variant="secondary"
