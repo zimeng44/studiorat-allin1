@@ -96,6 +96,7 @@ const BookingPageTabs = ({
       <Tabs
         value={defaultTab}
         onValueChange={(value) => {
+          setDefaultTab(value);
           params.set("view", value);
           router.replace(`${pathname}?${params.toString()}`);
           // console.log(value);
