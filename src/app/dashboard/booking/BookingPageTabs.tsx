@@ -75,34 +75,35 @@ const BookingPageTabs = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  // const view = searchParams.get("view") ?? "calendar";
+  const view = searchParams.get("view") ?? "calendar";
   // console.log(searchParams.get("view"));
   const params = new URLSearchParams(searchParams);
-  const [defaultTab, setDefaultTab] = useState("calendar");
+  const [defaultTab, setDefaultTab] = useState(view);
 
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
-      setDefaultTab(isMobile ? "grid" : "calendar");
+      // setDefaultTab(isMobile ? "grid" : "calendar");
       // if (view === "list") setDefaultTab(view);
-      // params.set("view", isMobile ? "grid" : "calendar");
-      // router.replace(`${pathname}?${params.toString()}`);
+      params.set("view", isMobile ? "grid" : view);
+      setDefaultTab(isMobile ? "grid" : view);
+      router.replace(`${pathname}?${params.toString()}`);
       // Default to 'list' on mobile, 'grid' on larger screens
     };
 
-    // handleResize(); // Set initial state
-    window.addEventListener("resize", handleResize); // Listen for window resize
+    handleResize(); // Set initial state
+    // window.addEventListener("resize", handleResize); // Listen for window resize
 
-    return () => window.removeEventListener("resize", handleResize); // Clean up on unmount
+    // return () => window.removeEventListener("resize", handleResize); // Clean up on unmount
   }, []);
 
   return (
     <div className="py-2">
       <Tabs
-        value={defaultTab}
+        value={view}
         onValueChange={(value) => {
-          // params.set("view", value);
-          // router.replace(`${pathname}?${params.toString()}`);
+          params.set("view", value);
+          router.replace(`${pathname}?${params.toString()}`);
           setDefaultTab(value);
           // console.log(params.toString());
         }}
@@ -111,17 +112,17 @@ const BookingPageTabs = ({
           <h1 className="left-content text-lg font-bold">Bookings</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">
+              <TabsTrigger value="list" className="hidden md:block">
                 <List className="mr-1 h-4 w-4" />
-                List
+                {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                Grid
+                {/* Grid */}
               </TabsTrigger>
-              <TabsTrigger value="calendar">
+              <TabsTrigger value="calendar" className="hidden md:block">
                 <CalendarDays className="mr-1 h-4 w-4" />
-                Calendar
+                {/* Calendar */}
               </TabsTrigger>
             </TabsList>
           </div>
