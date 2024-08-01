@@ -6,7 +6,7 @@ import { Logo } from "@/components/custom/Logo";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./LogoutButton";
 import { SummaryForm } from "@/components/forms/SummaryForm";
-import { User } from "lucide-react";
+import { CalendarPlus2, User } from "lucide-react";
 
 interface HeaderProps {
   data: {
@@ -44,6 +44,10 @@ export function LoggedInUser({
         <User className="h-6 w-6" />
         {/* {userData.username} */}
         {`${userData.firstName} ${userData.lastName}`}
+      </Link>
+      <Link href="/dashboard/booking">
+        <CalendarPlus2 />
+        {/* Booking */}
       </Link>
       <LogoutButton />
     </div>
