@@ -45,6 +45,7 @@ export function SigninForm() {
                 id="identifier"
                 name="identifier"
                 type="text"
+                autoCapitalize="none"
                 placeholder="username or email"
               />
               <ZodErrors error={formState?.zodErrors?.identifier} />

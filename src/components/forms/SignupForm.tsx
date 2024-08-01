@@ -50,6 +50,7 @@ export function SignupForm() {
                 id="username"
                 name="username"
                 type="text"
+                autoCapitalize="none"
                 placeholder="username"
               />
               <ZodErrors error={formState?.zodErrors?.username} />
@@ -60,6 +61,7 @@ export function SignupForm() {
                 id="email"
                 name="email"
                 type="email"
+                autoCapitalize="none"
                 placeholder="name@example.com"
               />
               <ZodErrors error={formState?.zodErrors?.email} />
