@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 import { BookingType } from "@/data/definitions";
@@ -77,11 +77,24 @@ const BookingPageTabs = ({
   const pathname = usePathname();
   const view = searchParams.get("view") ?? "calendar";
   const params = new URLSearchParams(searchParams);
+  const [defaultTab, setDefaultTab] = useState(view);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      setDefaultTab(isMobile ? "grid" : "calendar"); // Default to 'list' on mobile, 'grid' on larger screens
+    };
+
+    handleResize(); // Set initial state
+    window.addEventListener("resize", handleResize); // Listen for window resize
+
+    return () => window.removeEventListener("resize", handleResize); // Clean up on unmount
+  }, []);
 
   return (
     <div className="py-2">
       <Tabs
-        value={`${view}`}
+        value={defaultTab}
         onValueChange={(value) => {
           params.set("view", value);
           router.replace(`${pathname}?${params.toString()}`);
@@ -92,7 +105,7 @@ const BookingPageTabs = ({
           <h1 className="left-content text-lg font-bold">Bookings</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">
+              <TabsTrigger value="list" className="hidden md:block">
                 <List className="mr-1 h-4 w-4" />
                 List
               </TabsTrigger>
@@ -100,7 +113,7 @@ const BookingPageTabs = ({
                 <Grid className="mr-1 h-4 w-4" />
                 Grid
               </TabsTrigger>
-              <TabsTrigger value="calendar">
+              <TabsTrigger value="calendar" className="hidden md:block">
                 <CalendarDays className="mr-1 h-4 w-4" />
                 Calendar
               </TabsTrigger>
