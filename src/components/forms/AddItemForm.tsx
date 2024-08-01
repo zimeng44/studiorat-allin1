@@ -120,7 +120,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex-col gap-2 md:grid md:grid-cols-2"
+          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}

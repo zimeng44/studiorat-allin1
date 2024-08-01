@@ -494,7 +494,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="scan"
             render={({ field }) => (
-              <FormItem className="col-span-1 mb-1">
+              <FormItem className="col-span-1">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
                   // onPaste={(e) => {
@@ -534,7 +534,7 @@ const NewCheckoutForm = ({
           {/* <Button className="align-right" type="submit">
             Add
           </Button> */}
-          <div className="col-span-1 flex gap-1 md:col-span-2">
+          <div className="col-span-1 flex gap-1 space-y-1 md:col-span-2">
             <SubmitButton
               className="flex-1"
               text="Save"

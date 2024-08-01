@@ -285,7 +285,7 @@ const EditCheckoutSessionForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2 md:grid md:grid-cols-2"
+          className="flex flex-col gap-1 space-y-1 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}
@@ -481,7 +481,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="scan"
             render={({ field }) => (
-              <FormItem className="col-span-1 mb-1 size-fit">
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
                   // onPaste={(e) => {

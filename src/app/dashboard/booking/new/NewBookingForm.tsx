@@ -492,7 +492,7 @@ const NewBookingForm = ({
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           // className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
-          className="flex-col gap-2 md:grid md:grid-cols-4"
+          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-4"
         >
           <div className="col-span-2 md:col-span-4">
             <FormField
