@@ -71,12 +71,14 @@ interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
+  defaultTab: string;
 }
 
 const BookingTabHeader = ({
   columnsStatus,
   filter,
   setColumnsStatus,
+  defaultTab,
 }: TableHeaderProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -115,8 +117,8 @@ const BookingTabHeader = ({
       >
         <SheetTrigger asChild>
           <Button variant="outline">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
+            <Filter className="h-4 w-4" />
+            {/* Filter */}
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
@@ -131,49 +133,53 @@ const BookingTabHeader = ({
       </div>
       <div className="item-end ml-auto">
         <Link href={`/dashboard/booking/new?view=${view}`}>
-          <Button variant="outline" className="h10 ml-5">
+          <Button variant="outline" className="h-10 ">
             <PlusCircle className="mr-2 h-4 w-4" />
             New
           </Button>
         </Link>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="ml-5 h-10">
-            <Settings className="mr-2 h-4 w-4" />
-            Display
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {Object.entries(columnsStatus).map(([key, value]) => {
-            const typedKey = key as ColumnKeys; //type assertion
-            return (
-              <DropdownMenuCheckboxItem
-                key={typedKey}
-                className="capitalize"
-                checked={value.visible}
-                onCheckedChange={(checked) =>
-                  setColumnsVisibility(typedKey, checked)
-                }
-                onSelect={(e) => e.preventDefault()}
-              >
-                {value.header}
-              </DropdownMenuCheckboxItem>
-            );
-          })}
-          <DropdownMenuSeparator />
-          <DropdownMenuCheckboxItem
-            key={"reset"}
-            className="capitalize"
-            onSelect={(e) => {
-              e.preventDefault();
-              resetColumnsVisibility();
-            }}
-          >
-            Default
-          </DropdownMenuCheckboxItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {defaultTab === "grid" ? (
+        ``
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="hide ml-1 h-10">
+              <Settings className="mr-2 h-4 w-4" />
+              Display
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {Object.entries(columnsStatus).map(([key, value]) => {
+              const typedKey = key as ColumnKeys; //type assertion
+              return (
+                <DropdownMenuCheckboxItem
+                  key={typedKey}
+                  className="capitalize"
+                  checked={value.visible}
+                  onCheckedChange={(checked) =>
+                    setColumnsVisibility(typedKey, checked)
+                  }
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  {value.header}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+            <DropdownMenuSeparator />
+            <DropdownMenuCheckboxItem
+              key={"reset"}
+              className="capitalize"
+              onSelect={(e) => {
+                e.preventDefault();
+                resetColumnsVisibility();
+              }}
+            >
+              Default
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 };

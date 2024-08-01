@@ -35,7 +35,7 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   const pageSize = searchParams.get("pageSize") ?? "10";
   const numRowsSelected = searchParams.get("numRowsSelected") ?? "0";
 
-  const pageSizeInt =  parseInt(pageSize);
+  const pageSizeInt = parseInt(pageSize);
 
   const displayNumRows =
     pageCount === 1
@@ -58,12 +58,12 @@ const PaginationControls: FC<PaginationControlsProps> = ({
 
   return (
     <div className="flex items-center justify-between px-2">
-      <div className="mr-3 flex-1 text-sm text-muted-foreground">
+      <div className="mr-3 hidden flex-1 text-sm text-muted-foreground lg:flex">
         {numRowsSelected} of {displayNumRows} row(s) selected.
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Items per page</p>
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => router.push(createPageURL(1, value))}

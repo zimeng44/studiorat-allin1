@@ -60,6 +60,7 @@ export function Search() {
         }}
         // {...props}
       >
+        
         <XIcon className="h-4 w-4" />
         <span className="sr-only">Clear</span>
       </Button>

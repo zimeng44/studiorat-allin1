@@ -186,6 +186,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           // className="grid grid-cols-2 gap-4"
+          className="flex flex-col gap-2 space-y-1 "
         >
           <FormField
             control={form.control}

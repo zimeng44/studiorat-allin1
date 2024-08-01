@@ -39,7 +39,7 @@ interface ViewTabsProps {
 
 function LinkCard(booking: Readonly<BookingType>) {
   return (
-    <Link href={`/dashboard/booking/${booking.id}`}>
+    <Link href={`/dashboard/booking/${booking.id}?view=grid`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
@@ -75,17 +75,22 @@ const BookingPageTabs = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const view = searchParams.get("view") ?? "calendar";
+  // const view = searchParams.get("view") ?? "calendar";
+  // console.log(searchParams.get("view"));
   const params = new URLSearchParams(searchParams);
-  const [defaultTab, setDefaultTab] = useState(view);
+  const [defaultTab, setDefaultTab] = useState("calendar");
 
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
-      setDefaultTab(isMobile ? "grid" : "calendar"); // Default to 'list' on mobile, 'grid' on larger screens
+      setDefaultTab(isMobile ? "grid" : "calendar");
+      // if (view === "list") setDefaultTab(view);
+      // params.set("view", isMobile ? "grid" : "calendar");
+      // router.replace(`${pathname}?${params.toString()}`);
+      // Default to 'list' on mobile, 'grid' on larger screens
     };
 
-    handleResize(); // Set initial state
+    // handleResize(); // Set initial state
     window.addEventListener("resize", handleResize); // Listen for window resize
 
     return () => window.removeEventListener("resize", handleResize); // Clean up on unmount
@@ -96,17 +101,17 @@ const BookingPageTabs = ({
       <Tabs
         value={defaultTab}
         onValueChange={(value) => {
+          // params.set("view", value);
+          // router.replace(`${pathname}?${params.toString()}`);
           setDefaultTab(value);
-          params.set("view", value);
-          router.replace(`${pathname}?${params.toString()}`);
-          // console.log(value);
+          // console.log(params.toString());
         }}
       >
         <div className="flex items-center justify-between">
           <h1 className="left-content text-lg font-bold">Bookings</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list" className="hidden md:block">
+              <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
                 List
               </TabsTrigger>
@@ -114,7 +119,7 @@ const BookingPageTabs = ({
                 <Grid className="mr-1 h-4 w-4" />
                 Grid
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="hidden md:block">
+              <TabsTrigger value="calendar">
                 <CalendarDays className="mr-1 h-4 w-4" />
                 Calendar
               </TabsTrigger>
@@ -134,6 +139,7 @@ const BookingPageTabs = ({
             columnsStatus={columnsStatus}
             filter={filter}
             setColumnsStatus={setColumnsStatus}
+            defaultTab={defaultTab}
           />
           <BookingsTable data={data} columnsStatus={columnsStatus} />
           <div className="flex items-center justify-end space-x-2 py-2">
@@ -148,6 +154,7 @@ const BookingPageTabs = ({
             columnsStatus={columnsStatus}
             filter={filter}
             setColumnsStatus={setColumnsStatus}
+            defaultTab={defaultTab}
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((booking: BookingType) => (
