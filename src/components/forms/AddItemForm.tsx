@@ -120,13 +120,13 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-4"
+          className="flex-col gap-2 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}
             name="mTechBarcode"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>MTech Barcode</FormLabel>
                 <FormControl>
                   <Input placeholder={"MTech Barcode Here"} {...field}></Input>
@@ -139,7 +139,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="make"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Make</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -152,7 +152,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="model"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Model</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -165,7 +165,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Category</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -178,7 +178,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -191,7 +191,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="accessories"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Accessories</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -204,7 +204,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="storageLocation"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Storage Location</FormLabel>
                 {/* <FormControl>
                 <Input {...field}></Input>
@@ -232,7 +232,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
             control={form.control}
             name="comments"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 ">
                 <FormLabel>Comments</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -286,20 +286,23 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
           {/* <Button className="align-right" type="submit">
             Add
           </Button> */}
-          <SubmitButton
-            text="Save"
-            loadingText="Saving"
-            loading={form.formState.isSubmitting}
-          />
-          <Link href="/dashboard/master-inventory">
-            <Button
-              className="hover:bg-slate-200 active:bg-slate-300"
-              type="button"
-              variant="secondary"
-            >
-              Cancel
-            </Button>
-          </Link>
+          <div className="col-span-1 flex gap-1 md:col-span-2">
+            <SubmitButton
+              className="flex-1"
+              text="Save"
+              loadingText="Saving"
+              loading={form.formState.isSubmitting}
+            />
+            <Link className="flex-1" href="/dashboard/master-inventory">
+              <Button
+                className="size-full hover:bg-slate-200 active:bg-slate-300"
+                type="button"
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </Link>
+          </div>
         </form>
       </Form>
     </div>

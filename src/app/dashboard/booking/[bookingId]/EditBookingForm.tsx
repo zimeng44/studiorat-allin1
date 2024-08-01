@@ -438,60 +438,64 @@ const EditBookingForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
+          className="flex-col gap-2 md:grid md:grid-cols-4"
         >
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>Type</FormLabel>
-                <Select
-                  // onValueChange={field.onChange}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    handleTypeSelect(value);
-                  }}
-                  // defaultValue={field.value}
-                  value={field.value}
-                  disabled={isPast}
-                >
+          <div className="col-span-1 flex md:col-span-2">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="size-fit md:size-full">
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    // onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleTypeSelect(value);
+                    }}
+                    // defaultValue={field.value}
+                    value={field.value}
+                    disabled={isPast}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a stuido" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {bookingTypeList.map((type, index) => (
+                        <SelectItem
+                          key={index}
+                          value={`${type}`}
+                        >{`${type}`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-1 flex md:col-span-2">
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem className="size-fit md:size-full">
+                  <FormLabel>User Name</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a stuido" />
-                    </SelectTrigger>
+                    <Input
+                      {...field}
+                      disabled
+                      // onChange={(e) => setUserId(e.target.value)}
+                    ></Input>
                   </FormControl>
-                  <SelectContent>
-                    {bookingTypeList.map((type, index) => (
-                      <SelectItem
-                        key={index}
-                        value={`${type}`}
-                      >{`${type}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="userName"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>User Name</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled
-                    // onChange={(e) => setUserId(e.target.value)}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="col-span-2 flex">
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-1 flex md:col-span-2">
             <FormField
               control={form.control}
               name="startDate"
@@ -577,7 +581,7 @@ const EditBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-2 flex">
+          <div className="col-span-1 flex md:col-span-2">
             <FormField
               control={form.control}
               name="endDate"
@@ -666,110 +670,85 @@ const EditBookingForm = ({
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="useLocation"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>Use Location</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  // defaultValue={field.value}
-                  value={field.value}
-                  disabled={isPast}
-                >
+          <div className="col-span-1 flex md:col-span-2">
+            <FormField
+              control={form.control}
+              name="useLocation"
+              render={({ field }) => (
+                <FormItem className="size-fit md:size-full">
+                  <FormLabel>Use Location</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    // defaultValue={field.value}
+                    value={field.value}
+                    disabled={isPast}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a stuido" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {bookingLocationList.map((locataion, index) => (
+                        <SelectItem
+                          key={index}
+                          value={`${locataion}`}
+                        >{`${locataion}`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-1 flex md:col-span-2">
+            <FormField
+              control={form.control}
+              name="bookingCreatorName"
+              render={({ field }) => (
+                <FormItem className="size-fit md:size-full">
+                  <FormLabel>Created by</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a stuido" />
-                    </SelectTrigger>
+                    <Input disabled {...field}></Input>
                   </FormControl>
-                  <SelectContent>
-                    {bookingLocationList.map((locataion, index) => (
-                      <SelectItem
-                        key={index}
-                        value={`${locataion}`}
-                      >{`${locataion}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bookingCreatorName"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>Created by</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel className="align-bottom">Notes</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="col-span-2"></div>
-          <div className="col-span-4">
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-1 flex md:col-span-2">
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem className="size-fit md:size-full">
+                  <FormLabel className="align-bottom">Notes</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-1 md:col-span-2"></div>
+          <div className="col-span-2 flex justify-evenly md:col-span-4">
             {/* <div className="text-center align-baseline font-normal"> */}
-            Booking Items
+            <h1 className="flex-1 content-center text-center">Booking Items</h1>
+            <Button
+              className={`flex-1 hover:bg-slate-200 active:bg-slate-300 ${isPast ? "invisible" : ""}`}
+              type="button"
+              onClick={(e) => handleAddItem()}
+              variant="secondary"
+              disabled={isPast}
+            >
+              Add Item
+            </Button>
             {/* </div> */}
           </div>
 
-          {/* <FormField
-            control={form.control}
-            name="scan"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel className="ml-1">Barcode Scan</FormLabel>
-                <FormControl
-                  // onPaste={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
-                  // onCopy={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
-                  onChange={(e) => handleIdScan(e.target.value)}
-                >
-                  <Input
-                    className="bg-indigo-100"
-                    placeholder={"Scan a barcode"}
-                    {...field}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          <Button
-            className={`hover:bg-slate-200 active:bg-slate-300 ${isPast ? "invisible" : ""}`}
-            type="button"
-            onClick={(e) => handleAddItem()}
-            variant="secondary"
-            disabled={isPast}
-          >
-            Add Item
-          </Button>
-          <div className="col-span-2 size-full gap-10 md:col-span-4 lg:col-span-4">
+          <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
             <BookingEmbededTable
               data={itemObjArr}
               columns={inventoryColumns}
@@ -782,43 +761,46 @@ const EditBookingForm = ({
           {/* <Button className="align-right col-span-2" type="submit">
             Save
           </Button> */}
-          <SubmitButton
-            text="Save"
-            loadingText="Saving Booking"
-            loading={form.formState.isSubmitting}
-          />
+          <div className="col-span-2 flex gap-1 md:col-span-4">
+            <SubmitButton
+              className="flex-1"
+              text="Save"
+              loadingText="Saving Booking"
+              loading={form.formState.isSubmitting}
+            />
 
-          <Button
-            className={`hover:bg-red-300 active:bg-red-400 ${isPast && currentUser.role?.name !== "Admin" ? "invisible" : ""}`}
-            type="button"
-            onClick={(e) => {
-              const confirm = window.confirm(
-                "Are you sure you want to delete this booking?",
-              );
-              if (!confirm) return;
-              const res = deleteBookingAction(bookingId);
-              if (!res) {
-                toast.success("Booking Deleted");
+            <Button
+              className={`flex-1 hover:bg-red-300 active:bg-red-400 ${isPast && currentUser.role?.name !== "Admin" ? "invisible" : ""}`}
+              type="button"
+              onClick={(e) => {
+                const confirm = window.confirm(
+                  "Are you sure you want to delete this booking?",
+                );
+                if (!confirm) return;
+                const res = deleteBookingAction(bookingId);
+                if (!res) {
+                  toast.success("Booking Deleted");
+                  router.push(`/dashboard/booking?view=${view}`);
+                }
+              }}
+              variant="destructive"
+            >
+              Delete
+            </Button>
+            <Button
+              variant="secondary"
+              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              onClick={(e) => {
+                // deleteCookie(`tempBookingItems${bookingId}`);
+                // localStorage.removeItem(`tempBookingItems${bookingId}`);
                 router.push(`/dashboard/booking?view=${view}`);
-              }
-            }}
-            variant="destructive"
-          >
-            Delete
-          </Button>
-          <Button
-            variant="secondary"
-            className="hover:bg-slate-200 active:bg-slate-300"
-            type="button"
-            onClick={(e) => {
-              // deleteCookie(`tempBookingItems${bookingId}`);
-              // localStorage.removeItem(`tempBookingItems${bookingId}`);
-              router.push(`/dashboard/booking?view=${view}`);
-              // router.refresh();
-            }}
-          >
-            Cancel
-          </Button>
+                // router.refresh();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

@@ -85,69 +85,68 @@ const BookingEmbededTable = ({
   // console.log(data.length);
 
   return (
-    <div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader className="top-0 bg-indigo-100">
-            <TableRow>
-              {columnsVisible[0] ? (
-                <TableHead className="whitespace-nowrap p-0" key={header[0]}>
-                  MTech Barcode
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[1] ? (
-                <TableHead
-                  className="whitespace-nowrap border-x-0"
-                  key={header[1]}
-                >
-                  Make
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[2] ? (
-                <TableHead
-                  className="whitespace-nowrap border-x-0"
-                  key={header[2]}
-                >
-                  Model
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[3] ? (
-                <TableHead
-                  className="whitespace-nowrap border-x-0"
-                  key={header[3]}
-                >
-                  Category
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[4] ? (
-                <TableHead key={header[4]}>Description</TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[5] ? (
-                <TableHead key={header[5]}>Accessories</TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[6] ? (
-                <TableHead key={header[6]}>Storage Location</TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[7] ? (
-                <TableHead key={header[7]}>Comments</TableHead>
-              ) : (
-                ``
-              )}
-              {/* {columnsVisible[8] ? (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader className="top-0 bg-indigo-100">
+          <TableRow>
+            {columnsVisible[0] ? (
+              <TableHead className="whitespace-nowrap p-0" key={header[0]}>
+                MTech Barcode
+              </TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[1] ? (
+              <TableHead
+                className="whitespace-nowrap border-x-0"
+                key={header[1]}
+              >
+                Make
+              </TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[2] ? (
+              <TableHead
+                className="whitespace-nowrap border-x-0"
+                key={header[2]}
+              >
+                Model
+              </TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[3] ? (
+              <TableHead
+                className="whitespace-nowrap border-x-0"
+                key={header[3]}
+              >
+                Category
+              </TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[4] ? (
+              <TableHead key={header[4]}>Description</TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[5] ? (
+              <TableHead key={header[5]}>Accessories</TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[6] ? (
+              <TableHead key={header[6]}>Storage Location</TableHead>
+            ) : (
+              ``
+            )}
+            {columnsVisible[7] ? (
+              <TableHead key={header[7]}>Comments</TableHead>
+            ) : (
+              ``
+            )}
+            {/* {columnsVisible[8] ? (
                 <TableHead className="text-center" key={header[8]}>
                   Out
                 </TableHead>
@@ -161,95 +160,92 @@ const BookingEmbededTable = ({
               ) : (
                 ``
               )} */}
-              {/* <TableHead className="text-center" key="delete">
+            {/* <TableHead className="text-center" key="delete">
               </TableHead> */}
-              <TableHead className="text-center" key="deleteButton"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.length ? (
-              data.map((row, index) => (
-                <TableRow key={row.id}>
-                  {columnsVisible[0] ? (
-                    <TableCell
-                      className="whitespace-nowrap p-1"
-                      key={header[0]}
-                    >{`${row.mTechBarcode}`}</TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[1] ? (
-                    <TableCell
-                      className="whitespace-nowrap p-4"
-                      key={header[1]}
-                    >
-                      {row.make.length > MAX_TEXT_LEN
-                        ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.make}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[2] ? (
-                    <TableCell className="whitespace-nowrap" key={header[2]}>
-                      {row.model.length > MAX_TEXT_LEN
-                        ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.model}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[3] ? (
-                    <TableCell className="whitespace-nowrap" key={header[3]}>
-                      {row.category.length > MAX_TEXT_LEN
-                        ? `${row.category.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.category}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[4] ? (
-                    <TableCell className="whitespace-nowrap" key={header[4]}>
-                      {row.description.length > MAX_TEXT_LEN
-                        ? `${row.description.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.description}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[5] ? (
-                    <TableCell key={header[5]}>
-                      {row.accessories.length > MAX_TEXT_LEN
-                        ? `${row.accessories.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.accessories}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[6] ? (
-                    <TableCell
-                      key={header[6]}
-                    >{`${row.storageLocation}`}</TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {columnsVisible[7] ? (
-                    <TableCell className="whitespace-nowrap" key={header[7]}>
-                      {row.comments.length > MAX_TEXT_LEN
-                        ? `${row.comments.substring(0, MAX_TEXT_LEN)}...`
-                        : `${row.comments}`}
-                    </TableCell>
-                  ) : (
-                    ``
-                  )}
-                  {/* {columnsVisible[8] ? (
+            <TableHead className="text-center" key="deleteButton"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.length ? (
+            data.map((row, index) => (
+              <TableRow key={row.id}>
+                {columnsVisible[0] ? (
+                  <TableCell
+                    className="whitespace-nowrap p-1"
+                    key={header[0]}
+                  >{`${row.mTechBarcode}`}</TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[1] ? (
+                  <TableCell className="whitespace-nowrap p-4" key={header[1]}>
+                    {row.make.length > MAX_TEXT_LEN
+                      ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.make}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[2] ? (
+                  <TableCell className="whitespace-nowrap" key={header[2]}>
+                    {row.model.length > MAX_TEXT_LEN
+                      ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.model}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[3] ? (
+                  <TableCell className="whitespace-nowrap" key={header[3]}>
+                    {row.category.length > MAX_TEXT_LEN
+                      ? `${row.category.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.category}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[4] ? (
+                  <TableCell className="whitespace-nowrap" key={header[4]}>
+                    {row.description.length > MAX_TEXT_LEN
+                      ? `${row.description.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.description}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[5] ? (
+                  <TableCell key={header[5]}>
+                    {row.accessories.length > MAX_TEXT_LEN
+                      ? `${row.accessories.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.accessories}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[6] ? (
+                  <TableCell
+                    key={header[6]}
+                  >{`${row.storageLocation}`}</TableCell>
+                ) : (
+                  ``
+                )}
+                {columnsVisible[7] ? (
+                  <TableCell className="whitespace-nowrap" key={header[7]}>
+                    {row.comments.length > MAX_TEXT_LEN
+                      ? `${row.comments.substring(0, MAX_TEXT_LEN)}...`
+                      : `${row.comments}`}
+                  </TableCell>
+                ) : (
+                  ``
+                )}
+                {/* {columnsVisible[8] ? (
                     <TableCell className="p-1 text-center" key={header[8]}>
                       <Checkbox disabled checked={row.out} />
                     </TableCell>
                   ) : (
                     ``
                   )} */}
-                  {/* {columnsVisible[9] ? (
+                {/* {columnsVisible[9] ? (
                     <TableCell className="text-center" key={header[9]}>
                       <Checkbox
                         checked={row.broken}
@@ -261,32 +257,31 @@ const BookingEmbededTable = ({
                   ) : (
                     ``
                   )} */}
-                  <TableCell className="text-center" key="deleteButton">
-                    <Button
-                      type="button"
-                      key="addbutton"
-                      variant="outline"
-                      onClick={(e) => {
-                        // e.preventDefault();
-                        handleRemoveFromBooking(row);
-                      }}
-                      disabled={isPast}
-                    >
-                      <CircleMinus className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={header.length} className="h-24 text-center">
-                  No results.
+                <TableCell className="text-center" key="deleteButton">
+                  <Button
+                    type="button"
+                    key="addbutton"
+                    variant="outline"
+                    onClick={(e) => {
+                      // e.preventDefault();
+                      handleRemoveFromBooking(row);
+                    }}
+                    disabled={isPast}
+                  >
+                    <CircleMinus className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={header.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };

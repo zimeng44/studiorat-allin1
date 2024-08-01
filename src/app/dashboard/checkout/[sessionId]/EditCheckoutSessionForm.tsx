@@ -285,13 +285,13 @@ const EditCheckoutSessionForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-2"
+          className="flex flex-col gap-2 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}
             name="creationTime"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Creation Time</FormLabel>
                 <FormControl>
                   <Input
@@ -309,7 +309,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="finishTime"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Finish Time</FormLabel>
                 <FormControl>
                   <Input
@@ -326,7 +326,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="stuIDCheckout"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Checkout ID</FormLabel>
                 <FormControl>
                   <Input disabled {...field}></Input>
@@ -339,7 +339,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="userName"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>User Name</FormLabel>
                 <FormControl>
                   <Input
@@ -356,7 +356,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="stuIDCheckin"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Checkin ID</FormLabel>
                 <FormControl>
                   <Input {...field} disabled={session.finished}></Input>
@@ -369,7 +369,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="studio"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Studio</FormLabel>
                 <Select
                   onValueChange={(value) => {
@@ -401,7 +401,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="otherLocation"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Other Location</FormLabel>
                 <FormControl>
                   <Input
@@ -419,7 +419,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="creationMonitor"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Creation Monitor</FormLabel>
                 <FormControl>
                   <Input {...field} disabled></Input>
@@ -432,7 +432,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="finishMonitor"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel>Finish Monitor</FormLabel>
                 <FormControl>
                   <Input {...field} disabled></Input>
@@ -446,7 +446,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1 size-fit">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -481,7 +481,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="scan"
             render={({ field }) => (
-              <FormItem className="mb-1">
+              <FormItem className="col-span-1 mb-1 size-fit">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
                   // onPaste={(e) => {
@@ -509,7 +509,7 @@ const EditCheckoutSessionForm = ({
             )}
           />
 
-          <div className="col-span-2 flex w-[550px]  gap-10">
+          <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
             <EmbededTable
               data={itemObjArr}
               setItemObjArr={setItemObjArr}
@@ -522,15 +522,17 @@ const EditCheckoutSessionForm = ({
           {/* <Button className="align-right" type="submit">
             Save
           </Button> */}
-          <SubmitButton
-            text="Save"
-            loadingText="Saving Session"
-            loading={form.formState.isSubmitting}
-          />
-          <div className="col-span-1">
+          <div className="col-span-1 flex gap-1 md:col-span-2">
+            <SubmitButton
+              className="flex-1"
+              text="Save"
+              loadingText="Saving Session"
+              loading={form.formState.isSubmitting}
+            />
+
             <Button
               variant="secondary"
-              className={`${session.finished ? "invisible" : ""} w-max hover:bg-slate-200 active:bg-slate-300`}
+              className={`${session.finished ? "invisible" : ""} w-max flex-1 hover:bg-slate-200 active:bg-slate-300`}
               type="button"
               onClick={() => {
                 handleFinish();
@@ -540,7 +542,7 @@ const EditCheckoutSessionForm = ({
             </Button>
             {/* <Link href="/dashboard/checkout"> */}
             <Button
-              className="ml-2 hover:bg-slate-200 active:bg-slate-300"
+              className="ml-2 flex-1 hover:bg-slate-200 active:bg-slate-300"
               type="button"
               variant="secondary"
               onClick={(e) => {
@@ -550,6 +552,7 @@ const EditCheckoutSessionForm = ({
             >
               Cancel
             </Button>
+
             {/* </Link> */}
           </div>
         </form>

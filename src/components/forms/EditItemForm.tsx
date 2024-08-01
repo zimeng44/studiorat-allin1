@@ -142,13 +142,13 @@ const EditItemForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-4"
+          className="flex-col gap-2 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}
             name="mTechBarcode"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>MTech Barcode</FormLabel>
                 <FormControl>
                   <Input placeholder={"MTech Barcode Here"} {...field}></Input>
@@ -161,7 +161,7 @@ const EditItemForm = ({
             control={form.control}
             name="make"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Make</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -174,7 +174,7 @@ const EditItemForm = ({
             control={form.control}
             name="model"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Model</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -187,7 +187,7 @@ const EditItemForm = ({
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Category</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -200,7 +200,7 @@ const EditItemForm = ({
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -213,7 +213,7 @@ const EditItemForm = ({
             control={form.control}
             name="accessories"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Accessories</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -226,7 +226,7 @@ const EditItemForm = ({
             control={form.control}
             name="storageLocation"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Storage Location</FormLabel>
                 {/* <FormControl>
                 <Input {...field}></Input>
@@ -254,7 +254,7 @@ const EditItemForm = ({
             control={form.control}
             name="comments"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Comments</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -263,16 +263,15 @@ const EditItemForm = ({
               </FormItem>
             )}
           />
-          <div className="col-span-1 flex gap-10 bg-slate-300">
+          <div className="col-span-1 flex h-10 items-center justify-center gap-10 bg-slate-300">
             <FormField
               control={form.control}
               name="out"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="ml-2 align-bottom">Out</FormLabel>
-                  <FormControl>
+                  <FormLabel>Out</FormLabel>
+                  <FormControl className="ml-2">
                     <Checkbox
-                      className="ml-2 align-middle"
                       disabled
                       checked={field.value}
                       onCheckedChange={field.onChange}
@@ -286,12 +285,10 @@ const EditItemForm = ({
               control={form.control}
               name="broken"
               render={({ field }) => (
-                <FormItem className="mb-1">
-                  <FormLabel className="ml-1">Broken</FormLabel>
-                  <FormControl>
-                    {/* <Input placeholder={"Broken"} {...field}></Input> */}
+                <FormItem>
+                  <FormLabel>Broken</FormLabel>
+                  <FormControl className="ml-2">
                     <Checkbox
-                      className="ml-2"
                       disabled
                       checked={field.value}
                       onCheckedChange={field.onChange}
@@ -302,18 +299,21 @@ const EditItemForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 grid grid-cols-subgrid gap-4"></div>
+          <div className="col-span-1"></div>
 
           {/* <Button className="align-right" type="submit">
             Save
           </Button> */}
-          <SubmitButton
-            text="Save"
-            loadingText="Saving"
-            loading={form.formState.isSubmitting}
-          />
-          <div className="ml-10 flex space-x-5">
+
+          <div className="col-span-1 flex gap-1 md:col-span-2">
+            <SubmitButton
+              className="flex-1"
+              text="Save"
+              loadingText="Saving"
+              loading={form.formState.isSubmitting}
+            />
             <Button
+              className="flex-1"
               type="button"
               variant="destructive"
               onClick={(e) => handleDelete(e)}
@@ -322,7 +322,7 @@ const EditItemForm = ({
             </Button>
             <Link href="/dashboard/master-inventory">
               <Button
-                className="hover:bg-slate-200 active:bg-slate-300"
+                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
                 type="button"
                 variant="secondary"
               >

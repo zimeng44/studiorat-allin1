@@ -317,13 +317,13 @@ const NewCheckoutForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-3"
+          className="flex flex-col gap-2 md:grid md:grid-cols-2"
         >
           <FormField
             control={form.control}
             name="creationTime"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Creation Time</FormLabel>
                 <FormControl>
                   <Input
@@ -354,7 +354,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="stuIDCheckout"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Checkout ID</FormLabel>
                 <FormControl
                   // onChange={(e) => {
@@ -378,7 +378,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="userName"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>User Name</FormLabel>
                 <FormControl>
                   <Input
@@ -409,7 +409,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="studio"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Studio</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -438,7 +438,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="otherLocation"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Other Location</FormLabel>
                 <FormControl>
                   <Input
@@ -454,7 +454,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="creationMonitor"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel>Created by</FormLabel>
                 <FormControl>
                   <Input {...field} disabled></Input>
@@ -481,7 +481,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-1">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -494,7 +494,7 @@ const NewCheckoutForm = ({
             control={form.control}
             name="scan"
             render={({ field }) => (
-              <FormItem className="mb-1">
+              <FormItem className="col-span-1 mb-1">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
                   // onPaste={(e) => {
@@ -520,7 +520,7 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-          <div className="col-span-2 flex w-[550px]  gap-10">
+          <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
             <EmbededTable
               data={itemObjArr}
               setItemObjArr={setItemObjArr}
@@ -534,21 +534,24 @@ const NewCheckoutForm = ({
           {/* <Button className="align-right" type="submit">
             Add
           </Button> */}
-          <SubmitButton
-            text="Save"
-            loadingText="Saving Session"
-            loading={form.formState.isSubmitting}
-          />
+          <div className="col-span-1 flex gap-1 md:col-span-2">
+            <SubmitButton
+              className="flex-1"
+              text="Save"
+              loadingText="Saving Session"
+              loading={form.formState.isSubmitting}
+            />
 
-          <Link href="/dashboard/checkout">
-            <Button
-              className="hover:bg-slate-200 active:bg-slate-300"
-              type="button"
-              variant="secondary"
-            >
-              Cancel
-            </Button>
-          </Link>
+            <Link className="flex-1" href="/dashboard/checkout">
+              <Button
+                className="size-full hover:bg-slate-200 active:bg-slate-300"
+                type="button"
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </Link>
+          </div>
         </form>
       </Form>
     </div>

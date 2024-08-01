@@ -35,7 +35,7 @@ interface SearchParamsProps {
   };
 }
 
-export default async function CheckoutSessions({
+export default async function BookingPage({
   searchParams,
 }: Readonly<SearchParamsProps>) {
   const pageIndex = searchParams?.page ?? "1";
