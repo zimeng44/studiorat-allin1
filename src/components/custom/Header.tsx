@@ -36,7 +36,7 @@ export function LoggedInUser({
   readonly userData: AuthUserProps;
 }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 items-center">
       <Link
         href="/dashboard/account"
         className=" flex gap-2 font-semibold hover:text-primary"

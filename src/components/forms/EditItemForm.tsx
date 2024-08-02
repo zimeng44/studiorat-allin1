@@ -263,19 +263,22 @@ const EditItemForm = ({
               </FormItem>
             )}
           />
-          <div className="col-span-1 flex h-10 items-center justify-center gap-10 bg-slate-300">
+          <div className="col-span-1 flex h-10 items-center justify-evenly bg-slate-300">
             <FormField
               control={form.control}
               name="out"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex content-center items-center">
                   <FormLabel>Out</FormLabel>
-                  <FormControl className="ml-2">
-                    <Checkbox
-                      disabled
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                  <FormControl className="pl-2">
+                    <div className="flex">
+                      <Checkbox
+                        className="mb-2"
+                        disabled
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -285,14 +288,17 @@ const EditItemForm = ({
               control={form.control}
               name="broken"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex content-center items-center">
                   <FormLabel>Broken</FormLabel>
-                  <FormControl className="ml-2">
-                    <Checkbox
-                      disabled
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                  <FormControl className="pl-2">
+                    <div className="flex">
+                      <Checkbox
+                        className="mb-2"
+                        disabled
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
