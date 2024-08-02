@@ -56,6 +56,15 @@ interface BookingsFilterProps {
   // inventory_items?: InventoryItem[];
   // studioUser?: UserType[];
 }
+interface UsersFilterProps {
+  username?: string;
+  stuId?: string;
+  fullName?: string;
+  academicLevel?: string;
+  email?: string;
+  bio?: string;
+  blocked?: boolean;
+}
 
 const baseUrl = getStrapiURL();
 // console.log(baseUrl);
@@ -529,3 +538,72 @@ export async function getBookingByDateWeek(newDate: Date) {
 //   // console.log("query data", query)
 //   return fetchData(url.href);
 // }
+
+export async function getUsers(
+  sort: string,
+  page: string,
+  pageSize: string,
+  filter: UsersFilterProps,
+) {
+  let filterArr = [];
+  for (const [key, value] of Object.entries(filter)) {
+    // console.log(`${key}: ${value}`);
+    if (value === "" || value === false || value === "false") continue;
+
+    if (value === true || value === "true") {
+      filterArr.push({ [key]: { $eq: value } });
+    } else {
+      filterArr.push({ [key]: { $containsi: value } });
+    }
+  }
+
+  // console.log(filterArr);
+
+  const query = qs.stringify({
+    sort: [sort],
+    filters: {
+      $and: filterArr,
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/users", baseUrl);
+  url.search = query;
+  // console.log(url.href);
+  return fetchData(url.href);
+}
+
+export async function getUserById(userId: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
+  return fetchData(`${baseUrl}/api/users/${userId}`);
+}
+
+export async function getUsersByQuery(
+  queryString: string,
+  page: string,
+  pageSize: string,
+) {
+  const query = qs.stringify({
+    sort: ["createdAt:desc"],
+    filters: {
+      $or: [
+        { username: { $containsi: queryString } },
+        { stuId: { $containsi: queryString } },
+        { firstName: { $containsi: queryString } },
+        { lastName: { $containsi: queryString } },
+        { email: { $containsi: queryString } },
+        { academicLevel: { $containsi: queryString } },
+        { bio: { $containsi: queryString } },
+      ],
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/users", baseUrl);
+  url.search = query;
+  return fetchData(url.href);
+}

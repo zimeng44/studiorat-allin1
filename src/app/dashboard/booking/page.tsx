@@ -93,14 +93,12 @@ export default async function BookingPage({
 
   const jwtCookie = cookies().get("jwt");
 
-  if (jwtCookie) {
-    const { value: authToken } = jwtCookie;
-    // You can now use authToken safely here
-    // console.log(authToken);
-  } else {
-    // Handle the case where the cookie is not found
+  if (!jwtCookie) {
     console.error("JWT cookie not found");
+    return <p>You're not authorized.</p>;
   }
+  // Handle the case where the cookie is not found
+
   // console.log(authToken);
 
   // if (isLoading) return <p>Loading...</p>;
@@ -129,7 +127,7 @@ export default async function BookingPage({
         data={data}
         meta={meta}
         filter={filter}
-        authToken={jwtCookie?.value??""}
+        authToken={jwtCookie?.value ?? ""}
         calendarFirstLoadData={calendarLoadEvents}
       />
     </div>

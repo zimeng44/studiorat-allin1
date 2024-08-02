@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { Barcode, BarcodeIcon, BookPlus, Vault } from "lucide-react";
+import {
+  Barcode,
+  BarcodeIcon,
+  BookPlus,
+  UserIcon,
+  Users,
+  Vault,
+} from "lucide-react";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 export default async function DashboardLayout({
@@ -40,8 +47,8 @@ export default async function DashboardLayout({
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                 href="/dashboard/account"
               >
-                <UsersIcon className="h-4 w-4" />
-                Account
+                <UserIcon className="h-4 w-4" />
+                My Profile
               </Link>
 
               {currentRole !== "InventoryManager" ? (
@@ -75,6 +82,18 @@ export default async function DashboardLayout({
                 >
                   <Vault className="h-4 w-4" />
                   Master Inventory
+                </Link>
+              ) : (
+                ``
+              )}
+
+              {currentRole === "Admin" || currentRole === "Monitor" ? (
+                <Link
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                  href="/dashboard/users"
+                >
+                  <Users className="h-4 w-4" />
+                  Users
                 </Link>
               ) : (
                 ``

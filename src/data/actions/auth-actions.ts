@@ -17,23 +17,71 @@ const config = {
 };
 
 const schemaRegister = z.object({
-  username: z.string().min(3).max(20, {
-    message: "Username must be between 3 and 20 characters",
-  }),
-  password: z.string().min(6).max(100, {
-    message: "Password must be between 6 and 100 characters",
-  }),
+  username: z
+    .string()
+    .min(3, {
+      message: "Username must be between 3 and 20 characters",
+    })
+    .max(20, {
+      message: "Username must be between 3 and 20 characters",
+    }),
+  password: z
+    .string()
+    .min(6, {
+      message: "Password must be between 6 and 100 characters",
+    })
+    .max(100, {
+      message: "Password must be between 6 and 100 characters",
+    }),
+  firstName: z
+    .string()
+    .min(2, {
+      message: "First Name must be between 2 and 20 characters",
+    })
+    .max(20, {
+      message: "First Name must be between 2 and 20 characters",
+    }),
+  lastName: z
+    .string()
+    .min(2, {
+      message: "Last Name must be between 2 and 20 characters",
+    })
+    .max(20, {
+      message: "Last Name must be between 2 and 20 characters",
+    }),
   email: z.string().email({
-    message: "Please enter a valid email address",
+    message: "Please enter a valid NYU email address",
   }),
+  stuId: z
+    .string()
+    .min(3, {
+      message: "ID barcode must be between 3 and 16 characters",
+    })
+    .max(16, {
+      message: "ID barcode must be between 3 and 16 characters",
+    }),
+  academicLevel: z
+    .string()
+    .min(3, {
+      message: "Academic Level must be between 3 and 10 characters",
+    })
+    .max(10, {
+      message: "Academic Level must be between 3 and 10 characters",
+    }),
 });
 
 export async function registerUserAction(prevState: any, formData: FormData) {
   const validatedFields = schemaRegister.safeParse({
     username: formData.get("username"),
     password: formData.get("password"),
-    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: `${formData.get("username")}@nyu.edu`,
+    stuId: formData.get("stuId"),
+    academicLevel: formData.get("academicLevel"),
   });
+
+  // console.log(validatedFields?.error.flatten().fieldErrors);
 
   if (!validatedFields.success) {
     return {

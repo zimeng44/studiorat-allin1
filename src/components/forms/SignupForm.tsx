@@ -18,6 +18,13 @@ import { registerUserAction } from "@/data/actions/auth-actions";
 import { ZodErrors } from "../custom/ZodErrors";
 import { StrapiErrors } from "../custom/StrapiErrors";
 import { SubmitButton } from "../custom/SubmitButton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const INITIAL_STATE = {
   data: null,
@@ -45,25 +52,25 @@ export function SignupForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">NetID</Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
                 autoCapitalize="none"
-                placeholder="username"
+                placeholder="School Assigned NetId"
               />
               <ZodErrors error={formState?.zodErrors?.username} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              {/* <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoCapitalize="none"
                 placeholder="name@example.com"
-              />
+              /> */}
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>
 
@@ -76,6 +83,60 @@ export function SignupForm() {
                 placeholder="password"
               />
               <ZodErrors error={formState?.zodErrors?.password} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoCapitalize="none"
+                placeholder="First Name"
+              />
+              <ZodErrors error={formState?.zodErrors?.firstName} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoCapitalize="none"
+                placeholder="Last Name"
+              />
+              <ZodErrors error={formState?.zodErrors?.lastName} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="stuId">ID Barcode</Label>
+              <Input
+                id="stuId"
+                name="stuId"
+                type="text"
+                autoCapitalize="none"
+                placeholder="ID Barcode"
+              />
+              <ZodErrors error={formState?.zodErrors?.stuId} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="academicLevel">Academic Level</Label>
+              {/* <Input
+                id="academicLevel"
+                name="academicLevel"
+                type="text"
+                autoCapitalize="none"
+                placeholder="Academic Level"
+              /> */}
+              <Select name="academicLevel">
+                <SelectTrigger id="academicLevel">
+                  <SelectValue placeholder="Select a Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="underGrad">Undergrad</SelectItem>
+                  <SelectItem value="Grad">Grad</SelectItem>
+                  <SelectItem value="Faculty">Faculty</SelectItem>
+                </SelectContent>
+              </Select>
+              <ZodErrors error={formState?.zodErrors?.academicLevel} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">

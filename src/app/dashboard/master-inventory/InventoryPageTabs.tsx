@@ -70,11 +70,11 @@ const InventoryPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
             <TabsList>
               <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
-                List
+                {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                Grid
+                {/* Grid */}
               </TabsTrigger>
             </TabsList>
           </div>

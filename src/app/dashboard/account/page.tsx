@@ -28,11 +28,11 @@ export default async function AccountRoute() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Account</BreadcrumbPage>
+            <BreadcrumbPage>Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="grid grid-cols-1 gap-4 px-5 py-2 lg:grid-cols-5 md:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 px-5 py-2 md:grid-cols-5 lg:grid-cols-5">
         <ProfileForm data={userData} className="col-span-3" />
         <ProfileImageForm data={userImage} className="col-span-2" />
       </div>

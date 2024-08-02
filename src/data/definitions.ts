@@ -93,12 +93,14 @@ export interface BookingTypePost {
 
 export type UserType = {
   id?: number;
+  username?: string;
   stuId?: string;
+  email?: string;
   firstName?: string;
   lastName?: string;
   lastUse?: string;
-  email?: string;
-  userType?: string;
+  bio?: string;
+  academicLevel?: string;
   blocked?: boolean;
   role?: UserRole;
 };

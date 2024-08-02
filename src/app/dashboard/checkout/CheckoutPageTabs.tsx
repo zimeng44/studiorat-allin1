@@ -12,9 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { checkoutColumnsDefault } from "@/data/checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
-import { flattenAttributes } from "@/lib/utils";
-import { addDays, startOfDay, subDays } from "date-fns";
-import qs from "qs";
 import { Grid, List } from "lucide-react";
 
 interface ViewTabsProps {
@@ -78,11 +75,11 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
             <TabsList>
               <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
-                List
+                {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                Grid
+                {/* Grid */}
               </TabsTrigger>
             </TabsList>
           </div>
