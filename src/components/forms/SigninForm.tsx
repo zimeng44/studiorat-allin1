@@ -70,12 +70,12 @@ export function SigninForm() {
             <StrapiErrors error={formState?.strapiErrors} />
           </CardFooter>
         </Card>
-        <div className="mt-4 text-center text-sm">
+        {/* <div className="mt-4 text-center text-sm">
           Don't have an account?
           <Link className="ml-2 underline" href="signup">
             Sign Up
           </Link>
-        </div>
+        </div> */}
       </form>
     </div>
   );
