@@ -577,7 +577,7 @@ export async function getUsers(
 
 export async function getUserById(userId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/users/${userId}`);
+  return fetchData(`${baseUrl}/api/users/${userId}?populate=role`);
 }
 
 export async function getUsersByQuery(

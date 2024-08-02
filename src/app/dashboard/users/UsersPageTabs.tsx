@@ -36,16 +36,16 @@ interface ViewTabsProps {
 
 function LinkCard(user: Readonly<UserType>) {
   return (
-    <Link href={`/dashboard/master-inventory/${user.id}`}>
+    <Link href={`/dashboard/users/${user.id}`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-8 text-pink-500">
-            {user.firstName + " " + user.lastName || "Brand Model"}
+            {user.firstName + " " + user.lastName || "User Name Missing"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 w-full leading-7">{user.username}</p>
+          <p className="mb-4 w-full leading-7">{user.academicLevel}</p>
         </CardContent>
       </Card>
     </Link>

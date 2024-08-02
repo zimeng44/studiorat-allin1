@@ -7,6 +7,7 @@ import {
   registerUserService,
   loginUserService,
 } from "@/data/services/auth-services";
+import { getUserMeLoader } from "../services/get-user-me-loader";
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -52,13 +53,14 @@ const schemaRegister = z.object({
   email: z.string().email({
     message: "Please enter a valid NYU email address",
   }),
+  role: z.string(),
   stuId: z
     .string()
-    .min(3, {
-      message: "ID barcode must be between 3 and 16 characters",
+    .min(15, {
+      message: "ID barcode must be between 15 and 16 characters",
     })
     .max(16, {
-      message: "ID barcode must be between 3 and 16 characters",
+      message: "ID barcode must be between 15 and 16 characters",
     }),
   academicLevel: z
     .string()
@@ -71,17 +73,30 @@ const schemaRegister = z.object({
 });
 
 export async function registerUserAction(prevState: any, formData: FormData) {
-  const validatedFields = schemaRegister.safeParse({
-    username: formData.get("username"),
-    password: formData.get("password"),
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    email: `${formData.get("username")}@nyu.edu`,
-    stuId: formData.get("stuId"),
-    academicLevel: formData.get("academicLevel"),
-  });
+  const { data: currentUser } = await getUserMeLoader();
+  // console.log(currentUser.role);
 
-  // console.log(validatedFields?.error.flatten().fieldErrors);
+  const validatedFields =
+    currentUser.role.name === "Admin"
+      ? schemaRegister.omit({ stuId: true }).safeParse({
+          username: formData.get("username"),
+          password: formData.get("password"),
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName"),
+          email: `${formData.get("username")}@nyu.edu`,
+          stuId: formData.get("stuId"),
+          role: formData.get("userRole"),
+          academicLevel: formData.get("academicLevel"),
+        })
+      : schemaRegister.omit({ role: true }).safeParse({
+          username: formData.get("username"),
+          password: formData.get("password"),
+          firstName: formData.get("firstName"),
+          lastName: formData.get("lastName"),
+          email: `${formData.get("username")}@nyu.edu`,
+          stuId: formData.get("stuId"),
+          academicLevel: formData.get("academicLevel"),
+        });
 
   if (!validatedFields.success) {
     return {
@@ -91,6 +106,8 @@ export async function registerUserAction(prevState: any, formData: FormData) {
       message: "Missing Fields. Failed to Register.",
     };
   }
+
+  // console.log(validatedFields.data);
 
   const responseData = await registerUserService(validatedFields.data);
 
@@ -113,7 +130,7 @@ export async function registerUserAction(prevState: any, formData: FormData) {
   }
 
   // cookies().set("jwt", responseData.jwt, config);
-  redirect("/dashboard");
+  redirect("/dashboard/users");
 }
 
 const schemaLogin = z.object({

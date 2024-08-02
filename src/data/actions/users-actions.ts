@@ -6,7 +6,7 @@ import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 // import { InventoryItem } from "@/app/lib/definitions";
-import { InventoryItem, UserType } from "../definitions";
+import { InventoryItem, UserType, UserTypePost } from "../definitions";
 
 // interface Payload {
 //   data: {
@@ -31,7 +31,10 @@ import { InventoryItem, UserType } from "../definitions";
 //   redirect("/dashboard/users");
 // }
 
-export const updateUserAction = async (updatedUser: UserType, id: string) => {
+export const updateUserAction = async (
+  updatedUser: UserTypePost,
+  id: string,
+) => {
   // console.log(updatedUser);
 
   const payload = {
@@ -62,6 +65,7 @@ export const updateUserAction = async (updatedUser: UserType, id: string) => {
 
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/users");
+  // redirect("/dashboard/users");
 
   return {
     // ...prevState,

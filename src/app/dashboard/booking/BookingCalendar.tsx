@@ -79,6 +79,11 @@ export default function BookingCalendar({
       // if (title) {
       //   setEvents((prev) => [...prev, { start, end, title }]);
       // }
+      if (compareAsc(addDays(new Date(), 1), start) > 0) {
+        window.alert("No booking allowed within 24 hours or in the past.");
+        return;
+      }
+
       const eightAM = addHours(startOfDay(start), 8);
       const elevenPM = addHours(startOfDay(start), 23);
       if (

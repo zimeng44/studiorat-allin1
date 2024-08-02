@@ -105,6 +105,19 @@ export type UserType = {
   role?: UserRole;
 };
 
+export type UserTypePost = {
+  username?: string;
+  stuId?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  lastUse?: string;
+  bio?: string;
+  academicLevel?: string;
+  blocked?: boolean;
+  role?: string | number;
+};
+
 export type UserRole = {
   id?: number;
   name?: string;

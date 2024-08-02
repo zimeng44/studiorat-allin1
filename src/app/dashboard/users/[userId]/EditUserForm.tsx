@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ import {
   deleteItemAction,
   updateItemAction,
 } from "@/data/actions/inventory-actions";
-import { InventoryItem, UserType } from "@/data/definitions";
+import { InventoryItem, UserRole, UserType } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -35,11 +35,12 @@ import {
   deleteUserAction,
   updateUserAction,
 } from "@/data/actions/users-actions";
+import { StrapiErrors } from "@/components/custom/StrapiErrors";
 
 const INITIAL_STATE = {
-  strapiErrors: null,
-  data: null,
-  message: null,
+  message: "",
+  name: "",
+  status: "",
 };
 
 const mTechBarcode = z.union([
@@ -48,22 +49,67 @@ const mTechBarcode = z.union([
 ]);
 
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
+  username: z
+    .string()
+    .min(3, {
+      message: "Username must be between 3 and 20 characters",
+    })
+    .max(20, {
+      message: "Username must be between 3 and 20 characters",
+    }),
   // username: z.string().min(12).and(z.string().max(13)),
-  stuId: z.string().min(10).max(16),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  academicLevel: z.string().min(1),
+  stuId: z
+    .string()
+    .min(15, {
+      message: "ID Barcode must be between 15 and 16 characters",
+    })
+    .max(16, {
+      message: "ID Barcode must be between 15 and 16 characters",
+    }),
+  firstName: z
+    .string()
+    .min(2, {
+      message: "First Name must be between 2 and 20 characters",
+    })
+    .max(20, {
+      message: "First Name must be between 2 and 20 characters",
+    }),
+  lastName: z
+    .string()
+    .min(2, {
+      message: "Last Name must be between 2 and 20 characters",
+    })
+    .max(20, {
+      message: "Last Name must be between 2 and 20 characters",
+    }),
+  academicLevel: z
+    .string()
+    .min(3, {
+      message: "Academic Level must be between 3 and 10 characters",
+    })
+    .max(10, {
+      message: "Academic Level must be between 3 and 10 characters",
+    }),
+  role: z.number(),
   email: z.string().email({
-    message: "Please enter a valid email address",
+    message: "Please enter a valid NYU email address",
   }),
   bio: z.string().optional(),
   blocked: z.boolean(),
 });
 
-const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
-  // console.log("Item Details Render!!");
+const EditUserForm = ({
+  userId,
+  user,
+  currentUserRole,
+}: {
+  userId: string;
+  user: UserType;
+  currentUserRole: UserRole;
+}) => {
+  // console.log(currentUserRole.id);
   const router = useRouter();
+  const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
   // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
 
   // const [deleteState, deleteAction] = useFormState(
@@ -83,19 +129,36 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
   // console.log(itemId);
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: user.username,
-      stuId: user.stuId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      academicLevel: user.academicLevel,
-      email: user.email,
-      bio: user.bio,
-      blocked: user.blocked,
-    },
-  });
+  const form =
+    currentUserRole.name === "Admin"
+      ? useForm<z.infer<typeof formSchema>>({
+          resolver: zodResolver(formSchema.omit({ stuId: true })),
+          defaultValues: {
+            username: user.username,
+            stuId: user.stuId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            academicLevel: user.academicLevel,
+            role: user?.role?.id ?? undefined,
+            email: user.email,
+            bio: user.bio || "",
+            blocked: user.blocked ?? false,
+          },
+        })
+      : useForm<z.infer<typeof formSchema>>({
+          resolver: zodResolver(formSchema),
+          defaultValues: {
+            username: user.username,
+            stuId: user.stuId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            academicLevel: user.academicLevel,
+            role: user?.role?.id,
+            email: user.email,
+            bio: user.bio || "",
+            blocked: user.blocked ?? false,
+          },
+        });
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
@@ -106,17 +169,13 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
 
     // console.log(values);
     const res = await updateUserAction(values, userId);
+    console.log(res.strapiErrors);
+    setStrapiErrors(res.strapiErrors);
 
-    // console.log(res);
-
-    router.refresh();
-    toast.success("Item Saved.");
-
-    return res;
-
-    // closeDetail();
-    // console.log("Form Submitted!!");
-    // setDialogOpen(false);
+    if (!res.strapiErrors?.status) {
+      router.push("/dashboard/users");
+      toast.success("User Saved.");
+    }
   }
 
   async function handleDelete(e: any) {
@@ -128,7 +187,14 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
 
     const res = await deleteUserAction(userId);
 
-    if (!res) toast.success("Item Deleted");
+    if (!res?.strapiErrors?.status) {
+      router.push("/dashboard/users");
+      toast.success("User Deleted.");
+    } else {
+      setStrapiErrors(res?.strapiErrors);
+    }
+
+    // if (!res) toast.success("Item Deleted");
 
     // if ((totalEntries - 1) % pageSize === 0) {
     //   setPageIndex((pageIndex) => pageIndex - 1);
@@ -139,6 +205,9 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
 
   return (
     <div>
+      <div className="max-w-60">
+        <StrapiErrors error={strapiErrors} />
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -196,6 +265,38 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
               </FormItem>
             )}
           />
+          {currentUserRole.name === "Admin" ? (
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    onValueChange={(value: string) =>
+                      field.onChange(parseInt(value))
+                    }
+                    value={field.value?.toString() ?? ""}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="3">Monitor</SelectItem>
+                      <SelectItem value="5">Inventory Manager</SelectItem>
+                      <SelectItem value="1">User</SelectItem>
+                      <SelectItem value="4">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            ``
+          )}
           <FormField
             control={form.control}
             name="academicLevel"
@@ -212,7 +313,7 @@ const EditUserForm = ({ userId, user }: { userId: string; user: UserType }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="underGrad">Undergrad</SelectItem>
+                    <SelectItem value="Undergrad">Undergrad</SelectItem>
                     <SelectItem value="Grad">Grad</SelectItem>
                     <SelectItem value="Faculty">Faculty</SelectItem>
                   </SelectContent>
