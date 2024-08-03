@@ -41,9 +41,9 @@ function LinkCard(report: Readonly<InventoryReportType>) {
           </p>
           <p className="mb-4 w-full leading-5">
             {report.isFinished ? (
-              <Badge variant="default">In Progress</Badge>
-            ) : (
               <Badge variant="secondary">Finished</Badge>
+            ) : (
+              <Badge variant="default">In Progress</Badge>
             )}
           </p>
         </CardContent>
