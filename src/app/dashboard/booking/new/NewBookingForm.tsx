@@ -67,6 +67,7 @@ import {
   updateBookingAction,
 } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
+import { Label } from "@/components/ui/label";
 
 // const config = {
 //   maxAge: 60 * 60, // 1 hour
@@ -535,12 +536,18 @@ const NewBookingForm = ({
                 <FormItem className="size-fit flex-1 md:size-full">
                   <FormLabel>User Name</FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       placeholder="Waiting for a NetID"
                       {...field}
                       disabled
                       // onChange={(e) => setUserId(e.target.value)}
-                    ></Input>
+                    ></Input> */}
+                    <Label
+                      {...field}
+                      className="flex p-2 font-sans italic text-slate-400"
+                    >
+                      {field.value === "" ? "NetID needed" : field.value}
+                    </Label>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -553,7 +560,7 @@ const NewBookingForm = ({
                 control={form.control}
                 name="netId"
                 render={({ field }) => (
-                  <FormItem className="size-fit flex-1 md:size-full">
+                  <FormItem className="size-auto flex-1 md:size-full">
                     <FormLabel>NetID</FormLabel>
                     <FormControl
                       onChange={(e) =>
@@ -563,6 +570,7 @@ const NewBookingForm = ({
                       <Input
                         placeholder="Type in a NetID Here"
                         {...field}
+                        autoCapitalize="none"
                         // onChange={(e) => setUserId(e.target.value)}
                       ></Input>
                     </FormControl>
@@ -575,12 +583,12 @@ const NewBookingForm = ({
             )}
           </div>
 
-          <div className="col-span-1 flex justify-start md:col-span-2">
+          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="startDate"
               render={({ field }) => (
-                <FormItem className="col-span-1 w-[120px]">
+                <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>Start Date</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger asChild>
@@ -588,7 +596,7 @@ const NewBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-2 text-left font-normal",
+                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
                         >
@@ -597,13 +605,13 @@ const NewBookingForm = ({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent
                       side="bottom"
-                      className="w-auto p-0"
+                      className="w-auto flex-1 p-0"
                       align="start"
                     >
                       <Calendar
@@ -630,7 +638,7 @@ const NewBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "min-w-[125px]",
+                    "col-span-1 size-full min-w-[125px]",
                     " pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
@@ -646,7 +654,7 @@ const NewBookingForm = ({
                         <SelectValue placeholder="Select a time" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="w-auto p-0">
                       {bookingTimeList.map((time, index) => (
                         <SelectItem
                           key={index}
@@ -660,12 +668,12 @@ const NewBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 flex justify-start md:col-span-2">
+          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="endDate"
               render={({ field }) => (
-                <FormItem className="w-[120px]">
+                <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>End Date</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger asChild>
@@ -673,7 +681,7 @@ const NewBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-2 text-left font-normal",
+                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={form.getValues("type") !== "Exception"}
@@ -683,7 +691,7 @@ const NewBookingForm = ({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -714,8 +722,8 @@ const NewBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "w-[125px]",
-                    "pl-2 text-left font-normal",
+                    "col-span-1 size-full min-w-[125px]",
+                    " pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -749,55 +757,63 @@ const NewBookingForm = ({
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="useLocation"
-            render={({ field }) => (
-              <FormItem className="col-span-2 size-fit">
-                <FormLabel>Use Location</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  // defaultValue={field.value}
-                  value={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a location" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {bookingLocationList.map((location, index) => (
-                      <SelectItem
-                        key={`${index}${location}`}
-                        value={`${location}`}
-                      >{`${location}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="col-span-2 flex size-auto flex-1 flex-row justify-start md:col-span-4">
+            <FormField
+              control={form.control}
+              name="useLocation"
+              render={({ field }) => (
+                <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
+                  <FormLabel>Use Location</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    // defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a location" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {bookingLocationList.map((location, index) => (
+                        <SelectItem
+                          key={`${index}${location}`}
+                          value={`${location}`}
+                        >{`${location}`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="bookingCreatorName"
-            render={({ field }) => (
-              <FormItem className="col-span-2 size-fit">
-                <FormLabel>Created by</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="bookingCreatorName"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full pl-2 md:col-span-2">
+                  <FormLabel>Created by</FormLabel>
+                  <FormControl>
+                    {/* <Input disabled {...field}></Input> */}
+                    <Label
+                      {...field}
+                      className="flex p-2 font-sans italic text-slate-400"
+                    >
+                      {field.value}
+                    </Label>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <FormField
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem className="col-span-2 size-fit">
+              <FormItem className="col-span-2 size-full">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>

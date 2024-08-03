@@ -64,6 +64,7 @@ import {
 } from "@/data/actions/booking-actions";
 import qs from "qs";
 import { SubmitButton } from "@/components/custom/SubmitButton";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -484,23 +485,29 @@ const EditBookingForm = ({
                 <FormItem className="size-fit">
                   <FormLabel>User Name</FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       {...field}
                       disabled
                       // onChange={(e) => setUserId(e.target.value)}
-                    ></Input>
+                    ></Input> */}
+                    <Label
+                      {...field}
+                      className="flex p-2 font-sans italic text-slate-400"
+                    >
+                      {field.value}
+                    </Label>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <div className="col-span-1 flex justify-start md:col-span-2">
+          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="startDate"
               render={({ field }) => (
-                <FormItem className="col-span-1 w-[120px]">
+                <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>Start Date</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger asChild>
@@ -508,7 +515,7 @@ const EditBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-2 text-left font-normal",
+                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={isPast}
@@ -518,13 +525,13 @@ const EditBookingForm = ({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent
                       side="bottom"
-                      className="w-auto p-0"
+                      className="w-auto flex-1 p-0"
                       align="start"
                     >
                       <Calendar
@@ -551,7 +558,7 @@ const EditBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "min-w-[125px]",
+                    "col-span-1 size-full min-w-[125px]",
                     " pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
@@ -567,7 +574,7 @@ const EditBookingForm = ({
                         <SelectValue placeholder="Select a time" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="w-auto p-0">
                       {bookingTimeList.map((time, index) => (
                         <SelectItem
                           key={index}
@@ -581,12 +588,12 @@ const EditBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 flex md:col-span-2">
+          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="endDate"
               render={({ field }) => (
-                <FormItem className="w-[120px]">
+                <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>End Date</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger asChild>
@@ -594,7 +601,7 @@ const EditBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-2 text-left font-normal",
+                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={
@@ -606,7 +613,7 @@ const EditBookingForm = ({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -637,7 +644,7 @@ const EditBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "min-w-[125px] pl-2 text-left font-normal",
+                    "col-span-1 size-full min-w-[125px]",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -670,12 +677,13 @@ const EditBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 flex md:col-span-2">
+
+          <div className="col-span-2 flex size-auto flex-1 flex-row justify-start md:col-span-4">
             <FormField
               control={form.control}
               name="useLocation"
               render={({ field }) => (
-                <FormItem className="size-fit md:size-full">
+                <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                   <FormLabel>Use Location</FormLabel>
                   <Select
                     onValueChange={field.onChange}
@@ -701,38 +709,44 @@ const EditBookingForm = ({
                 </FormItem>
               )}
             />
-          </div>
-          <div className="col-span-1 flex md:col-span-2">
+
             <FormField
               control={form.control}
               name="bookingCreatorName"
               render={({ field }) => (
-                <FormItem className="size-fit md:size-full">
+                <FormItem className="col-span-1 size-full pl-2 md:col-span-2">
                   <FormLabel>Created by</FormLabel>
                   <FormControl>
-                    <Input disabled {...field}></Input>
+                    {/* <Input disabled {...field}></Input> */}
+                    <Label
+                      {...field}
+                      className="flex p-2 font-sans italic text-slate-400"
+                    >
+                      {field.value}
+                    </Label>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <div className="col-span-1 flex md:col-span-2">
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem className="size-fit md:size-full">
-                  <FormLabel className="align-bottom">Notes</FormLabel>
-                  <FormControl>
-                    <Input {...field}></Input>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1 md:col-span-2"></div>
+
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem className="col-span-2 size-full">
+                <FormLabel className="align-bottom">Notes</FormLabel>
+                <FormControl>
+                  <Input {...field}></Input>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="col-span-2"></div>
+
           <div className="col-span-2 flex justify-evenly md:col-span-4">
             {/* <div className="text-center align-baseline font-normal"> */}
             <h1 className="flex-1 content-center text-center">Booking Items</h1>
