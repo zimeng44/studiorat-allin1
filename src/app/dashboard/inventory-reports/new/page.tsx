@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import NewInventoryReportForm from "./NewInventoryReportForm";
-import { getInventoryReports } from "@/data/loaders";
+import { getInventoryItems, getInventoryReports } from "@/data/loaders";
 import { redirect } from "next/navigation";
 
 const NewInventoryReportPage = async () => {
@@ -42,6 +42,24 @@ const NewInventoryReportPage = async () => {
     redirect(`/dashboard/inventory-reports/${data[0].id}?draft=yes`);
   }
 
+  const { meta: inventoryMeta } = await getInventoryItems(
+    "",
+    pageIndex.toString(),
+    pageSize.toString(),
+    {
+      mTechBarcode: "",
+      make: "",
+      model: "",
+      category: "",
+      description: "",
+      accessories: "",
+      storageLocation: "",
+      comments: "",
+      out: false,
+      broken: false,
+    },
+  );
+
   return (
     <div className="p-5">
       <Breadcrumb>
@@ -70,6 +88,7 @@ const NewInventoryReportPage = async () => {
         <NewInventoryReportForm
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}
+          inventorySize={inventoryMeta.pagination.total}
         />
       </div>
     </div>

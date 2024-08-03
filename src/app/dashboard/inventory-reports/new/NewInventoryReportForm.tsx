@@ -52,13 +52,15 @@ const formSchema = z.object({
 const NewInventoryReportForm = ({
   thisMonitor,
   authToken,
+  inventorySize,
 }: {
   thisMonitor: UserType;
   authToken: string;
+  inventorySize: string;
 }) => {
   const [data, setData] = useState({
     creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-    inventorySize: 0,
+    inventorySize: inventorySize,
     notes: "",
     isFinished: false,
     scan: "",
@@ -66,14 +68,14 @@ const NewInventoryReportForm = ({
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
 
-  // console.log(rowId);
+  // console.log(inventorySize);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-      inventorySize: 0,
+      inventorySize: parseInt(inventorySize),
       notes: "",
       isFinished: false,
       scan: "",
