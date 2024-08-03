@@ -1,7 +1,7 @@
 interface StrapiErrorsProps {
   message: string | null;
   name: string;
-  status: string | null;
+  status?: string | null;
 }
 
 export function StrapiErrors({ error }: { readonly error: StrapiErrorsProps }) {

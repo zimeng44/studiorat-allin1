@@ -120,12 +120,6 @@ const TabHeader = ({
         <Search />
       </div>
       <div className="item-end ml-auto">
-        <Link href="/dashboard/inventory-reports/new">
-          <Button variant="outline" className="h10 ml-5">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Inventory Reports
-          </Button>
-        </Link>
         <Link href="/dashboard/checkout/new">
           <Button variant="outline" className="h10 ml-5">
             <PlusCircle className="mr-2 h-4 w-4" />

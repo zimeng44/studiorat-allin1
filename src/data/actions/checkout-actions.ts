@@ -37,6 +37,15 @@ export async function createCheckoutSessionAction(
   const data = await mutateData("POST", "/api/checkout-sessions", payload);
   const flattenedData = flattenAttributes(data);
 
+  if (data.error) {
+    // console.log("responseData.error", responseData.error);
+    return {
+      // ...prevState,
+      strapiErrors: data.error,
+      message: "Failed to create checkout session.",
+    };
+  }
+
   // redirect("/dashboard/checkout/" + flattenedData.id);
   redirect("/dashboard/checkout/");
 }
@@ -68,7 +77,7 @@ export const updateCheckoutSessionAction = async (
     return {
       // ...prevState,
       strapiErrors: responseData.error,
-      message: "Failed to update summary.",
+      message: "Failed to update checkout session.",
     };
   }
 
@@ -79,7 +88,7 @@ export const updateCheckoutSessionAction = async (
 
   return {
     // ...prevState,
-    message: "Summary updated successfully",
+    message: "checkout session updated successfully",
     data: flattenedData,
     strapiErrors: null,
   };
@@ -113,7 +122,7 @@ export const updateCheckoutSessionActionWithItems = async (
     return {
       // ...prevState,
       strapiErrors: responseData.error,
-      message: "Failed to update summary.",
+      message: "Failed to update checkout session.",
     };
   }
 
@@ -141,7 +150,7 @@ export const updateCheckoutSessionActionWithItems = async (
 
   return {
     // ...prevState,
-    message: "Summary updated successfully",
+    message: "Checkout session updated successfully",
     data: flattenedData,
     strapiErrors: null,
   };

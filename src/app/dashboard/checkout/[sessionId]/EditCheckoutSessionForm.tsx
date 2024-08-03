@@ -45,8 +45,19 @@ import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { updateItemAction } from "@/data/actions/inventory-actions";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
+import { StrapiErrors } from "@/components/custom/StrapiErrors";
 
 // import { useRouter } from "next/navigation";
+
+interface StrapiErrorsProps {
+  message: string | null;
+  name: string;
+}
+
+const INITIAL_STATE = {
+  message: null,
+  name: "",
+};
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -66,14 +77,6 @@ const formSchema = z.object({
   user: z.string().optional(),
 });
 
-// const getIdArray: number[] = (session: CheckoutSessionType) => {
-//   let IdArray: number[] = session.inventory_items?.data.map(
-//     (item: InventoryItem) => item.id,
-//   );
-
-//   return IdArray;
-// };
-
 const EditCheckoutSessionForm = ({
   session,
   sessionId,
@@ -86,6 +89,7 @@ const EditCheckoutSessionForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
   // router.refresh();
   // const [tempSession, setTempSession] = useState(session);
   // console.log("Item Details Render!!", session);
@@ -223,11 +227,16 @@ const EditCheckoutSessionForm = ({
     };
 
     try {
-      await updateCheckoutSessionActionWithItems(
+      const res = await updateCheckoutSessionActionWithItems(
         formValue,
         sessionId,
         itemObjArr,
       );
+      setError(res.strapiErrors);
+      if (!res?.strapiErrors?.status) {
+        router.push("/dashboard/users");
+        toast.success("New Checkout Session Added");
+      }
     } catch (error) {
       toast.error("Error Updating Checkout Session");
       // setError({
@@ -239,15 +248,6 @@ const EditCheckoutSessionForm = ({
       return;
     }
 
-    // values.inventory_items = itemIdArray;
-    // delete values.userName;
-    // updateCheckoutSessionAction(formValue, sessionId).then((res) =>
-    //   itemObjArr.map((item) => {
-    //     // console.log(item);
-    //     const id = item.id as number;
-    //     updateItemAction({ out: item.out, broken: item.broken }, id.toString());
-    //   }),
-    // );
     toast.success("Session Saved.");
     router.push("/dashboard/checkout");
     router.refresh();
@@ -456,27 +456,6 @@ const EditCheckoutSessionForm = ({
             )}
           />
 
-          {/* <FormField
-            control={form.control}
-            name="finished"
-            render={({ field }) => (
-              <FormItem className="mb-1">
-                <FormLabel className="ml-1">Finished</FormLabel>
-                <FormControl>
-                  <div className="col-span-1 h-10 rounded-md border-2 bg-slate-300">
-                    <Checkbox
-                      className="ml-20 mt-3"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-
           <FormField
             control={form.control}
             name="scan"
@@ -484,14 +463,6 @@ const EditCheckoutSessionForm = ({
               <FormItem className="col-span-1 size-fit">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
-                  // onPaste={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
-                  // onCopy={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
                   onChange={(e) =>
                     handleScan((e.target as HTMLInputElement).value)
                   }
@@ -540,7 +511,6 @@ const EditCheckoutSessionForm = ({
             >
               Finish
             </Button>
-            {/* <Link href="/dashboard/checkout"> */}
             <Button
               className="ml-2 flex-1 hover:bg-slate-200 active:bg-slate-300"
               type="button"
@@ -552,8 +522,9 @@ const EditCheckoutSessionForm = ({
             >
               Cancel
             </Button>
-
-            {/* </Link> */}
+          </div>
+          <div className="max-w-60">
+            <StrapiErrors error={error} />
           </div>
         </form>
       </Form>

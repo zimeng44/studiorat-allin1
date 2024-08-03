@@ -6,7 +6,7 @@ import { Logo } from "@/components/custom/Logo";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./LogoutButton";
 import { SummaryForm } from "@/components/forms/SummaryForm";
-import { CalendarPlus2, User } from "lucide-react";
+import { CalendarPlus2, PlusCircle, User } from "lucide-react";
 import HeaderMenu from "./HeaderMenu";
 import { UserRole } from "@/data/definitions";
 
@@ -41,6 +41,16 @@ export function LoggedInUser({
   // console.log(userData);
   return (
     <div className="flex items-center gap-4">
+      {(userData.role?.name ?? "") === "Monitor" ? (
+        <Link href="/dashboard/inventory-reports/new">
+          <Button variant="outline" className="h10 ml-5">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Inventory Reports
+          </Button>
+        </Link>
+      ) : (
+        ``
+      )}
       <Link
         href="/dashboard/account"
         className=" flex gap-2 font-semibold hover:text-primary"
@@ -49,10 +59,7 @@ export function LoggedInUser({
         {/* {userData.username} */}
         {`${userData.firstName} ${userData.lastName}`}
       </Link>
-      {/* <Link href="/dashboard/booking">
-        <CalendarPlus2 />
-        Booking
-      </Link> */}
+
       <HeaderMenu currentRole={userData.role?.name ?? ""} />
       {/* <LogoutButton /> */}
     </div>

@@ -46,6 +46,8 @@ import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { updateItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
+import { useRouter } from "next/navigation";
+import { StrapiErrors } from "@/components/custom/StrapiErrors";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -101,6 +103,7 @@ const NewCheckoutForm = ({
   thisMonitor: UserType;
   authToken: string;
 }) => {
+  const router = useRouter();
   const [data, setData] = useState({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
@@ -295,7 +298,12 @@ const NewCheckoutForm = ({
         updateItemAction({ out: itemObj.out }, itemObj.id),
       );
       //create the session in the checkout
-      await createCheckoutSessionAction(formValue);
+      const res = await createCheckoutSessionAction(formValue);
+      setError(res.strapiErrors);
+      if (!res?.strapiErrors?.status) {
+        router.push("/dashboard/users");
+        toast.success("New Checkout Session Added");
+      }
     } catch (error) {
       toast.error("Error Creating New Checkout Session");
       setError({
@@ -306,10 +314,7 @@ const NewCheckoutForm = ({
       // setLoading(false);
       return;
     }
-
-    toast.success("New Checkout Session Added");
-
-    // console.log("data submited is ", values);
+    return;
   }
 
   return (
@@ -551,6 +556,9 @@ const NewCheckoutForm = ({
                 Cancel
               </Button>
             </Link>
+          </div>
+          <div className="max-w-60">
+            <StrapiErrors error={error} />
           </div>
         </form>
       </Form>
