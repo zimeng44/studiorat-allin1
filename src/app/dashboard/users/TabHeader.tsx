@@ -121,7 +121,7 @@ const TabHeader = ({
         <SheetTrigger asChild>
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
-            Filter
+            {/* Filter */}
           </Button>
         </SheetTrigger>
         <SheetContent side="left">

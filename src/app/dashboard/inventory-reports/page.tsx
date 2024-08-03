@@ -82,7 +82,7 @@ export default async function InventoryReportsPage({
   // console.log("filter is ", filter);
 
   return (
-    <div className="p-5">
+    <div className="p-2 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

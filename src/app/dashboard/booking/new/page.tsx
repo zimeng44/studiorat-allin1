@@ -72,7 +72,7 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   }
 
   return (
-    <div className="p-5">
+    <div className="flex-col p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -92,8 +92,8 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">New Booking</h1>
-      <div className="flex items-center px-2">
+      <h1 className="px-1 py-4 text-lg font-bold md:px-2">New Booking</h1>
+      <div className="flex items-center md:px-2">
         <NewBookingForm booking={data} authToken={jwtCookie?.value ?? ""} />
       </div>
     </div>

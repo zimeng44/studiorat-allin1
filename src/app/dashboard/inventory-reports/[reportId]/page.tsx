@@ -40,7 +40,7 @@ export default async function SingleInventoryReportDetails({
   // console.log("checkout session by ID \n", data);
 
   return (
-    <div className="p-5">
+    <div className="p-2 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

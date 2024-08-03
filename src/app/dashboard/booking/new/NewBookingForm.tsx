@@ -492,7 +492,7 @@ const NewBookingForm = ({
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           // className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
-          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-4"
+          className="w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-4 md:px-0"
         >
           <div className="col-span-2 md:col-span-4">
             <FormField
@@ -575,7 +575,7 @@ const NewBookingForm = ({
             )}
           </div>
 
-          <div className="col-span-1 flex md:col-span-2">
+          <div className="col-span-1 flex justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="startDate"
@@ -588,7 +588,7 @@ const NewBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-3 text-left font-normal",
+                            "pl-2 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                         >
@@ -630,8 +630,8 @@ const NewBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "w-[125px]",
-                    " pl-3 text-left font-normal",
+                    "min-w-[125px]",
+                    " pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -660,7 +660,7 @@ const NewBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 flex md:col-span-2">
+          <div className="col-span-1 flex justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="endDate"
@@ -673,7 +673,7 @@ const NewBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            " pl-3 text-left font-normal",
+                            "pl-2 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={form.getValues("type") !== "Exception"}
@@ -715,7 +715,7 @@ const NewBookingForm = ({
                 <FormItem
                   className={cn(
                     "w-[125px]",
-                    " pl-3 text-left font-normal",
+                    "pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -753,7 +753,7 @@ const NewBookingForm = ({
             control={form.control}
             name="useLocation"
             render={({ field }) => (
-              <FormItem className="col-span-2">
+              <FormItem className="col-span-2 size-fit">
                 <FormLabel>Use Location</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -783,7 +783,7 @@ const NewBookingForm = ({
             control={form.control}
             name="bookingCreatorName"
             render={({ field }) => (
-              <FormItem className="col-span-2">
+              <FormItem className="col-span-2 size-fit">
                 <FormLabel>Created by</FormLabel>
                 <FormControl>
                   <Input disabled {...field}></Input>
@@ -797,7 +797,7 @@ const NewBookingForm = ({
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem className="col-span-2">
+              <FormItem className="col-span-2 size-fit">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -834,7 +834,7 @@ const NewBookingForm = ({
           {/* <Button className="align-right col-span-2" type="submit">
             Save
           </Button> */}
-          <div className="col-span-2 flex gap-1 md:col-span-4">
+          <div className="col-span-2 flex gap-1 py-2 md:col-span-4">
             <SubmitButton
               className="flex-1"
               text="Save"

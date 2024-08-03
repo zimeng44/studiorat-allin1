@@ -70,7 +70,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
   // console.log(searchParams.bookingId);
 
   return (
-    <div className="p-5">
+    <div className="p-2 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -86,17 +86,19 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>New</BreadcrumbPage>
+            <BreadcrumbPage>Edit</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <BookingAddItemForm
-        // bookingId={searchParams.bookingId}
-        // bookingData={bookingData}
-        inventoryData={data}
-        inventoryMeta={meta}
-        filter={filter}
-      />
+      <div className="flex items-center md:px-2">
+        <BookingAddItemForm
+          // bookingId={searchParams.bookingId}
+          // bookingData={bookingData}
+          inventoryData={data}
+          inventoryMeta={meta}
+          filter={filter}
+        />
+      </div>
     </div>
   );
 };

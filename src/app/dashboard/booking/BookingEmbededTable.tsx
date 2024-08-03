@@ -86,11 +86,14 @@ const BookingEmbededTable = ({
 
   return (
     <div className="rounded-md border">
-      <Table>
+      <Table className="md:max-w-lg">
         <TableHeader className="top-0 bg-indigo-100">
           <TableRow>
             {columnsVisible[0] ? (
-              <TableHead className="whitespace-nowrap p-0" key={header[0]}>
+              <TableHead
+                className="whitespace-nowrap p-1 md:p-4"
+                key={header[0]}
+              >
                 MTech Barcode
               </TableHead>
             ) : (
@@ -98,7 +101,7 @@ const BookingEmbededTable = ({
             )}
             {columnsVisible[1] ? (
               <TableHead
-                className="whitespace-nowrap border-x-0"
+                className="whitespace-nowrap border-x-0 p-1 md:p-4"
                 key={header[1]}
               >
                 Make
@@ -108,7 +111,7 @@ const BookingEmbededTable = ({
             )}
             {columnsVisible[2] ? (
               <TableHead
-                className="whitespace-nowrap border-x-0"
+                className="whitespace-nowrap border-x-0 p-1 md:p-4"
                 key={header[2]}
               >
                 Model
@@ -171,14 +174,14 @@ const BookingEmbededTable = ({
               <TableRow key={row.id}>
                 {columnsVisible[0] ? (
                   <TableCell
-                    className="whitespace-nowrap p-1"
+                    className="whitespace-nowrap p-1 md:p-4"
                     key={header[0]}
                   >{`${row.mTechBarcode}`}</TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[1] ? (
-                  <TableCell className="whitespace-nowrap p-4" key={header[1]}>
+                  <TableCell className="p-1 md:p-4" key={header[1]}>
                     {row.make.length > MAX_TEXT_LEN
                       ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
                       : `${row.make}`}
@@ -187,7 +190,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[2] ? (
-                  <TableCell className="whitespace-nowrap" key={header[2]}>
+                  <TableCell className="p-1 md:p-4" key={header[2]}>
                     {row.model.length > MAX_TEXT_LEN
                       ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
                       : `${row.model}`}

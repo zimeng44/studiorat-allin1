@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 
@@ -15,6 +15,8 @@ import InventoryTable from "@/components/custom/InventoryTable";
 import TabHeader from "./TabHeader";
 import BookingInventoryTable from "./BookingInventoryTable";
 import { CirclePlus } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 interface TableFieldStatus {
   header: string;
@@ -33,7 +35,7 @@ interface TableColumnStatus {
 
 interface ViewTabsProps {
   data: any[];
-  meta: {pagination:{pageCount:number, total: number}};
+  meta: { pagination: { pageCount: number; total: number } };
   filter: {};
   itemObjArr: InventoryItem[];
   addToBooking: Function;
@@ -56,6 +58,7 @@ function LinkCard({
       return;
     }
     setItemObjArr([...itemObjArr, item]);
+    toast.success("Item Added.");
   };
   return (
     <Card
@@ -72,9 +75,9 @@ function LinkCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mb-4 w-full leading-7">
-          {item.description?.slice(0, 50) + "... [read more]"}
-          <CirclePlus className="h-4 w-4 content-end" />
+        <p className="mb-2 flex w-full items-center leading-7">
+          {item.description?.slice(0, 50)}
+          <CirclePlus className="ml-2 h-5 w-5 content-end" />
         </p>
       </CardContent>
     </Card>
@@ -91,15 +94,47 @@ const BookingAddItemPageTabs = ({
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(inventoryColumnsDefault),
   );
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const addView = searchParams.get("addView") ?? "list";
+  const params = new URLSearchParams(searchParams);
+  const [defaultTab, setDefaultTab] = useState(addView);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+
+      params.set("addView", isMobile ? "cards" : addView);
+      setDefaultTab(isMobile ? "cards" : addView);
+      router.replace(`${pathname}?${params.toString()}`);
+      // Default to 'list' on mobile, 'grid' on larger screens
+    };
+
+    handleResize(); // Set initial state
+  }, []);
+
   return (
     <div className="py-2">
-      <Tabs defaultValue="list">
+      <Tabs
+        value={addView}
+        onValueChange={(value) => {
+          params.set("addView", value);
+          router.replace(`${pathname}?${params.toString()}`);
+          setDefaultTab(value);
+        }}
+      >
         <div className="flex items-center justify-between">
-          <h1 className="left-content text-lg font-bold"></h1>
+          <h1 className="left-content font-bold">Available Items</h1>
           <div className="right-content">
             <TabsList>
-              <TabsTrigger value="list">List</TabsTrigger>
-              <TabsTrigger value="icon">Icon</TabsTrigger>
+              {defaultTab === "cards" ? (
+                ``
+              ) : (
+                <TabsTrigger value="list">List</TabsTrigger>
+              )}
+              <TabsTrigger value="cards">Icon</TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -107,6 +142,7 @@ const BookingAddItemPageTabs = ({
           columnsStatus={columnsStatus}
           filter={filter}
           setColumnsStatus={setColumnsStatus}
+          defaultTab={defaultTab}
         />
         <TabsContent value="list">
           <BookingInventoryTable
@@ -116,7 +152,7 @@ const BookingAddItemPageTabs = ({
             addToBooking={addToBooking}
           />
         </TabsContent>
-        <TabsContent value="icon">
+        <TabsContent value="cards">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((item: InventoryItem) => (
               <LinkCard

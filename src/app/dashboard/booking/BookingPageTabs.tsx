@@ -76,7 +76,6 @@ const BookingPageTabs = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const view = searchParams.get("view") ?? "calendar";
-  // console.log(searchParams.get("view"));
   const params = new URLSearchParams(searchParams);
   const [defaultTab, setDefaultTab] = useState(view);
 

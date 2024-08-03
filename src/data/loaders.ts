@@ -8,7 +8,16 @@ import {
   InventoryItem,
   UserType,
 } from "@/data/definitions";
-import { addDays, endOfWeek, startOfDay, startOfWeek, subDays } from "date-fns";
+import {
+  addDays,
+  endOfMonth,
+  endOfWeek,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+  subMonths,
+} from "date-fns";
 
 interface InventoryFilterProps {
   mTechBarcode: string;
@@ -532,8 +541,10 @@ export async function getBookingsByQuery(
 }
 
 export async function getBookingByDateWeek(newDate: Date) {
-  const start = startOfDay(subDays(startOfWeek(newDate), 7)).toISOString();
-  const end = startOfDay(addDays(endOfWeek(newDate), 1)).toISOString();
+  // const start = startOfDay(subDays(startOfWeek(newDate), 7)).toISOString();
+  // const end = startOfDay(addDays(endOfWeek(newDate), 1)).toISOString();
+  const start = startOfDay(subMonths(startOfMonth(newDate), 1)).toISOString();
+  const end = startOfDay(addDays(endOfMonth(newDate), 1)).toISOString();
 
   const query = qs.stringify({
     populate: ["user"],

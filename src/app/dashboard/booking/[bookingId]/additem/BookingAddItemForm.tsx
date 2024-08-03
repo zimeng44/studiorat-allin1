@@ -31,7 +31,7 @@ const BookingAddItemForm = ({
   bookingId: string;
   // bookingData: BookingType;
   inventoryData: InventoryItem[];
-  inventoryMeta: {pagination:{pageCount:number, total: number}};
+  inventoryMeta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }) => {
   const router = useRouter();
@@ -91,7 +91,7 @@ const BookingAddItemForm = ({
         itemObjArr={itemObjArr}
         setItemObjArr={setItemObjArr}
       />
-      <p className="py-5 font-bold">Available Items</p>
+      {/* <p className="py-5 font-bold">Available Items</p> */}
       <BookingAddItemPageTabs
         data={inventoryData}
         meta={inventoryMeta}

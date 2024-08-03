@@ -65,6 +65,7 @@ import { Badge } from "@/components/ui/badge";
 // import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
 import { InventoryItem } from "@/data/definitions";
+import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 20;
 
@@ -224,6 +225,7 @@ const BookingInventoryTable = ({
       return;
     }
     addToBooking([...newArr, row]);
+    toast.success("Item Added.");
 
     // addToBooking((prev: InventoryItem[]) => {
     //   if (prev.filter((item) => item.id === row.id).length > 0) {
@@ -241,7 +243,7 @@ const BookingInventoryTable = ({
           <TableRow>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
-                <TableHead className="whitespace-nowrap p-3" key={key}>
+                <TableHead className="whitespace-nowrap" key={key}>
                   {value.header}
                   {key === "mTechBarcode" ||
                   key === "make" ||
@@ -249,11 +251,11 @@ const BookingInventoryTable = ({
                   key === "category" ||
                   key === "storageLocation" ? (
                     <Button
-                      className="p-1 text-left"
+                      className="content-center p-1 text-left"
                       variant="ghost"
                       onClick={() => handleSort(key)}
                     >
-                      <ArrowUpDown className="m-1 h-4 w-4" />
+                      <ArrowUpDown className="ml-1 h-4 w-4" />
                     </Button>
                   ) : (
                     ``
@@ -269,7 +271,10 @@ const BookingInventoryTable = ({
         <TableBody>
           {data.length ? (
             data.map((row, index) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                // data-state={row.getIsSelected() && "selected"}
+              >
                 {Object.entries(columnsStatus).map(([key, value]) => {
                   if (key === "out") {
                     return value.visible ? (
@@ -299,7 +304,7 @@ const BookingInventoryTable = ({
                   }
 
                   return value.visible ? (
-                    <TableCell className="whitespace-nowrap" key={key}>
+                    <TableCell className="" key={key}>
                       {row[key].length <= MAX_TEXT_LEN
                         ? row[key]
                         : `${row[key].substring(0, MAX_TEXT_LEN)}...`}

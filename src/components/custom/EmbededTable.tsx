@@ -52,11 +52,14 @@ const InventoryTable = ({
   return (
     <div>
       <div className="rounded-md border">
-        <Table>
+        <Table className="max-w-60 md:max-w-lg">
           <TableHeader className="sticky top-0 bg-indigo-100">
             <TableRow>
               {columnsVisible[0] ? (
-                <TableHead className="whitespace-nowrap p-0" key={header[0]}>
+                <TableHead
+                  className="whitespace-nowrap p-1 md:p-4"
+                  key={header[0]}
+                >
                   MTech Barcode
                 </TableHead>
               ) : (
@@ -64,7 +67,7 @@ const InventoryTable = ({
               )}
               {columnsVisible[1] ? (
                 <TableHead
-                  className="whitespace-nowrap border-x-0"
+                  className="whitespace-nowrap border-x-0 p-1 md:p-4"
                   key={header[1]}
                 >
                   {/* {" "} */}
@@ -75,7 +78,7 @@ const InventoryTable = ({
               )}
               {columnsVisible[2] ? (
                 <TableHead
-                  className="whitespace-nowrap border-x-0"
+                  className="whitespace-nowrap border-x-0 p-1 md:p-4"
                   key={header[2]}
                 >
                   {/* {" "} */}
@@ -116,14 +119,14 @@ const InventoryTable = ({
                 ``
               )}
               {columnsVisible[8] ? (
-                <TableHead className="text-center" key={header[8]}>
+                <TableHead className="p-1 text-center md:p-4" key={header[8]}>
                   Out
                 </TableHead>
               ) : (
                 ``
               )}
               {columnsVisible[9] ? (
-                <TableHead className="text-center" key={header[9]}>
+                <TableHead className="p-1 text-center md:p-4" key={header[9]}>
                   Broken
                 </TableHead>
               ) : (
@@ -137,17 +140,14 @@ const InventoryTable = ({
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (
                     <TableCell
-                      className="whitespace-nowrap p-1"
+                      className="whitespace-nowrap p-1 md:p-4"
                       key={header[0]}
                     >{`${row.mTechBarcode}`}</TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[1] ? (
-                    <TableCell
-                      className="whitespace-nowrap p-4"
-                      key={header[1]}
-                    >
+                    <TableCell className="p-1 md:p-4" key={header[1]}>
                       {(row.make?.length ?? 0) > MAX_TEXT_LEN
                         ? `${row.make?.substring(0, MAX_TEXT_LEN)}...`
                         : `${row.make ?? ""}`}
@@ -156,7 +156,7 @@ const InventoryTable = ({
                     ``
                   )}
                   {columnsVisible[2] ? (
-                    <TableCell className="whitespace-nowrap" key={header[2]}>
+                    <TableCell className="p-1 md:p-4" key={header[2]}>
                       {(row.model?.length ?? 0) > MAX_TEXT_LEN
                         ? `${row.model?.substring(0, MAX_TEXT_LEN)}...`
                         : `${row.model ?? ""}`}
@@ -208,7 +208,10 @@ const InventoryTable = ({
                     ``
                   )}
                   {columnsVisible[8] ? (
-                    <TableCell className="p-1 text-center" key={header[8]}>
+                    <TableCell
+                      className=" p-1 text-center md:p-4"
+                      key={header[8]}
+                    >
                       <Checkbox
                         disabled
                         checked={row.out}
@@ -219,7 +222,10 @@ const InventoryTable = ({
                     ``
                   )}
                   {columnsVisible[9] ? (
-                    <TableCell className="p-1 text-center" key={header[9]}>
+                    <TableCell
+                      className=" p-1 text-center md:p-4"
+                      key={header[9]}
+                    >
                       <Checkbox
                         checked={row.broken}
                         onCheckedChange={(checked: boolean) =>

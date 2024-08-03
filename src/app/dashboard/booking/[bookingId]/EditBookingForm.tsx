@@ -56,7 +56,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CirclePlus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   deleteBookingAction,
@@ -438,14 +438,14 @@ const EditBookingForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-4"
+          className="w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-4 md:px-0"
         >
           <div className="col-span-1 flex md:col-span-2">
             <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem className="size-fit md:size-full">
+                <FormItem className="size-fitl">
                   <FormLabel>Type</FormLabel>
                   <Select
                     // onValueChange={field.onChange}
@@ -481,7 +481,7 @@ const EditBookingForm = ({
               control={form.control}
               name="userName"
               render={({ field }) => (
-                <FormItem className="size-fit md:size-full">
+                <FormItem className="size-fit">
                   <FormLabel>User Name</FormLabel>
                   <FormControl>
                     <Input
@@ -495,7 +495,7 @@ const EditBookingForm = ({
               )}
             />
           </div>
-          <div className="col-span-1 flex md:col-span-2">
+          <div className="col-span-1 flex justify-start md:col-span-2">
             <FormField
               control={form.control}
               name="startDate"
@@ -508,7 +508,7 @@ const EditBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "pl-3 text-left font-normal",
+                            "pl-2 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={isPast}
@@ -551,8 +551,8 @@ const EditBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "col-span-1 w-[120px]",
-                    " pl-3 text-left font-normal",
+                    "min-w-[125px]",
+                    " pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -594,7 +594,7 @@ const EditBookingForm = ({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            " pl-3 text-left font-normal",
+                            "pl-2 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                           disabled={
@@ -637,7 +637,7 @@ const EditBookingForm = ({
               render={({ field }) => (
                 <FormItem
                   className={cn(
-                    "w-[120px] pl-3 text-left font-normal",
+                    "min-w-[125px] pl-2 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                 >
@@ -737,17 +737,17 @@ const EditBookingForm = ({
             {/* <div className="text-center align-baseline font-normal"> */}
             <h1 className="flex-1 content-center text-center">Booking Items</h1>
             <Button
-              className={`flex-1 hover:bg-slate-200 active:bg-slate-300 ${isPast ? "invisible" : ""}`}
+              className={`flex-1 p-3 hover:bg-slate-200 active:bg-slate-300 ${isPast ? "invisible" : ""}`}
               type="button"
               onClick={(e) => handleAddItem()}
               variant="secondary"
               disabled={isPast}
             >
+              <CirclePlus className="mr-2 h-4 w-4" />
               Add Item
             </Button>
             {/* </div> */}
           </div>
-
           <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
             <BookingEmbededTable
               data={itemObjArr}
@@ -761,7 +761,7 @@ const EditBookingForm = ({
           {/* <Button className="align-right col-span-2" type="submit">
             Save
           </Button> */}
-          <div className="col-span-2 flex gap-1 md:col-span-4">
+          <div className="col-span-2 flex gap-1 p-3 md:col-span-4">
             <SubmitButton
               className="flex-1"
               text="Save"

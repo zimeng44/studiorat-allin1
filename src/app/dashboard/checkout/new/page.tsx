@@ -45,7 +45,7 @@ const NewCheckoutSession = async () => {
   // console.log(thisMonitor);
 
   return (
-    <div className="p-5">
+    <div className="p-2 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

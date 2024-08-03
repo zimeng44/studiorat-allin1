@@ -109,7 +109,7 @@ export default async function CheckoutSessions({
   );
 
   return (
-    <div className="p-5">
+    <div className="p-2 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

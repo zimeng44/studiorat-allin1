@@ -161,7 +161,7 @@ export default function BookingCalendar({
 
       // console.log(subMonths(startOfMonth(newDate),1));
 
-      console.log(start.toLocaleString(), end.toLocaleString());
+      // console.log(start.toLocaleString(), end.toLocaleString());
 
       const query = qs.stringify({
         populate: ["user"],
