@@ -47,7 +47,7 @@ const NewInventoryReportPage = async () => {
     pageIndex.toString(),
     pageSize.toString(),
     {
-      mTechBarcode: "",
+      mTechBarcode: "MT",
       make: "",
       model: "",
       category: "",

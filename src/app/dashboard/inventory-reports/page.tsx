@@ -8,12 +8,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
-  getCheckoutSessions,
-  getCheckoutSessionsByQuery,
   getInventoryReports,
   getInventoryReportsByQuery,
 } from "@/data/loaders";
-import CheckoutPageTabs from "./InventoryReportsPageTabs";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import InventoryReportsPageTabs from "./InventoryReportsPageTabs";
 import { redirect } from "next/navigation";
