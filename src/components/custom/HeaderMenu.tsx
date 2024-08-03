@@ -121,9 +121,8 @@ const HeaderMenu = async ({ currentRole }: { currentRole: string }) => {
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="content-center items-center justify-start">
+          <DropdownMenuItem>
             <LogoutButton />
-            <p className="ml-2">Log Out</p>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
