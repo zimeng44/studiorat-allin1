@@ -12,12 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { checkoutColumnsDefault } from "@/data/checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
-import { Grid, List } from "lucide-react";
+import { Grid, HomeIcon, List } from "lucide-react";
+import StudioView from "./StudioView";
 
 interface ViewTabsProps {
   data: any[];
-  meta: {pagination:{pageCount:number, total: number}};
+  meta: { pagination: { pageCount: number; total: number } };
   filter: {};
+  studioData: InventoryItem[];
 }
 
 interface TableFieldStatus {
@@ -44,6 +46,29 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
+            {`${session.user?.firstName} ${session.user?.lastName}` ||
+              "User Name Unknown"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-2 w-full leading-5">
+            {session.studio || "Studio Unknow"}
+          </p>
+          <p className="mb-4 w-full leading-5">
+            {`${session.creationTime ? new Date(session.creationTime).toLocaleString() : "Time Unknown"}`}
+          </p>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+function StudioCard(session: Readonly<CheckoutSessionType>) {
+  return (
+    <Link href={`/dashboard/checkout/${session.id}`}>
+      <Card className="relative">
+        <CardHeader>
+          <CardTitle className="leading-7 text-pink-500">
             {session.studio || "Studio Unknow"}
           </CardTitle>
         </CardHeader>
@@ -61,7 +86,12 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
   );
 }
 
-const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
+const CheckoutPageTabs = ({
+  data,
+  meta,
+  filter,
+  studioData,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(checkoutColumnsDefault),
   );
@@ -81,6 +111,10 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
                 <Grid className="mr-1 h-4 w-4" />
                 {/* Grid */}
               </TabsTrigger>
+              <TabsTrigger value="studio">
+                <HomeIcon className="mr-1 h-4 w-4" />
+                {/* Grid */}
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -96,6 +130,13 @@ const CheckoutPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data.map((item: InventoryItem) => (
               <LinkCard key={item.id} {...item} />
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="studio">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {studioData.map((item) => (
+              <StudioCard key={item.id} {...item} />
             ))}
           </div>
         </TabsContent>

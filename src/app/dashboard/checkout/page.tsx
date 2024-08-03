@@ -13,6 +13,7 @@ import {
 } from "@/data/loaders";
 import CheckoutPageTabs from "./CheckoutPageTabs";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { InventoryItem, studioList } from "@/data/definitions";
 
 interface SearchParamsProps {
   searchParams?: {
@@ -93,6 +94,19 @@ export default async function CheckoutSessions({
   if (!data) return <p>No Checkout Sessions data</p>;
 
   // console.log("filter is ", filter);
+  const studioData: InventoryItem[] = await Promise.all(
+    studioList.map(async (item: string): Promise<InventoryItem> => {
+      const { data, meta } = await getCheckoutSessions(
+        "creationTime:desc",
+        "1",
+        "10",
+        {
+          studio: item,
+        },
+      );
+      return data[0];
+    }),
+  );
 
   return (
     <div className="p-5">
@@ -111,7 +125,12 @@ export default async function CheckoutSessions({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <CheckoutPageTabs data={data} meta={meta} filter={filter} />
+      <CheckoutPageTabs
+        data={data}
+        meta={meta}
+        filter={filter}
+        studioData={studioData}
+      />
     </div>
   );
 }
