@@ -60,7 +60,7 @@ const NewInventoryReportForm = ({
 }) => {
   const [data, setData] = useState({
     creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-    inventorySize: inventorySize,
+    inventorySize: parseInt(inventorySize),
     notes: "",
     isFinished: false,
     scan: "",
