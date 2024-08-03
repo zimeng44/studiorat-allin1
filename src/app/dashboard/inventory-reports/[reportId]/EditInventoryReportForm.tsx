@@ -70,11 +70,6 @@ const EditInventoryReportForm = ({
   thisMonitor: UserType;
   authToken: string;
 }) => {
-  useEffect(() => {
-    if (!report.isFinished && thisMonitor.role?.name === "Monitor")
-      window.alert("Please finish the draft before filing any new reports");
-  }, []);
-
   const router = useRouter();
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
   const itemsChecked = report.itemsChecked as RetrievedItems;
@@ -220,6 +215,13 @@ const EditInventoryReportForm = ({
   return (
     <div>
       <StrapiErrors error={strapiErrors} />
+      {!report.isFinished && thisMonitor.role?.name === "Monitor" ? (
+        <p className="mb-2 italic text-gray-400">
+          (No new report allowed before finishing the draft)
+        </p>
+      ) : (
+        ``
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
