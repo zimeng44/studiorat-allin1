@@ -169,7 +169,7 @@ const EditUserForm = ({
 
     // console.log(values);
     const res = await updateUserAction(values, userId);
-    console.log(res.strapiErrors);
+    // console.log(res.strapiErrors);
     setStrapiErrors(res.strapiErrors);
 
     if (!res.strapiErrors?.status) {

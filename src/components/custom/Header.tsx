@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./LogoutButton";
 import { SummaryForm } from "@/components/forms/SummaryForm";
 import { CalendarPlus2, User } from "lucide-react";
+import HeaderMenu from "./HeaderMenu";
+import { UserRole } from "@/data/definitions";
 
 interface HeaderProps {
   data: {
@@ -28,6 +30,7 @@ interface AuthUserProps {
   email: string;
   firstName: string;
   lastName: string;
+  role: UserRole;
 }
 
 export function LoggedInUser({
@@ -35,8 +38,9 @@ export function LoggedInUser({
 }: {
   readonly userData: AuthUserProps;
 }) {
+  // console.log(userData);
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-4">
       <Link
         href="/dashboard/account"
         className=" flex gap-2 font-semibold hover:text-primary"
@@ -45,11 +49,12 @@ export function LoggedInUser({
         {/* {userData.username} */}
         {`${userData.firstName} ${userData.lastName}`}
       </Link>
-      <Link href="/dashboard/booking">
+      {/* <Link href="/dashboard/booking">
         <CalendarPlus2 />
-        {/* Booking */}
-      </Link>
-      <LogoutButton />
+        Booking
+      </Link> */}
+      <HeaderMenu currentRole={userData.role?.name ?? ""} />
+      {/* <LogoutButton /> */}
     </div>
   );
 }

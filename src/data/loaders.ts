@@ -66,6 +66,17 @@ interface UsersFilterProps {
   blocked?: boolean;
 }
 
+interface InventoryReportsFilterProps {
+  createdFrom?: string;
+  createdTo?: string;
+  creator?: string;
+  itemChecked?: string;
+  isFinished?: string;
+  notes?: string;
+  // inventory_items?: InventoryItem[];
+  // studioUser?: UserType[];
+}
+
 const baseUrl = getStrapiURL();
 // console.log(baseUrl);
 
@@ -144,6 +155,8 @@ export async function getGlobalPageMetadata() {
   return await fetchData(url.href);
 }
 
+// ########################### Summaries ########################
+
 export async function getSummaries(queryString: string) {
   const query = qs.stringify({
     sort: ["createdAt:desc"],
@@ -162,6 +175,8 @@ export async function getSummaries(queryString: string) {
 export async function getSummaryById(summaryId: string) {
   return fetchData(`${baseUrl}/api/summaries/${summaryId}`);
 }
+
+// ########################### Inventory ########################
 
 export async function getInventoryItems(
   sort: string,
@@ -233,6 +248,8 @@ export async function getItemsByQuery(
   url.search = query;
   return fetchData(url.href);
 }
+
+// ########################### Checkout ########################
 
 export async function getCheckoutSessions(
   sort: string,
@@ -334,6 +351,7 @@ export async function getCheckoutSessionsByQuery(
         {
           user: {
             $or: [
+              { username: { $containsi: queryString } },
               { firstName: { $containsi: queryString } },
               { lastName: { $containsi: queryString } },
               { stuId: { $containsi: queryString } },
@@ -353,6 +371,8 @@ export async function getCheckoutSessionsByQuery(
   // console.log("query data", query)
   return fetchData(url.href);
 }
+
+// ########################### Booking ########################
 
 export async function getBookings(
   sort: string,
@@ -465,6 +485,7 @@ export async function getBookingsByQuery(
         {
           user: {
             $or: [
+              { username: { $containsi: queryString } },
               { firstName: { $containsi: queryString } },
               { lastName: { $containsi: queryString } },
               { stuId: { $containsi: queryString } },
@@ -539,6 +560,8 @@ export async function getBookingByDateWeek(newDate: Date) {
 //   return fetchData(url.href);
 // }
 
+// ########################### Users ########################
+
 export async function getUsers(
   sort: string,
   page: string,
@@ -605,5 +628,138 @@ export async function getUsersByQuery(
   });
   const url = new URL("/api/users", baseUrl);
   url.search = query;
+  return fetchData(url.href);
+}
+
+// ########################### Inventory Reports ########################
+
+export async function getInventoryReports(
+  sort: string,
+  page: string,
+  pageSize: string,
+  filter: InventoryReportsFilterProps,
+) {
+  let filterArr = [];
+  for (const [key, value] of Object.entries(filter)) {
+    // console.log(`${key}: ${value}`);
+    // if (value === "" || value === false || value === "false") continue;
+    if (value === "All" || value === "") continue;
+
+    if (key === "createdAt") {
+      if (value.from === undefined && value.to === undefined) {
+        continue;
+      } else if (value.to === undefined) {
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        continue;
+      } else if (value.from === undefined) {
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      } else {
+        // console.log(new Date(value.to).toISOString());
+        // console.log("Value to is ", value.to);
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      }
+    }
+
+    if (value === "finished") {
+      filterArr.push({ [key]: { $eq: true } });
+      continue;
+    } else if (value === "unfinished") {
+      filterArr.push({ [key]: { $eq: false } });
+      continue;
+    }
+
+    if (value === true || value === "true") {
+      filterArr.push({ [key]: { $eq: value } });
+    } else {
+      filterArr.push({ [key]: { $containsi: value } });
+    }
+  }
+
+  // console.log(filterArr);
+
+  const query = qs.stringify({
+    populate: "*",
+    sort: [sort],
+    filters: {
+      $and: filterArr,
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/inventory-reports", baseUrl);
+  url.search = query;
+  // console.log(url.href);
+
+  return fetchData(url.href);
+}
+
+export async function getInventoryReportById(reportId: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
+  return fetchData(`${baseUrl}/api/inventory-reports/${reportId}?populate=*`);
+}
+
+export async function getInventoryReportsByQuery(
+  queryString: string,
+  page: string,
+  pageSize: string,
+) {
+  const query = qs.stringify({
+    populate: "*",
+    sort: ["createdAt:desc"],
+    filters: {
+      $or: [
+        { notes: { $containsi: queryString } },
+        {
+          creator: {
+            $or: [
+              { username: { $containsi: queryString } },
+              { firstName: { $containsi: queryString } },
+              { lastName: { $containsi: queryString } },
+              { stuId: { $containsi: queryString } },
+              { email: { $containsi: queryString } },
+            ],
+          },
+        },
+        {
+          itemsChecked: {
+            $or: [
+              { mTechBarcode: { $containsi: queryString } },
+              { make: { $containsi: queryString } },
+              { model: { $containsi: queryString } },
+              { category: { $containsi: queryString } },
+              { description: { $containsi: queryString } },
+              { accessories: { $containsi: queryString } },
+              { storageLocation: { $containsi: queryString } },
+              { comments: { $containsi: queryString } },
+            ],
+          },
+        },
+      ],
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/inventory-reports", baseUrl);
+  url.search = query;
+  // console.log("query data", query)
   return fetchData(url.href);
 }

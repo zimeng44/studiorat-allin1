@@ -40,26 +40,11 @@ import {
 import FilterForm from "./FilterForm";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
-import { checkoutColumnsDefault } from "@/data/checkoutColumns";
-
-interface TableFieldStatus {
-  header: string;
-  visible: boolean;
-}
-interface TableColumnStatus {
-  creationTime: TableFieldStatus;
-  stuIDCheckout: TableFieldStatus;
-  stuIDCheckin: TableFieldStatus;
-  userName: TableFieldStatus;
-  studio: TableFieldStatus;
-  otherLocation: TableFieldStatus;
-  creationMonitor: TableFieldStatus;
-  finishMonitor: TableFieldStatus;
-  finishTime: TableFieldStatus;
-  notes: TableFieldStatus;
-  finished: TableFieldStatus;
-}
-type ColumnKeys = keyof TableColumnStatus;
+import {
+  ColumnKeys,
+  inventoryReportsColumnsDefault,
+  TableColumnStatus,
+} from "./inventoryReportsColumns";
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
@@ -84,12 +69,12 @@ const TabHeader = ({
   };
 
   const resetColumnsVisibility = () => {
-    setColumnsStatus(structuredClone(checkoutColumnsDefault));
+    setColumnsStatus(structuredClone(inventoryReportsColumnsDefault));
     // setRowsSelected(Array(data.length).fill(false));
     const params = new URLSearchParams(searchParams);
     params.delete("sort");
     router.push(`${pathname}?${params.toString()}`);
-    // console.log(checkoutColumnsDefault);
+    // console.log(inventoryReportsColumnsDefaultColumnsDefault);
   };
 
   return (
@@ -121,12 +106,6 @@ const TabHeader = ({
       </div>
       <div className="item-end ml-auto">
         <Link href="/dashboard/inventory-reports/new">
-          <Button variant="outline" className="h10 ml-5">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Inventory Reports
-          </Button>
-        </Link>
-        <Link href="/dashboard/checkout/new">
           <Button variant="outline" className="h10 ml-5">
             <PlusCircle className="mr-2 h-4 w-4" />
             New

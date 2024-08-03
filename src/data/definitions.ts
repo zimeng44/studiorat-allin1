@@ -12,21 +12,6 @@ export type InventoryItem = {
   broken?: boolean;
 };
 
-// export type CheckoutSessionSent = {
-//   creationTime: string;
-//   stuIDCheckout: string;
-//   stuIDCheckin: string;
-//   studio: string;
-//   otherLocation: string;
-//   creationMonitor: string;
-//   finishTime: string;
-//   finishMonitor: string;
-//   finished: boolean;
-//   notes: string;
-//   inventory_items: number[];
-//   studioUser: number[];
-// };
-
 export type CheckoutSessionType = {
   id?: number;
   creationTime?: Date | string;
@@ -121,6 +106,25 @@ export type UserTypePost = {
 export type UserRole = {
   id?: number;
   name?: string;
+};
+
+export type InventoryReportType = {
+  id?: number;
+  createdAt?: string;
+  notes?: string;
+  isFinished?: boolean;
+  inventorySize?: number;
+  itemsChecked?: { data: InventoryItem[] };
+  creator?: UserType;
+};
+
+export type InventoryReportTypePost = {
+  createdAt?: string;
+  notes?: string;
+  isFinished?: boolean;
+  inventorySize?: number;
+  itemsChecked?: (number | undefined)[];
+  creator?: number;
 };
 
 export const studioList = [
