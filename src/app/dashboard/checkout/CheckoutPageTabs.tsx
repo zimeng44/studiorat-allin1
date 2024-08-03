@@ -13,7 +13,6 @@ import { checkoutColumnsDefault } from "@/data/checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
 import { Grid, HomeIcon, List } from "lucide-react";
-import StudioView from "./StudioView";
 
 interface ViewTabsProps {
   data: any[];
