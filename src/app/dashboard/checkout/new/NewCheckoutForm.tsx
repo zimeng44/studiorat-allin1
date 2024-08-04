@@ -41,6 +41,7 @@ import { updateItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { useRouter } from "next/navigation";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
+import { Textarea } from "@/components/ui/textarea";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -413,7 +414,11 @@ const NewCheckoutForm = ({
               <FormItem className="col-span-1">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-32"></Input>
+                  <Textarea
+                    {...field}
+                    className="min-h-32 whitespace-normal"
+                    placeholder="Leave a note"
+                  ></Textarea>
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -62,6 +62,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { createBookingAction } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -720,7 +721,7 @@ const NewBookingForm = ({
             />
           </div>
 
-          <div className="col-span-2 flex size-auto flex-1 flex-row justify-start md:col-span-4">
+          <div className="col-span-2 flex size-auto flex-1 flex-row justify-start gap-2 md:col-span-4">
             <FormField
               control={form.control}
               name="useLocation"
@@ -751,14 +752,13 @@ const NewBookingForm = ({
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="bookingCreatorName"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full pl-2 md:col-span-2">
                   <FormLabel>Created by</FormLabel>
                   <FormControl>
-                    {/* <Input disabled {...field}></Input> */}
                     <Label
                       {...field}
                       className="flex p-2 font-sans italic text-slate-400"
@@ -769,22 +769,21 @@ const NewBookingForm = ({
                   <FormMessage />
                 </FormItem>
               )}
+            /> */}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
+                  <FormLabel className="align-bottom">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} placeholder="Leave a note"></Textarea>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem className="col-span-2 size-full">
-                <FormLabel className="align-bottom">Notes</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <div className="col-span-2"></div>
 

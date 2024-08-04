@@ -65,6 +65,7 @@ import {
 import qs from "qs";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -738,7 +739,7 @@ const EditBookingForm = ({
               <FormItem className="col-span-2 size-full">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Textarea {...field} placeholder="Leave a note"></Textarea>
                 </FormControl>
                 <FormMessage />
               </FormItem>

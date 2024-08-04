@@ -41,6 +41,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { TagsInput } from "react-tag-input-component";
+import { Textarea } from "@/components/ui/textarea";
 
 // import { useRouter } from "next/navigation";
 
@@ -452,7 +453,11 @@ const EditCheckoutSessionForm = ({
               <FormItem className="col-span-1 size-full">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-32"></Input>
+                  <Textarea
+                    {...field}
+                    className="min-h-32 whitespace-normal"
+                    placeholder="Leave a note"
+                  ></Textarea>
                 </FormControl>
                 <FormMessage />
               </FormItem>
