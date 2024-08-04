@@ -32,13 +32,17 @@ const INITIAL_STATE = {
   message: null,
 };
 
-export function SignupForm({ userRole }: { userRole: string }) {
+export function SignupForm({
+  userRole,
+  stuId,
+}: {
+  userRole: string;
+  stuId: string;
+}) {
   const [formState, formAction] = useFormState(
     registerUserAction,
     INITIAL_STATE,
   );
-
-  // console.log(formState, "client");
 
   return (
     <div className="w-full max-w-md">
@@ -113,6 +117,7 @@ export function SignupForm({ userRole }: { userRole: string }) {
                   id="stuId"
                   name="stuId"
                   type="text"
+                  defaultValue={stuId}
                   autoCapitalize="none"
                   placeholder="ID Barcode"
                 />

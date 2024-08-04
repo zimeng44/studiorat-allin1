@@ -152,10 +152,12 @@ const NewCheckoutForm = ({
           // setUserName(`${data[0].firstName} ${data[0].lastName}`);
           form.setValue("userName", `${data[0].firstName} ${data[0].lastName}`);
         } else {
-          window.alert("User not found.");
+          // window.alert("User not found.");
           form.setValue("userName", "");
           form.setValue("stuIDCheckout", "");
           form.setFocus("stuIDCheckout");
+          const confirm = window.confirm("User not found, create a new one?");
+          if (confirm) router.push(`/signup?stuId=${term}`);
         }
       });
     } else {
@@ -305,6 +307,8 @@ const NewCheckoutForm = ({
                   }
                 >
                   <Input
+                    className="bg-indigo-100"
+                    placeholder="Scan a ID barcode"
                     {...field}
                     // onChange={(e) => setUserId(e.target.value)}
                   ></Input>
@@ -416,7 +420,7 @@ const NewCheckoutForm = ({
                 >
                   <Input
                     className="bg-indigo-100"
-                    placeholder={"Scan a barcode"}
+                    placeholder={"Scan an item barcode"}
                     {...field}
                   ></Input>
                 </FormControl>

@@ -57,7 +57,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { createBookingAction } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -787,6 +787,7 @@ const NewBookingForm = ({
               onClick={(e) => handleAddItem()}
               variant="secondary"
             >
+              <PlusCircle className="mr-2 h-4 w-4" />
               Add Item
             </Button>
           </div>

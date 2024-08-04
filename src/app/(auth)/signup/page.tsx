@@ -1,8 +1,17 @@
 import { SignupForm } from "@/components/forms/SignupForm";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
-export default async function SignUpRoute() {
+interface SearchParamsProps {
+  searchParams?: {
+    stuId?: string;
+  };
+}
+
+export default async function SignUpRoute({
+  searchParams,
+}: Readonly<SearchParamsProps>) {
   const { ok: ok, data: currentUser } = await getUserMeLoader();
+  const stuId = searchParams?.stuId ?? "";
 
   if (!ok)
     return <p>Only Admin and Monitor Allowed to sign up for new user.</p>;
@@ -10,5 +19,5 @@ export default async function SignUpRoute() {
   if (currentUser.role.name !== "Admin" && currentUser.role.name !== "Monitor")
     return <p>Only Admin and Monitor Allowed to sign up for new user.</p>;
 
-  return <SignupForm userRole={`${currentUser.role.name}`} />;
+  return <SignupForm userRole={`${currentUser.role.name}`} stuId={stuId} />;
 }
