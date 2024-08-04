@@ -66,12 +66,16 @@ export default async function SingleCheckoutSessionDetails({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="px-1 py-4 text-lg font-bold md:px-2">
+      <div className="flex items-center px-1 py-4 text-lg font-bold md:px-2">
         <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
         {data.finished ? (
-          <Badge variant="secondary">Finished</Badge>
+          <Badge className="size-fit" variant="secondary">
+            Finished
+          </Badge>
         ) : (
-          <Badge variant="default">Ongoing</Badge>
+          <Badge className="size-fit" variant="default">
+            Ongoing
+          </Badge>
         )}
       </div>
       <div className="flex items-center md:px-2">

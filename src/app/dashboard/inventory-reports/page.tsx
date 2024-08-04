@@ -22,8 +22,8 @@ interface SearchParamsProps {
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    createdFrom?: Date | string;
-    createdTo?: Date | string;
+    createdFrom?: string;
+    createdTo?: string;
     notes?: string;
     isFinished?: string;
     itemChecked?: string;

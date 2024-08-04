@@ -144,7 +144,7 @@ const TabHeader = ({
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="ml-5 h-10">
+          <Button variant="outline" className="ml-1 h-10">
             <Settings className="mr-2 h-4 w-4" />
             Display
           </Button>

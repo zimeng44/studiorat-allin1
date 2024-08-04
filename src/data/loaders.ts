@@ -20,24 +20,22 @@ import {
 } from "date-fns";
 
 interface InventoryFilterProps {
-  mTechBarcode: string;
-  make: string;
-  model: string;
-  category: string;
-  description: string;
-  accessories: string;
-  storageLocation: string;
-  comments: string;
-  out: boolean;
-  broken: boolean;
+  mTechBarcode?: string;
+  make?: string;
+  model?: string;
+  category?: string;
+  description?: string;
+  accessories?: string;
+  storageLocation?: string;
+  comments?: string;
+  out?: boolean;
+  broken?: boolean;
 }
 
 interface CheckoutSessionsFilterProps {
   id?: number;
-  createdFrom?: string;
-  createdTo?: string;
-  finishedFrom?: string;
-  finishedTo?: string;
+  creationTime?: { from?: string; to?: string };
+  finishTime?: { from?: string; to?: string };
   stuIDCheckout?: string;
   stuIDCheckin?: string;
   studio?: string;
@@ -52,10 +50,10 @@ interface CheckoutSessionsFilterProps {
 
 interface BookingsFilterProps {
   id?: number;
-  startTimeFrom?: string;
-  startTimeTo?: string;
-  endTimeFrom?: string;
-  endTimeTo?: string;
+  startTime?: { from?: string; to?: string };
+  // startTimeTo?: string;
+  endTime?: { from?: string; to?: string };
+  // endTimeTo?: string;
   user?: string;
   useLocation?: string;
   type?: string;
@@ -76,8 +74,7 @@ interface UsersFilterProps {
 }
 
 interface InventoryReportsFilterProps {
-  createdFrom?: string;
-  createdTo?: string;
+  createdAt?: { from?: string; to?: string };
   creator?: string;
   itemChecked?: string;
   isFinished?: string;
@@ -273,14 +270,14 @@ export async function getCheckoutSessions(
     if (value === "All" || value === "") continue;
 
     if (key === "creationTime" || key === "finishTime") {
-      if (value.from === undefined && value.to === undefined) {
+      if (!value.from && !value.to) {
         continue;
-      } else if (value.to === undefined) {
+      } else if (!value.to) {
         filterArr.push({
           [key]: { $gte: `${new Date(value.from).toISOString()}` },
         });
         continue;
-      } else if (value.from === undefined) {
+      } else if (!value.from) {
         filterArr.push({
           [key]: {
             $lte: `${new Date(value.to).toISOString()}`,
@@ -395,15 +392,15 @@ export async function getBookings(
     // if (value === "" || value === false || value === "false") continue;
     if (value === "All" || value === "") continue;
 
-    if (key === "starTime" || key === "endTime") {
-      if (value.from === undefined && value.to === undefined) {
+    if (key === "startTime" || key === "endTime") {
+      if (!value.from && !value.to) {
         continue;
-      } else if (value.to === undefined) {
+      } else if (!value.to) {
         filterArr.push({
           [key]: { $gte: `${new Date(value.from).toISOString()}` },
         });
         continue;
-      } else if (value.from === undefined) {
+      } else if (!value.from) {
         filterArr.push({
           [key]: {
             $lte: `${new Date(value.to).toISOString()}`,
@@ -435,8 +432,10 @@ export async function getBookings(
 
     if (value === true || value === "true") {
       filterArr.push({ [key]: { $eq: value } });
+      continue;
     } else {
       filterArr.push({ [key]: { $containsi: value } });
+      continue;
     }
   }
 
@@ -453,7 +452,7 @@ export async function getBookings(
   });
   const url = new URL("/api/bookings", baseUrl);
   url.search = query;
-  // console.log(url.href);
+  // console.log(filterArr);
   // console.log(url.href);
   return fetchData(url.href);
 }
@@ -657,14 +656,14 @@ export async function getInventoryReports(
     if (value === "All" || value === "") continue;
 
     if (key === "createdAt") {
-      if (value.from === undefined && value.to === undefined) {
+      if (!value.from && !value.to) {
         continue;
-      } else if (value.to === undefined) {
+      } else if (!value.to) {
         filterArr.push({
           [key]: { $gte: `${new Date(value.from).toISOString()}` },
         });
         continue;
-      } else if (value.from === undefined) {
+      } else if (!value.from) {
         filterArr.push({
           [key]: {
             $lte: `${new Date(value.to).toISOString()}`,
@@ -672,8 +671,6 @@ export async function getInventoryReports(
         });
         continue;
       } else {
-        // console.log(new Date(value.to).toISOString());
-        // console.log("Value to is ", value.to);
         filterArr.push({
           [key]: { $gte: `${new Date(value.from).toISOString()}` },
         });
