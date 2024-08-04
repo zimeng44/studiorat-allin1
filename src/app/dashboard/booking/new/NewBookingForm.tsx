@@ -92,9 +92,11 @@ const formSchema = z.object({
 
 const NewBookingForm = ({
   booking,
+  currentUser,
   authToken,
 }: {
   booking: BookingType;
+  currentUser: UserType;
   authToken: string;
 }) => {
   const router = useRouter();
@@ -134,6 +136,7 @@ const NewBookingForm = ({
   const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
 
   const [user, setUser] = useState<UserType>(booking.user ?? {});
+  const [bookingType, setBookingType] = useState(booking.type);
   // const [netId, setNetId] = useState("");
 
   let localItemsObj = undefined;
@@ -168,7 +171,12 @@ const NewBookingForm = ({
   }, []);
 
   function handleTypeSelect(value: string) {
-    // window.alert("yes");
+    if (value === "Exception" && currentUser.role?.name !== "Admin") {
+      window.alert(
+        "Admin approval required, please contact admin to make exceptions.",
+      );
+      form.setValue("type", bookingType ?? "Same Day");
+    }
     if (value === "Same Day") {
       form.setValue("endDate", form.getValues("startDate"));
     }
@@ -183,6 +191,7 @@ const NewBookingForm = ({
       form.setValue("endTime", "12:00 PM");
       // form.setValue("endDate", form.getValues("startDate"));
     }
+    setBookingType(value);
   }
 
   function handleStartDateSelect(value: Date) {

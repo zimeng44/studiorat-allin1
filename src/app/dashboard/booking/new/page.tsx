@@ -47,11 +47,11 @@ interface SearchParamsProps {
 
 const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
   // console.log(await getUserMeLoader());
-  const { data: thisUser } = await getUserMeLoader();
+  const { data: currentUser } = await getUserMeLoader();
 
   const data: BookingType = {
-    user: thisUser.role.name === "Authenticated" ? thisUser : undefined,
-    bookingCreator: thisUser,
+    user: currentUser.role.name === "Authenticated" ? currentUser : undefined,
+    bookingCreator: currentUser,
     startTime: searchParams?.startTime
       ? new Date(searchParams?.startTime)
       : addHours(startOfDay(addDays(new Date(), 1)), 12),
@@ -84,7 +84,11 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
       </Breadcrumb>
       <h1 className="px-1 py-4 text-lg font-bold md:px-2">New Booking</h1>
       <div className="flex items-center md:px-2">
-        <NewBookingForm booking={data} authToken={jwtCookie?.value ?? ""} />
+        <NewBookingForm
+          booking={data}
+          currentUser={currentUser}
+          authToken={jwtCookie?.value ?? ""}
+        />
       </div>
     </div>
   );
