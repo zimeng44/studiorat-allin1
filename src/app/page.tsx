@@ -5,12 +5,6 @@ import { HeroSection } from "@/components/custom/HeroSection";
 // import qs from "qs";
 // import { getStrapiURL } from "@/lib/utils";
 import { FeatureSection } from "@/components/custom/FeaturesSection";
-import type { Viewport } from "next";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  userScalable: false,
-};
 
 // const homePageQuery = qs.stringify({
 //   populate: {

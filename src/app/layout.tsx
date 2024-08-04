@@ -10,6 +10,14 @@ import { describe } from "node:test";
 import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 import { NavigationEvents } from "@/components/custom/navigation-events";
+import type { Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 const inter = Inter({ subsets: ["latin"] });
 
