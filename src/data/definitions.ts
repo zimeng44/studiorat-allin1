@@ -29,6 +29,7 @@ export type CheckoutSessionType = {
     | number[]
     | undefined
     | { data: InventoryItem[] };
+  noTagItems?: string[];
   user?: UserType;
 };
 
@@ -43,8 +44,9 @@ export type CheckoutSessionTypePost = {
   finishTime?: Date | string;
   finishMonitor?: string;
   finished: boolean;
-  notes: string;
-  inventory_items: (number | undefined)[];
+  notes?: string;
+  inventory_items?: (number | undefined)[];
+  noTagItems?: string[];
   user: number;
 };
 

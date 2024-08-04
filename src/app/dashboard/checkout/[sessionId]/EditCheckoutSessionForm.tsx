@@ -40,6 +40,7 @@ import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
+import { TagsInput } from "react-tag-input-component";
 
 // import { useRouter } from "next/navigation";
 
@@ -68,6 +69,7 @@ const formSchema = z.object({
   finished: z.boolean(),
   scan: z.string().optional(),
   inventory_items: z.string().optional(),
+  noTagItems: z.string().array().optional(),
   user: z.string().optional(),
 });
 
@@ -91,12 +93,13 @@ const EditCheckoutSessionForm = ({
   // const [data, setData] = useState(rowData);
   // const [scan, setScan] = useState("");
   const inventoryItems = session.inventory_items as RetrievedItems;
+  const [noTagItems, setNoTagItems] = useState(session.noTagItems ?? [""]);
   // const [itemObjArr, setItemObjArr] = useState(
   //   inventoryItems.data ?? Array(),
   // );
 
   const [itemIdArray, setItemIdArray] = useState(
-    inventoryItems?.data.map((item: InventoryItem) => item.id),
+    inventoryItems?.data?.map((item: InventoryItem) => item.id),
   );
   const [itemObjArr, setItemObjArr] = useState<InventoryItem[]>(
     inventoryItems?.data ?? Array(),
@@ -121,6 +124,7 @@ const EditCheckoutSessionForm = ({
       finishMonitor: session.finishMonitor ?? "",
       notes: session.notes ?? "",
       finished: session.finished ?? false,
+      noTagItems: session.noTagItems ?? [""],
       scan: "",
     },
     mode: "onChange",
@@ -217,6 +221,7 @@ const EditCheckoutSessionForm = ({
       finished: values.finished,
       notes: values.notes ?? "",
       inventory_items: itemIdArray ?? [0],
+      noTagItems: noTagItems,
       user: session.user?.id ?? 0,
     };
 
@@ -256,6 +261,10 @@ const EditCheckoutSessionForm = ({
     // console.log(itemObjArr.filter((item) => item.out === false));
     if (itemObjArr.filter((item) => item.out === true).length > 0) {
       window.alert("Unreturned item(s)");
+      return;
+    }
+    if (noTagItems.includes("unreturned")) {
+      window.alert("Unreturned untagged item(s)");
       return;
     }
     const confirm = window.confirm(
@@ -299,7 +308,7 @@ const EditCheckoutSessionForm = ({
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="finishTime"
             render={({ field }) => (
@@ -315,7 +324,7 @@ const EditCheckoutSessionForm = ({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="stuIDCheckout"
@@ -443,9 +452,32 @@ const EditCheckoutSessionForm = ({
               <FormItem className="col-span-1 size-full">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} className="h-32"></Input>
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="noTagItems"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>Untagged Items</FormLabel>
+                <FormControl>
+                  <TagsInput
+                    value={noTagItems}
+                    onChange={setNoTagItems}
+                    name="item"
+                    placeHolder="Enter a item"
+                    disabled={session.finished}
+                  />
+                </FormControl>
+                <FormMessage className="text-slate-400">
+                  press enter or comma to add new item. take 'unreturned' off
+                  when items return'
+                </FormMessage>
               </FormItem>
             )}
           />

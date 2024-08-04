@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { TagsInput } from "react-tag-input-component";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -59,6 +60,7 @@ const formSchema = z.object({
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
   notes: z.string().optional(),
+  noTagItems: z.string().array().optional(),
   scan: z.string().optional(),
 });
 
@@ -77,6 +79,7 @@ const NewCheckoutForm = ({
     otherLocation: "",
     creationMonitor: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
     notes: "",
+    noTagItems: [""],
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
@@ -94,6 +97,7 @@ const NewCheckoutForm = ({
       otherLocation: data.otherLocation ? data.otherLocation : "",
       creationMonitor: data.creationMonitor,
       notes: data.notes ? data.notes : "",
+      noTagItems: [""],
     },
     mode: "onChange",
     values: data,
@@ -102,7 +106,10 @@ const NewCheckoutForm = ({
   const [userId, setUserId] = useState("");
   const [itemIdArray, setItemIdArray] = useState(Array());
   const [itemObjArr, setItemObjArr] = useState(Array());
-
+  const [noTagItems, setNoTagItems] = useState([
+    "unreturned",
+    "example: xlr cable 1",
+  ]);
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
@@ -238,6 +245,7 @@ const NewCheckoutForm = ({
       finished: false,
       notes: values.notes ?? "",
       inventory_items: itemIdArray ?? [0],
+      noTagItems: noTagItems,
       user: parseInt(userId),
     };
 
@@ -248,12 +256,14 @@ const NewCheckoutForm = ({
       );
       //create the session in the checkout
       const res = await createCheckoutSessionAction(formValue);
-      setError(res.strapiErrors);
+      setError(res?.strapiErrors);
+      // console.log(res);
       if (!res?.strapiErrors?.status) {
-        router.push("/dashboard/users");
+        router.push("/dashboard/checkout");
         toast.success("New Checkout Session Added");
       }
     } catch (error) {
+      // console.log(error);
       toast.error("Error Creating New Checkout Session");
       setError({
         ...INITIAL_STATE,
@@ -308,7 +318,7 @@ const NewCheckoutForm = ({
                 >
                   <Input
                     className="bg-indigo-100"
-                    placeholder="Scan a ID barcode"
+                    placeholder="Scan an ID barcode"
                     {...field}
                     // onChange={(e) => setUserId(e.target.value)}
                   ></Input>
@@ -328,6 +338,7 @@ const NewCheckoutForm = ({
                   <Input
                     {...field}
                     disabled
+                    placeholder="Waiting for ID scan"
                     // onChange={(e) => setUserId(e.target.value)}
                   ></Input>
                 </FormControl>
@@ -380,7 +391,7 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="creationMonitor"
             render={({ field }) => (
@@ -392,7 +403,8 @@ const NewCheckoutForm = ({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
+          <div className="col-span-1"></div>
 
           <FormField
             control={form.control}
@@ -401,9 +413,30 @@ const NewCheckoutForm = ({
               <FormItem className="col-span-1">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
-                  <Input {...field}></Input>
+                  <Input {...field} className="h-32"></Input>
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="noTagItems"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>Untagged Items</FormLabel>
+                <FormControl>
+                  <TagsInput
+                    value={noTagItems}
+                    onChange={setNoTagItems}
+                    name="item"
+                    placeHolder="Enter a item"
+                  />
+                </FormControl>
+                <FormMessage className="text-slate-400">
+                  press enter or comma to add new item. take 'unreturned' off
+                  when items return'
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -440,15 +473,18 @@ const NewCheckoutForm = ({
           {/* <Button className="align-right" type="submit">
             Add
           </Button> */}
-          <div className="col-span-1 flex gap-1 space-y-1 md:col-span-2">
+          <div className="col-span-1 flex items-center gap-1 space-y-1 md:col-span-2">
             <SubmitButton
-              className="flex-1"
+              className="flex-1 items-center"
               text="Save"
               loadingText="Saving Session"
               loading={form.formState.isSubmitting}
             />
 
-            <Link className="flex-1" href="/dashboard/checkout">
+            <Link
+              className="size-full flex-1 items-center"
+              href="/dashboard/checkout"
+            >
               <Button
                 className="size-full hover:bg-slate-200 active:bg-slate-300"
                 type="button"
