@@ -38,22 +38,7 @@ import {
   Users2,
 } from "lucide-react";
 import { Search } from "@/components/custom/Search";
-import Link from "next/link";
-import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
-// import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
-// type ColumnKey =
-//   | "creationTime"
-//   | "stuIDCheckout"
-//   | "stuIDCheckin"
-//   | "userName"
-//   | "finished"
-//   | "studio"
-//   | "otherLocation"
-//   | "creationMonitor"
-//   | "finishMonitor"
-//   | "finishTime"
-//   | "notes";
 
 interface TableFieldStatus {
   header: string;
@@ -108,27 +93,6 @@ const TabHeader = ({
 
   return (
     <div className="flex items-center py-1">
-      {/* <Sheet
-        open={filterOpen}
-        onOpenChange={(open) => {
-          filterOpen = open;
-          const params = new URLSearchParams(searchParams);
-          params.set("filterOpen", filterOpen ? "true" : "false");
-          router.replace(`${pathname}?${params.toString()}`);
-        }}
-      >
-        <SheetTrigger asChild>
-          <Button variant="outline">
-            <Filter className="mr-2 h-4 w-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Filter</SheetTitle>
-          </SheetHeader>
-          <InventoryFilterForm filter={filter} />
-        </SheetContent>
-      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

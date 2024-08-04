@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -10,14 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
-import {
-  deleteItemAction,
-  updateItemAction,
-} from "@/data/actions/inventory-actions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { InventoryItem } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 30;
@@ -29,7 +21,7 @@ interface InventoryTableProps {
   disabled: boolean;
 }
 
-const InventoryTable = ({
+const EmbededInventoryTable = ({
   data,
   setItemObjArr,
   columns,
@@ -47,12 +39,10 @@ const InventoryTable = ({
     .fill("")
     .map((item, index) => columns[index].accessorKey);
 
-  // console.log(data.length);
-
   return (
     <div>
       <div className="rounded-md border">
-        <Table className="max-w-60 md:max-w-lg">
+        <Table className="md:max-w-lg">
           <TableHeader className="sticky top-0 bg-indigo-100">
             <TableRow>
               {columnsVisible[0] ? (
@@ -260,4 +250,4 @@ const InventoryTable = ({
   );
 };
 
-export default InventoryTable;
+export default EmbededInventoryTable;

@@ -9,14 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
-import {
-  deleteItemAction,
-  updateItemAction,
-} from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CircleMinus } from "lucide-react";
 import { InventoryItem } from "@/data/definitions";
@@ -42,7 +36,7 @@ const BookingAddItemEmbededTable = ({
   const pathname = usePathname();
 
   let numRowsSelected = searchParams.get("numRowsSelected")
-    ? parseInt(searchParams.get("numRowsSelected")??"0")
+    ? parseInt(searchParams.get("numRowsSelected") ?? "0")
     : 0;
   // console.log(numRowsSelected);
 

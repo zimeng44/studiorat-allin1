@@ -118,15 +118,6 @@ const BookingInventoryTable = ({
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
 
-  // const [numRowsSelected, setNumRowsSelected] = useState(0);
-
-  // store columns visibility
-  // const [columnsVisible, setColumnsVisible] = useState(
-  //   Array(columns.length)
-  //     .fill(true)
-  //     .map((item, index) => columns[index].visible),
-  // );
-
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
     Array(data.length).fill(false),
@@ -149,19 +140,7 @@ const BookingInventoryTable = ({
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
-    // const params = new URLSearchParams(searchParams);
-    // params.delete("numRowsSelected");
-    // params.delete("isBatchOpOpen");
-    // params.delete("isAllSelected");
-    // router.replace(`${pathname}?${params.toString()}`);
   }
-
-  // store keys of columns
-  // const header = Array(columns.length)
-  //   .fill("")
-  //   .map((item, index) => columns[index].accessorKey);
-
-  // console.log(data.length);
 
   const handleAllSelected = (checked: boolean) => {
     setRowsSelected(Array(data.length).fill(checked));
@@ -171,43 +150,6 @@ const BookingInventoryTable = ({
     params.set("numRowsSelected", data.length.toString());
     router.replace(`${pathname}?${params.toString()}`);
     // console.log("All Selected is ", allSelected);
-  };
-
-  const handleRowSelection = (
-    matchedIndex: number,
-    checked: boolean | undefined,
-  ) => {
-    setRowsSelected((rowsSelected) =>
-      rowsSelected.map((rowChecked, index) =>
-        index === matchedIndex ? checked : rowChecked,
-      ),
-    );
-  };
-
-  const handleResetSelection = () => {
-    setRowsSelected(Array(data.length).fill(false));
-    params.set("isAllSelected", "false");
-    params.set("isBatchOpOpen", "false");
-    params.set("numRowsSelected", "0");
-    router.replace(`${pathname}?${params.toString()}`);
-  };
-
-  const handleBatchDelete = () => {
-    const counter = rowsSelected.filter((item) => item === true).length;
-    // console.log("Size of rowSelected is ", rowsSelected.length);
-
-    const confirm = window.confirm(
-      `Are you sure you want to delete ${counter} item(s)?`,
-    );
-
-    if (!confirm) return;
-
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteItemAction(data[index].id);
-      }
-    });
-    setRowsSelected(Array(data.length).fill(false));
   };
 
   const handleSort = (field: string) => {
@@ -226,14 +168,6 @@ const BookingInventoryTable = ({
     }
     addToBooking([...newArr, row]);
     toast.success("Item Added.");
-
-    // addToBooking((prev: InventoryItem[]) => {
-    //   if (prev.filter((item) => item.id === row.id).length > 0) {
-    //     window.alert("Item Added Already.");
-    //     return [...prev];
-    //   }
-    //   return [...prev, row];
-    // });
   };
 
   return (

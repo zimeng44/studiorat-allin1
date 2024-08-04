@@ -21,7 +21,7 @@ import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Link from "next/link";
 import { InventoryReportTypePost, UserType } from "@/data/definitions";
-import { inventoryColumns } from "@/data/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";

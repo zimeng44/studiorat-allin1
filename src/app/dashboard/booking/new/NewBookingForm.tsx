@@ -1,8 +1,7 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import qs from "qs";
 import { cn } from "@/lib/utils";
-import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
 import {
   BookingType,
   InventoryItem,
@@ -44,13 +43,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { inventoryColumns } from "@/data/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import BookingEmbededTable from "../BookingEmbededTable";
@@ -61,21 +59,9 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  createBookingAction,
-  deleteBookingAction,
-  updateBookingAction,
-} from "@/data/actions/booking-actions";
+import { createBookingAction } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
-
-// const config = {
-//   maxAge: 60 * 60, // 1 hour
-//   path: "/",
-//   domain: process.env.HOST ?? "localhost",
-//   // httpOnly: true,
-//   secure: process.env.NODE_ENV === "production",
-// };
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -103,14 +89,6 @@ const formSchema = z.object({
   bookingCreatorName: z.string().min(1),
   notes: z.string().optional(),
 });
-
-// const getIdArray: number[] = (booking: CheckoutSessionType) => {
-//   let IdArray: number[] = booking.inventory_items?.data.map(
-//     (item: InventoryItem) => item.id,
-//   );
-
-//   return IdArray;
-// };
 
 const NewBookingForm = ({
   booking,
@@ -152,13 +130,6 @@ const NewBookingForm = ({
     values: tempForm,
   });
 
-  // console.log(form.getValues("startTime"));
-  // if (typeof window !== 'undefined') {}
-  // const [itemIdArray, setItemIdArray] = useState(
-  //   booking.inventory_items?.data.map((item: InventoryItem) => item.id) ??
-  //     Array(),
-  // );
-  // const [tempBookingObj, setTempBookingObj] = useState(booking);
   const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
 
@@ -274,9 +245,6 @@ const NewBookingForm = ({
   const baseUrl = getStrapiURL();
 
   async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
     const headers = {
       method: "GET",
       headers: {
@@ -442,20 +410,6 @@ const NewBookingForm = ({
       inventory_items: itemObjArr.map((item: InventoryItem) => item.id),
     };
 
-    // values.inventory_items = itemObjArr.map((item) => item.id);
-    // values.user = user?.id;
-    // values.bookingCreator = booking.bookingCreator.id;
-    // values.startTime = updatedStart;
-    // values.endTime = updatedEnd;
-
-    // delete values.startDate;
-    // delete values.endDate;
-    // delete values.netId;
-    // delete values.userName;
-    // delete values.bookingCreatorName;
-
-    // console.log(values);
-    // delete values.bookingCreator;
     if (formValue.startTime >= formValue.endTime) {
       window.alert("End Date and Time can't be less than Start Date and Time.");
       return;
@@ -495,7 +449,7 @@ const NewBookingForm = ({
           // className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
           className="w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-4 md:px-0"
         >
-          <div className="col-span-2 md:col-span-4">
+          <div className="col-span-2 max-w-sm md:col-span-4">
             <FormField
               control={form.control}
               name="type"

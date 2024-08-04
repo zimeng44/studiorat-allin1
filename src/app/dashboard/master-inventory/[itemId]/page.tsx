@@ -6,7 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import EditItemForm from "@/components/forms/EditItemForm";
+import EditItemForm from "./EditItemForm";
 import { getInventoryItemById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 

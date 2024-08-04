@@ -2,38 +2,18 @@
 import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-
 import { InventoryItem } from "@/data/definitions";
-
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { inventoryColumnsDefault } from "@/data/inventoryColumns";
-import InventoryTable from "@/components/custom/InventoryTable";
+import { inventoryColumnsDefault, TableColumnStatus } from "@/app/dashboard/master-inventory/inventoryColumns";
+import InventoryTable from "./InventoryTable";
 import TabHeader from "./TabHeader";
 import { Grid, List } from "lucide-react";
 
-interface TableFieldStatus {
-  header: string;
-  visible: boolean;
-}
-interface TableColumnStatus {
-  mTechBarcode: TableFieldStatus;
-  make: TableFieldStatus;
-  model: TableFieldStatus;
-  description: TableFieldStatus;
-  category: TableFieldStatus;
-  accessories: TableFieldStatus;
-  comments: TableFieldStatus;
-  storageLocation: TableFieldStatus;
-  out: TableFieldStatus;
-  broken: TableFieldStatus;
-}
-
 interface ViewTabsProps {
   data: any[];
-  meta: {pagination:{pageCount:number, total: number}};
+  meta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }
 

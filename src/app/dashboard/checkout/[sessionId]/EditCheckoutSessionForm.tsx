@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import qs from "qs";
 import {
   CheckoutSessionType,
@@ -29,20 +29,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  updateCheckoutSessionAction,
-  updateCheckoutSessionActionWithItems,
-} from "@/data/actions/checkout-actions";
-import Link from "next/link";
-import { inventoryColumns } from "@/data/inventoryColumns";
+import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
-import { updateItemAction } from "@/data/actions/inventory-actions";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
@@ -285,13 +279,13 @@ const EditCheckoutSessionForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-1 space-y-1 md:grid md:grid-cols-2"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
         >
           <FormField
             control={form.control}
             name="creationTime"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Creation Time</FormLabel>
                 <FormControl>
                   <Input
@@ -309,7 +303,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="finishTime"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1">
                 <FormLabel>Finish Time</FormLabel>
                 <FormControl>
                   <Input
@@ -326,7 +320,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="stuIDCheckout"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Checkout ID</FormLabel>
                 <FormControl>
                   <Input disabled {...field}></Input>
@@ -339,7 +333,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="userName"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>User Name</FormLabel>
                 <FormControl>
                   <Input
@@ -356,7 +350,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="stuIDCheckin"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Checkin ID</FormLabel>
                 <FormControl>
                   <Input {...field} disabled={session.finished}></Input>
@@ -369,7 +363,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="studio"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Studio</FormLabel>
                 <Select
                   onValueChange={(value) => {
@@ -401,7 +395,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="otherLocation"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Other Location</FormLabel>
                 <FormControl>
                   <Input
@@ -419,7 +413,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="creationMonitor"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Creation Monitor</FormLabel>
                 <FormControl>
                   <Input {...field} disabled></Input>
@@ -432,7 +426,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="finishMonitor"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Finish Monitor</FormLabel>
                 <FormControl>
                   <Input {...field} disabled></Input>
@@ -446,7 +440,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel className="align-bottom">Notes</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
@@ -460,7 +454,7 @@ const EditCheckoutSessionForm = ({
             control={form.control}
             name="scan"
             render={({ field }) => (
-              <FormItem className="col-span-1 size-fit">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
                   onChange={(e) =>

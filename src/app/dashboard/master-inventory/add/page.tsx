@@ -1,5 +1,5 @@
 import React from "react";
-import AddItemForm from "@/components/forms/AddItemForm";
+import AddItemForm from "./AddItemForm";
 import {
   Breadcrumb,
   BreadcrumbItem,

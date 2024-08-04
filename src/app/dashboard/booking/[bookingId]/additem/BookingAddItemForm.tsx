@@ -1,25 +1,12 @@
 "use client";
-import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import BookingEmbededTable from "../../BookingEmbededTable";
-import { inventoryColumns } from "@/data/inventoryColumns";
-import { BookingType, InventoryItem } from "@/data/definitions";
-// import InventoryTable from "@/components/custom/InventoryTable";
+import { useRouter } from "next/navigation";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { InventoryItem } from "@/data/definitions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import BookingInventoryTable from "./BookingInventoryTable";
 import BookingAddItemPageTabs from "./BookingAddItemPageTabs";
 import BookingAddItemEmbededTable from "./BookingAddItemEmbededTable";
-import Link from "next/link";
 import { ArrowLeftToLine } from "lucide-react";
-
-const config = {
-  maxAge: 60 * 60, // 1 hour
-  path: "/",
-  domain: process.env.HOST ?? "localhost",
-  // httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-};
 
 const BookingAddItemForm = ({
   bookingId,

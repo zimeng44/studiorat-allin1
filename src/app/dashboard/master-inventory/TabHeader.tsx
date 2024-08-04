@@ -40,38 +40,11 @@ import {
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
-import { inventoryColumnsDefault } from "@/data/inventoryColumns";
-// type ColumnKey =
-//   | "creationTime"
-//   | "stuIDCheckout"
-//   | "stuIDCheckin"
-//   | "userName"
-//   | "finished"
-//   | "studio"
-//   | "otherLocation"
-//   | "creationMonitor"
-//   | "finishMonitor"
-//   | "finishTime"
-//   | "notes";
-
-  interface TableFieldStatus {
-  header: string;
-  visible: boolean;
-}
-interface TableColumnStatus {
-  mTechBarcode: TableFieldStatus;
-  make: TableFieldStatus;
-  model: TableFieldStatus;
-  description: TableFieldStatus;
-  category: TableFieldStatus;
-  accessories: TableFieldStatus;
-  comments: TableFieldStatus;
-  storageLocation: TableFieldStatus;
-  out: TableFieldStatus;
-  broken: TableFieldStatus;
-}
-
-type ColumnKey = keyof TableColumnStatus;
+import {
+  ColumnKey,
+  inventoryColumnsDefault,
+  TableColumnStatus,
+} from "./inventoryColumns";
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;

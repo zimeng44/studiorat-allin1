@@ -47,7 +47,7 @@ import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 // import Link from "next/link";
-import { inventoryColumns } from "@/data/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import BookingEmbededTable from "../BookingEmbededTable";

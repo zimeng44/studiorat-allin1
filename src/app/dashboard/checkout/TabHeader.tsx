@@ -40,26 +40,11 @@ import {
 import FilterForm from "./FilterForm";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
-import { checkoutColumnsDefault } from "@/data/checkoutColumns";
-
-interface TableFieldStatus {
-  header: string;
-  visible: boolean;
-}
-interface TableColumnStatus {
-  creationTime: TableFieldStatus;
-  stuIDCheckout: TableFieldStatus;
-  stuIDCheckin: TableFieldStatus;
-  userName: TableFieldStatus;
-  studio: TableFieldStatus;
-  otherLocation: TableFieldStatus;
-  creationMonitor: TableFieldStatus;
-  finishMonitor: TableFieldStatus;
-  finishTime: TableFieldStatus;
-  notes: TableFieldStatus;
-  finished: TableFieldStatus;
-}
-type ColumnKeys = keyof TableColumnStatus;
+import {
+  checkoutColumnsDefault,
+  ColumnKeys,
+  TableColumnStatus,
+} from "./checkoutColumns";
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;

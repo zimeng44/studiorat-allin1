@@ -2,19 +2,13 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-
 import { InventoryItem } from "@/data/definitions";
-
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
-import InventoryTable from "@/components/custom/InventoryTable";
 import TabHeader from "./TabHeader";
 import BookingInventoryTable from "./BookingInventoryTable";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Grid, List } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
@@ -132,9 +126,13 @@ const BookingAddItemPageTabs = ({
               {defaultTab === "cards" ? (
                 ``
               ) : (
-                <TabsTrigger value="list">List</TabsTrigger>
+                <TabsTrigger value="list">
+                  <List className=" h-4 w-4" />
+                </TabsTrigger>
               )}
-              <TabsTrigger value="cards">Icon</TabsTrigger>
+              <TabsTrigger value="cards">
+                <Grid className=" h-4 w-4" />
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>

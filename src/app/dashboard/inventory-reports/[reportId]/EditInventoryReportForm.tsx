@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { inventoryColumns } from "@/data/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { updateItemAction } from "@/data/actions/inventory-actions";

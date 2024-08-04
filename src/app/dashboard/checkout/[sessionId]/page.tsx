@@ -46,7 +46,7 @@ export default async function SingleCheckoutSessionDetails({
   // console.log("checkout session by ID \n", data);
 
   return (
-    <div className="p-2 md:p-5">
+    <div className="flex-col p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -66,7 +66,7 @@ export default async function SingleCheckoutSessionDetails({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex items-center">
+      <div className="px-1 py-4 text-lg font-bold md:px-2">
         <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
         {data.finished ? (
           <Badge variant="secondary">Finished</Badge>
@@ -74,7 +74,7 @@ export default async function SingleCheckoutSessionDetails({
           <Badge variant="default">Ongoing</Badge>
         )}
       </div>
-      <div className="flex items-center px-2">
+      <div className="flex items-center md:px-2">
         <EditCheckoutSessionForm
           session={data}
           sessionId={params.sessionId}

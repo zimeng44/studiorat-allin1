@@ -112,11 +112,11 @@ const BookingPageTabs = ({
           <div className="right-content">
             <TabsList>
               <TabsTrigger value="list" className="hidden md:block">
-                <List className="mr-1 h-4 w-4" />
+                <List className=" h-4 w-4" />
                 {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
-                <Grid className="mr-1 h-4 w-4" />
+                <Grid className=" h-4 w-4" />
                 {/* Grid */}
               </TabsTrigger>
               <TabsTrigger value="calendar" className="hidden md:block">

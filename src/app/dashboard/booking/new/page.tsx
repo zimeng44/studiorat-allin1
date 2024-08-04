@@ -57,19 +57,9 @@ const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
       : addHours(startOfDay(addDays(new Date(), 1)), 12),
   };
 
-  // console.log(data);
-  // const { value: authToken } = cookies().get("jwt");
-  // console.log(authToken);
   const jwtCookie = cookies().get("jwt");
 
-  if (jwtCookie) {
-    const { value: authToken } = jwtCookie;
-    // You can now use authToken safely here
-    // console.log(authToken);
-  } else {
-    // Handle the case where the cookie is not found
-    console.error("JWT cookie not found");
-  }
+  if (!jwtCookie) console.error("JWT cookie not found");
 
   return (
     <div className="flex-col p-0 md:p-5">

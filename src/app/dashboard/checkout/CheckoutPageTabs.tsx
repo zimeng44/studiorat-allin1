@@ -2,14 +2,11 @@
 import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-
 import { CheckoutSessionType, InventoryItem } from "@/data/definitions";
-
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { checkoutColumnsDefault } from "@/data/checkoutColumns";
+import { checkoutColumnsDefault, TableColumnStatus } from "./checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
 import { Grid, HomeIcon, List } from "lucide-react";
@@ -19,24 +16,6 @@ interface ViewTabsProps {
   meta: { pagination: { pageCount: number; total: number } };
   filter: {};
   studioData: InventoryItem[];
-}
-
-interface TableFieldStatus {
-  header: string;
-  visible: boolean;
-}
-interface TableColumnStatus {
-  creationTime: TableFieldStatus;
-  stuIDCheckout: TableFieldStatus;
-  stuIDCheckin: TableFieldStatus;
-  userName: TableFieldStatus;
-  studio: TableFieldStatus;
-  otherLocation: TableFieldStatus;
-  creationMonitor: TableFieldStatus;
-  finishMonitor: TableFieldStatus;
-  finishTime: TableFieldStatus;
-  notes: TableFieldStatus;
-  finished: TableFieldStatus;
 }
 
 function LinkCard(session: Readonly<CheckoutSessionType>) {

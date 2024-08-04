@@ -11,19 +11,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
-// const INITIAL_STATE = {
-//   creationTime: `${new Date().toLocaleString()}`,
-//   stuIDCheckout: "",
-//   stuIDCheckin: "",
-//   studio: "",
-//   otherLocation: "",
-//   creationMonitor: "",
-//   finishMonitor: "",
-//   finishTime: "",
-//   notes: "",
-//   finished: false,
-// };
-
 const NewCheckoutSession = async () => {
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
@@ -34,18 +21,11 @@ const NewCheckoutSession = async () => {
 
   const jwtCookie = cookies().get("jwt");
 
-  if (jwtCookie) {
-    const { value: authToken } = jwtCookie;
-    // You can now use authToken safely here
-    // console.log(authToken);
-  } else {
-    // Handle the case where the cookie is not found
-    console.error("JWT cookie not found");
-  }
+  if (!jwtCookie) console.error("JWT cookie not found");
   // console.log(thisMonitor);
 
   return (
-    <div className="p-2 md:p-5">
+    <div className="flex-col p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -65,8 +45,8 @@ const NewCheckoutSession = async () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">New Checkout</h1>
-      <div className="flex items-center px-4">
+      <h1 className="px-1 py-4 text-lg font-bold md:px-2">New Checkout</h1>
+      <div className="flex items-center md:px-2">
         <NewCheckoutForm
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}

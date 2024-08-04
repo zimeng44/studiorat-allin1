@@ -3,7 +3,6 @@ import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-// import { toast } from "react-toastify";
 import {
   Form,
   FormControl,
@@ -21,25 +20,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { DialogClose } from "@/components/ui/dialog";
+import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import {
-  CheckoutSessionType,
   CheckoutSessionTypePost,
   InventoryItem,
   studioList,
   UserType,
 } from "@/data/definitions";
-import { inventoryColumns } from "@/data/inventoryColumns";
-import {
-  createCheckoutSessionAction,
-  updateCheckoutSessionAction,
-} from "@/data/actions/checkout-actions";
-// import { getStudioUserByStuId } from "@/data/loaders";
+import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { createCheckoutSessionAction } from "@/data/actions/checkout-actions";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import EmbededTable from "@/components/custom/EmbededTable";
@@ -59,41 +51,15 @@ const INITIAL_STATE = {
   name: "",
 };
 
-const FormUserType = z
-  .object({
-    stuId: z.string().optional(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    lastUse: z.string().optional(),
-    email: z.string().optional(),
-    userType: z.string().optional(),
-    blocked: z.boolean(),
-  })
-  .optional();
-
-// const mTechBarcode = z.union([
-//   z.string().min(12).and(z.string().max(13)),
-//   z.string().length(0),
-// ]);
-// .optional();
-// .transform((e) => (e === "" ? undefined : e));
-
 const formSchema = z.object({
-  // username: z.string().min(2).max(50),
   creationTime: z.date().or(z.string()),
-  // finishTime: z.date().or(z.string()).optional(),
   stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().optional(),
-  // stuIDCheckin: z.string().optional(),
   studio: z.string(),
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
-  // finishMonitor: z.string().optional(),
   notes: z.string().optional(),
-  // finished: z.boolean(),
   scan: z.string().optional(),
-  // inventory_items: z.number().array().optional(),
-  // user: z.string().optional(),
 });
 
 const NewCheckoutForm = ({
@@ -107,14 +73,10 @@ const NewCheckoutForm = ({
   const [data, setData] = useState({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
-    // stuIDCheckin: "",
     studio: "",
     otherLocation: "",
     creationMonitor: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-    // finishMonitor: "",
-    // finishTime: "",
     notes: "",
-    // finished: false,
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
@@ -126,26 +88,18 @@ const NewCheckoutForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       creationTime: data.creationTime,
-      // finishTime: undefined,
       stuIDCheckout: data.stuIDCheckout,
       userName: "",
-      // stuIDCheckin: data.stuIDCheckin,
       studio: data.studio ?? "",
       otherLocation: data.otherLocation ? data.otherLocation : "",
       creationMonitor: data.creationMonitor,
-      // finishMonitor: data.finishMonitor,
       notes: data.notes ? data.notes : "",
-      // finished: data.finished,
-      // inventory_items: [],
-      // user: undefined,
     },
     mode: "onChange",
     values: data,
   });
 
-  // const [stuIDCheckout, setstuIDCheckout] = useState("");
   const [userId, setUserId] = useState("");
-  // const [userName, setUserName] = useState("");
   const [itemIdArray, setItemIdArray] = useState(Array());
   const [itemObjArr, setItemObjArr] = useState(Array());
 
@@ -157,9 +111,6 @@ const NewCheckoutForm = ({
   const baseUrl = getStrapiURL();
 
   async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
     const headers = {
       method: "GET",
       headers: {
@@ -288,10 +239,6 @@ const NewCheckoutForm = ({
       user: parseInt(userId),
     };
 
-    // values.user = userId;
-    // values.inventory_items = itemIdArray;
-    // delete values.userName;
-
     try {
       //update the out status of the items in the master inventory
       itemObjArr.map((itemObj) =>
@@ -322,13 +269,13 @@ const NewCheckoutForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2 md:grid md:grid-cols-2"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
         >
           <FormField
             control={form.control}
             name="creationTime"
             render={({ field }) => (
-              <FormItem className="col-span-1">
+              <FormItem className="col-span-1 size-full">
                 <FormLabel>Creation Time</FormLabel>
                 <FormControl>
                   <Input
@@ -342,19 +289,7 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="finishTime"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Finish Time</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+
           <FormField
             control={form.control}
             name="stuIDCheckout"
@@ -396,20 +331,6 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-
-          {/* <FormField
-            control={form.control}
-            name="stuIDCheckin"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Checkin ID</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="studio"
@@ -468,19 +389,6 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="finishMonitor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Finish Monitor</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
 
           <FormField
             control={form.control}
@@ -502,15 +410,6 @@ const NewCheckoutForm = ({
               <FormItem className="col-span-1">
                 <FormLabel className="ml-1">Barcode Scan</FormLabel>
                 <FormControl
-                  // onPaste={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
-                  // onCopy={(e) => {
-                  //   e.preventDefault();
-                  //   return false;
-                  // }}
-                  // onChange={(e) => handleScan(e.target.value)}
                   onChange={(e) =>
                     handleScan((e.target as HTMLInputElement).value)
                   }
@@ -533,8 +432,6 @@ const NewCheckoutForm = ({
               disabled={false}
             />
           </div>
-
-          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4">what</div> */}
 
           {/* <Button className="align-right" type="submit">
             Add
