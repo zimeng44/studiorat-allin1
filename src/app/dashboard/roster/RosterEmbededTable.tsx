@@ -146,7 +146,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[1] ? (
-                  <TableCell className="p-1 md:p-4" key={header[1]}>
+                  <TableCell className="p-1 md:p-2" key={header[1]}>
                     {row.courseTitle}
                   </TableCell>
                 ) : (

@@ -68,6 +68,7 @@ function FileInput({ authToken }: { authToken: string }) {
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPermissionUploaded(false);
     const file = e.target.files ? e.target.files[0] : undefined;
     const reader = new FileReader();
 
@@ -77,8 +78,6 @@ function FileInput({ authToken }: { authToken: string }) {
       const sheet = workbook.Sheets[sheetName];
       const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
-      // #########################
-
       const convertedData: RosterPermissionTypePost[] = sheetData.map(
         (item) => {
           item.permittedStudios = item.permittedStudios?.split(",");
@@ -87,73 +86,13 @@ function FileInput({ authToken }: { authToken: string }) {
       );
       // setPermissionData(convertedData);
 
-      convertedData?.map(async (row) => {
-        await createRosterPermissionAction(row);
-      });
+      await Promise.all(
+        convertedData?.map(async (row) => {
+          await createRosterPermissionAction(row);
+        }),
+      );
 
       setPermissionUploaded(true);
-
-      // #########################
-
-      // const convertedData = await Promise.all(
-      //   // find id for each roster record's related permission
-      //   sheetData.map(async (item) => {
-      //     // find courseNumber related permission
-
-      //     // Fetch the roster permissions
-      //     const { data: resPermissions, meta } = await getPermissionByCourseN(
-      //       item.courseNumber,
-      //     );
-
-      //     console.log(resPermissions);
-
-      //     // Check the result and modify the item accordingly
-      //     if (resPermissions?.length > 1) {
-      //       return "error: multiple records found";
-      //     }
-
-      //     // if only one permission found for the courseNumber we give its id to the roster record
-      //     item.roster_permissions = [resPermissions[0].id];
-
-      //     return item;
-      //   }),
-      // );
-
-      // console.log(convertedData);
-
-      //combine multiple roster records of the same student into one
-      // const combinedRecords: RosterRecordTypePost[] = [];
-      // convertedData.map((item) => {
-      //   if (
-      //     item.stuN === "" ||
-      //     combinedRecords.map((item) => item.stuN).includes(item.stuN)
-      //   ) {
-      //     return;
-      //   }
-      //   let consolidatedPermissions: any[] = [];
-      //   const dupeRecords = convertedData.filter(
-      //     (itemDupe) => itemDupe.stuN !== "" && itemDupe.stuN === item.stuN,
-      //   );
-      //   // console.log(dupeRecords);
-
-      //   if (dupeRecords.length >= 1) {
-      //     consolidatedPermissions = consolidatedPermissions.concat(
-      //       dupeRecords.map((dupeItem) => dupeItem.roster_permissions[0]),
-      //     );
-      //   }
-      //   item.roster_permissions = consolidatedPermissions;
-
-      //   if (!combinedRecords.map((i) => i.stuN).includes(item.stuN)) {
-      //     combinedRecords.push(item);
-      //   }
-      //   // return item;
-      // });
-
-      // console.log(combinedRecords);
-      // combinedRecords?.map(async (row) => {
-      //   await createRosterAction(row);
-      // });
-      // ###################################################
     };
 
     // reader.readAsBinaryString(file);
@@ -161,6 +100,7 @@ function FileInput({ authToken }: { authToken: string }) {
   };
 
   const handleFileUpload2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRosterUploaded(false);
     const file = e.target.files ? e.target.files[0] : undefined;
     const reader = new FileReader();
 
@@ -169,22 +109,6 @@ function FileInput({ authToken }: { authToken: string }) {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-      // #########################
-
-      // const convertedData: RosterPermissionTypePost[] = sheetData.map(
-      //   (item) => {
-      //     item.permittedStudios = item.permittedStudios?.split(",");
-      //     return item;
-      //   },
-      // );
-      // setPermissionData(convertedData);
-
-      // convertedData?.map(async (row) => {
-      //   await createRosterPermissionAction(row);
-      // });
-
-      // #########################
 
       const convertedData = await Promise.all(
         // find id for each roster record's related permission
@@ -244,12 +168,13 @@ function FileInput({ authToken }: { authToken: string }) {
       // setRosterData(combinedRecords);
       console.log(combinedRecords);
 
-      combinedRecords?.map(async (row) => {
-        await createRosterAction(row);
-      });
+      await Promise.all(
+        combinedRecords?.map(async (row) => {
+          await createRosterAction(row);
+        }),
+      );
 
       setRosterUploaded(true);
-      // ###################################################
     };
 
     // reader.readAsBinaryString(file);
@@ -257,7 +182,8 @@ function FileInput({ authToken }: { authToken: string }) {
   };
 
   return (
-    <div>
+    <div className="py-2">
+      <h1 className="left-content py-2 text-lg font-bold">Import</h1>
       <input type="file" onChange={handleFileUpload} />
       {permissionUploaded ? (
         <h2 className="text-lg font-bold">Permission Uploaded</h2>

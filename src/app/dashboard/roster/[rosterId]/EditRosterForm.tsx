@@ -147,7 +147,7 @@ const EditRosterForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid justify-start md:grid-cols-2 md:px-0"
+          className="w-screen shrink flex-col justify-start gap-2 space-y-1 px-2 md:grid md:grid-cols-2 md:px-0"
         >
           <div className="gap-2 space-y-1 px-2 md:grid md:max-w-[600px] md:grid-cols-2">
             <FormField
@@ -219,7 +219,7 @@ const EditRosterForm = ({
             <div className="col-span-1"></div>
           </div>
 
-          <div className="col-span-1 flex size-full max-w-3xl justify-start gap-2 md:col-span-2 ">
+          <div className="col-span-1 flex size-full max-w-2xl justify-start gap-2 md:col-span-2 ">
             <RosterEmbededTable
               data={itemObjArr}
               columns={rosterPermissionColumns}
@@ -232,7 +232,7 @@ const EditRosterForm = ({
             Save
           </Button> */}
 
-          <div className="col-span-1 flex size-fit max-w-2xl gap-1 md:col-span-2">
+          <div className="col-span-1 flex size-full max-w-xl gap-1 md:col-span-2">
             <SubmitButton
               className="flex-1"
               text="Save"

@@ -23,6 +23,7 @@ import {
   EllipsisVertical,
   File,
   Filter,
+  Import,
   PlusCircle,
   Settings,
   ShoppingCart,
@@ -95,9 +96,16 @@ const TabHeader = ({
       <div className="px-2">
         <Search />
       </div>
-      <div className="item-end ml-auto">
-        <Link href="/dashboard/master-inventory/add">
+
+      <div className="item-end ml-auto flex">
+        <Link href="/dashboard/roster/data-import">
           <Button variant="outline" className="h10 ml-5">
+            <Import className="mr-2 h-4 w-4" />
+            Import
+          </Button>
+        </Link>
+        <Link href="/dashboard/roster/add">
+          <Button variant="outline" className="h10 ml-1">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add
           </Button>
