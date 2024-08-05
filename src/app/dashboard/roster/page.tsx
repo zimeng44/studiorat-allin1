@@ -4,13 +4,7 @@
 //   ssr: false,
 // });
 import React, { Suspense } from "react";
-import {
-  getInventoryItems,
-  getItemsByQuery,
-  getRosterRecords,
-  getRosters,
-  getRostersByQuery,
-} from "@/data/loaders";
+import { getRosters, getRostersByQuery } from "@/data/loaders";
 import {
   Breadcrumb,
   BreadcrumbItem,
