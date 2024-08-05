@@ -41,6 +41,10 @@ export const rosterColumnsDefault = {
     header: "Program",
     visible: false,
   },
+  agreement: {
+    header: "Agreement",
+    visible: true,
+  },
 };
 
 export const inventoryColumns = [
@@ -68,5 +72,10 @@ export const inventoryColumns = [
     accessorKey: "academicProgram",
     header: "Program",
     visible: false,
+  },
+  {
+    accessorKey: "agreement",
+    header: "Agreement",
+    visible: true,
   },
 ];

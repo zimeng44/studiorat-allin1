@@ -217,26 +217,13 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "out") {
+                  if (key === "agreement") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.out ? (
-                          <Badge variant="default">Out</Badge>
+                        {row.agreement ? (
+                          <Badge variant="secondary">Signed</Badge>
                         ) : (
-                          <Badge variant="secondary">In</Badge>
-                        )}
-                      </TableCell>
-                    ) : (
-                      ``
-                    );
-                  }
-                  if (key === "broken") {
-                    return value.visible ? (
-                      <TableCell className="whitespace-nowrap" key={key}>
-                        {row.broken ? (
-                          <Badge variant="destructive">Broken</Badge>
-                        ) : (
-                          <Badge variant="secondary">No</Badge>
+                          <Badge variant="default">Unsigned</Badge>
                         )}
                       </TableCell>
                     ) : (

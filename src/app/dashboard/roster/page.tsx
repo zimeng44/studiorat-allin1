@@ -29,6 +29,7 @@ interface SearchParamsProps {
     stuName?: string;
     academicLevel?: string;
     academicProgram?: string;
+    agreement?: string;
   };
 }
 

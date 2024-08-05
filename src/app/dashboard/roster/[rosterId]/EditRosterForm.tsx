@@ -38,6 +38,8 @@ import { useRouter } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import RosterEmbededTable from "../RosterEmbededTable";
 import { rosterPermissionColumns } from "../rosterPermssionColumns";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -53,6 +55,7 @@ const formSchema = z.object({
   stuName: z.string(),
   academicLevel: z.string(),
   academicProgram: z.string(),
+  agreement: z.boolean(),
 });
 
 const EditRosterForm = ({
@@ -96,6 +99,7 @@ const EditRosterForm = ({
       stuName: roster.stuName,
       academicLevel: roster.academicLevel,
       academicProgram: roster.academicProgram,
+      agreement: roster.agreement,
     },
   });
   // if (isLoading) return <p>Loading...</p>;
@@ -215,8 +219,28 @@ const EditRosterForm = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="agreement"
+              render={({ field }) => (
+                <FormItem className="col-span-1 flex-col">
+                  <FormLabel className="size-fit">Agreement</FormLabel>
+                  <FormControl>
+                    <div className="h-10 content-center items-center">
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={(checked) =>
+                          form.setValue("agreement", checked)
+                        }
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="col-span-1"></div>
+            {/* <div className="col-span-1"></div> */}
           </div>
 
           <div className="col-span-1 flex size-full max-w-2xl justify-start gap-2 md:col-span-2 ">

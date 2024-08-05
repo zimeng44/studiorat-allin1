@@ -137,6 +137,7 @@ export interface RosterRecordType {
   academicLevel?: string;
   academicProgram?: string;
   roster_permissions?: { data: RosterPermissionType[] };
+  agreement?: boolean;
 }
 
 export interface RosterRecordTypePost {
@@ -146,6 +147,7 @@ export interface RosterRecordTypePost {
   academicLevel?: string;
   academicProgram?: string;
   roster_permissions?: (number | undefined)[];
+  agreement?: boolean;
 }
 
 export interface RosterPermissionType {

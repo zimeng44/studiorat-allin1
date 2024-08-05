@@ -23,13 +23,15 @@ function LinkCard(item: Readonly<RosterRecordType>) {
     <Link href={`/dashboard/roster/${item.id}`}>
       <Card className="relative">
         <CardHeader>
-          <CardTitle className="leading-8 text-pink-500">
+          <CardTitle className="break-all leading-8 text-pink-500">
             {item.stuName || "Student Name"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 w-full leading-7">{item.academicProgram ?? ""}</p>
+          <p className="mb-4 w-full break-all leading-7">
+            {item.academicProgram ?? ""}
+          </p>
         </CardContent>
       </Card>
     </Link>

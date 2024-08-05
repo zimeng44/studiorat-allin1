@@ -80,8 +80,8 @@ const BookingEmbededTable = ({
   // console.log(data.length);
 
   return (
-    <div className="rounded-md border">
-      <Table className="md:max-w-[600]">
+    <div className="flex rounded-md border">
+      <Table className="md:max-w-2xl">
         <TableHeader className="top-0 bg-indigo-100">
           <TableRow>
             {columnsVisible[0] ? (
@@ -160,7 +160,25 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[3] ? (
-                  <TableCell key={header[3]}>{row.permissionDetails}</TableCell>
+                  <TableCell className="break-word" key={header[3]}>
+                    {row.permissionDetails.startsWith("http") ? (
+                      <a
+                        className="text-indigo-500"
+                        href={`${row.permissionDetails}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) =>
+                          !window.confirm("You're headed to a external link")
+                            ? e.preventDefault()
+                            : ""
+                        }
+                      >
+                        Link
+                      </a>
+                    ) : (
+                      row.permissionDetails
+                    )}
+                  </TableCell>
                 ) : (
                   ``
                 )}

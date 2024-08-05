@@ -24,6 +24,7 @@ import qs from "qs";
 import { useState } from "react";
 import React from "react";
 import * as XLSX from "xlsx";
+import { Progress } from "@/components/ui/progress";
 
 function FileInput({ authToken }: { authToken: string }) {
   const [permissionData, setPermissionData] =
@@ -31,6 +32,8 @@ function FileInput({ authToken }: { authToken: string }) {
   const [rosterData, setRosterData] = useState<RosterRecordTypePost[]>();
   const [permissionUploaded, setPermissionUploaded] = useState(false);
   const [rosterUploaded, setRosterUploaded] = useState(false);
+  const [permissionsProgress, setPermissionsProgress] = useState(0);
+  const [rosterProgress, setRosterProgress] = useState(0);
 
   const baseUrl = getStrapiURL();
 
@@ -67,8 +70,10 @@ function FileInput({ authToken }: { authToken: string }) {
     return fetchData(url.href);
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const updatePermission = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setPermissionUploaded(false);
+    setPermissionsProgress(0);
+    setPermissionData(undefined);
     const file = e.target.files ? e.target.files[0] : undefined;
     const reader = new FileReader();
 
@@ -84,14 +89,19 @@ function FileInput({ authToken }: { authToken: string }) {
           return item;
         },
       );
-      // setPermissionData(convertedData);
+
+      let currentProgress = 0;
 
       await Promise.all(
         convertedData?.map(async (row) => {
           await createRosterPermissionAction(row);
+          currentProgress += 1;
+          setPermissionsProgress(
+            (currentProgress / convertedData.length) * 100,
+          );
         }),
       );
-
+      setPermissionData(convertedData);
       setPermissionUploaded(true);
     };
 
@@ -99,23 +109,25 @@ function FileInput({ authToken }: { authToken: string }) {
     if (file) reader.readAsArrayBuffer(file);
   };
 
-  const handleFileUpload2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const updateRoster = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRosterUploaded(false);
+    setRosterProgress(0);
+    setRosterData(undefined);
     const file = e.target.files ? e.target.files[0] : undefined;
     const reader = new FileReader();
 
     reader.onload = async (event) => {
       const workbook = XLSX.read(event.target?.result, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+      const sheetName2 = workbook.SheetNames[0];
+      const sheet2 = workbook.Sheets[sheetName2];
+      const sheetData2: any[] = XLSX.utils.sheet_to_json(sheet2, {
+        defval: "",
+      });
 
-      const convertedData = await Promise.all(
+      const convertedData2 = await Promise.all(
         // find id for each roster record's related permission
-        sheetData.map(async (item) => {
-          // find courseNumber related permission
-
-          // Fetch the roster permissions
+        sheetData2.map(async (item) => {
+          // Fetch the roster permissions that are related to the courseN
           const { data: resPermissions, meta } = await getPermissionByCourseN(
             item.courseNumber,
           );
@@ -134,12 +146,11 @@ function FileInput({ authToken }: { authToken: string }) {
         }),
       );
 
-      console.log(convertedData);
+      // console.log(convertedData2);
 
       // combine multiple roster records of the same student into one
-
       const combinedRecords: RosterRecordTypePost[] = [];
-      convertedData.map((item) => {
+      convertedData2.map((item) => {
         if (
           item.stuN === "" ||
           combinedRecords.map((item) => item.stuN).includes(item.stuN)
@@ -147,7 +158,7 @@ function FileInput({ authToken }: { authToken: string }) {
           return;
         }
         let consolidatedPermissions: any[] = [];
-        const dupeRecords = convertedData.filter(
+        const dupeRecords = convertedData2.filter(
           (itemDupe) => itemDupe.stuN !== "" && itemDupe.stuN === item.stuN,
         );
         // console.log(dupeRecords);
@@ -165,15 +176,17 @@ function FileInput({ authToken }: { authToken: string }) {
         // return item;
       });
 
-      // setRosterData(combinedRecords);
-      console.log(combinedRecords);
+      // console.log(combinedRecords);
+      let currentProgress = 0;
 
       await Promise.all(
         combinedRecords?.map(async (row) => {
           await createRosterAction(row);
+          currentProgress += 1;
+          setRosterProgress((currentProgress / combinedRecords.length) * 100);
         }),
       );
-
+      setRosterData(combinedRecords);
       setRosterUploaded(true);
     };
 
@@ -181,20 +194,54 @@ function FileInput({ authToken }: { authToken: string }) {
     if (file) reader.readAsArrayBuffer(file);
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await updatePermission(e);
+    await updateRoster(e);
+  };
+
+  // const handleFileUpload2 = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
   return (
-    <div className="py-2">
-      <h1 className="left-content py-2 text-lg font-bold">Import</h1>
-      <input type="file" onChange={handleFileUpload} />
-      {permissionUploaded ? (
-        <h2 className="text-lg font-bold">Permission Uploaded</h2>
+    <div className="flex-col py-2">
+      <h1 className="left-content flex-1 py-2 text-lg font-bold">Import</h1>
+      {permissionsProgress > 0 || rosterProgress > 0 ? (
+        <div className="flex-1">
+          <div className="flex flex-row items-center">
+            Permission:
+            {permissionUploaded ? (
+              <h2 className="flex-1 p-1 text-sm italic text-green-400">
+                Permission Uploaded Complete
+              </h2>
+            ) : (
+              ``
+            )}
+          </div>
+          <Progress
+            value={permissionsProgress}
+            className="m-2 h-2 w-[60%] flex-1"
+          />
+          <div className="flex flex-1 items-center">
+            Roster:
+            {rosterUploaded ? (
+              <h2 className="flex-1 p-1 text-sm italic text-green-400">
+                Roster Upload Complete
+              </h2>
+            ) : (
+              ``
+            )}
+          </div>
+          <Progress value={rosterProgress} className="m-2 h-2 w-[60%] flex-1" />
+        </div>
       ) : (
         ``
       )}
+      <input className="flex-1 p-2" type="file" onChange={handleFileUpload} />
+
       {permissionData && (
-        <div>
-          <h2>Imported PermissionData:</h2>
+        <div className="flex-1 p-2">
+          <h2 className="p2">Sample From Imported Permission:</h2>
           {/* <pre>{JSON.stringify(permissionData, null, 2)}</pre> */}
-          <Table>
+          <Table className="max-w-xl">
             <TableHeader>
               <TableRow>
                 {permissionData.length
@@ -206,30 +253,36 @@ function FileInput({ authToken }: { authToken: string }) {
             </TableHeader>
             <TableBody>
               {permissionData.length
-                ? permissionData
-                    .map((row) => Object.values(row))
-                    .map((fields) => (
-                      <TableRow>
-                        {fields.map((field) => (
-                          <TableCell>{field as string}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))
+                ? permissionData.length > 5
+                  ? permissionData
+                      .slice(0, 5)
+                      .map((row) => Object.values(row))
+                      .map((fields) => (
+                        <TableRow>
+                          {fields.map((field) => (
+                            <TableCell>{field as string}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                  : permissionData
+                      .map((row) => Object.values(row))
+                      .map((fields) => (
+                        <TableRow>
+                          {fields.map((field) => (
+                            <TableCell>{field as string}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))
                 : ``}
             </TableBody>
           </Table>
         </div>
       )}
+      {/* <input type="file" onChange={handleFileUpload2} /> */}
 
-      <input type="file" onChange={handleFileUpload2} />
-      {rosterUploaded ? (
-        <h2 className="text-lg font-bold">Roster Uploaded</h2>
-      ) : (
-        ``
-      )}
       {rosterData && (
-        <div>
-          <h2>Imported PermissionData:</h2>
+        <div className="max-w-xl flex-1 overflow-scroll p-2">
+          <h2 className="p2">Sample From Imported Roster:</h2>
           {/* <pre>{JSON.stringify(rosterData, null, 2)}</pre> */}
           <Table>
             <TableHeader>
@@ -243,15 +296,26 @@ function FileInput({ authToken }: { authToken: string }) {
             </TableHeader>
             <TableBody>
               {rosterData.length
-                ? rosterData
-                    .map((row) => Object.values(row))
-                    .map((fields) => (
-                      <TableRow>
-                        {fields.map((field) => (
-                          <TableCell>{field as string}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))
+                ? rosterData.length > 5
+                  ? rosterData
+                      .slice(0, 5)
+                      .map((row) => Object.values(row))
+                      .map((fields) => (
+                        <TableRow>
+                          {fields.map((field) => (
+                            <TableCell>{field as string}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                  : rosterData
+                      .map((row) => Object.values(row))
+                      .map((fields) => (
+                        <TableRow>
+                          {fields.map((field) => (
+                            <TableCell>{field as string}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))
                 : ``}
             </TableBody>
           </Table>
