@@ -83,6 +83,26 @@ interface InventoryReportsFilterProps {
   // studioUser?: UserType[];
 }
 
+interface RosterPermissionsFilterProps {
+  courseN?: string;
+  courseTitle?: string;
+  instructor?: string;
+  permissionDetails?: string;
+  permittedStudios?: string;
+  startDate?: { from?: string; to?: string };
+  endDate?: { from?: string; to?: string };
+  // inventory_items?: InventoryItem[];
+  // studioUser?: UserType[];
+}
+
+interface RosterRecordsFilterProps {
+  stuN?: string;
+  netId?: string;
+  stuName?: string;
+  academicLevel?: string;
+  academicProgram?: string;
+}
+
 const baseUrl = getStrapiURL();
 // console.log(baseUrl);
 
@@ -767,6 +787,238 @@ export async function getInventoryReportsByQuery(
     },
   });
   const url = new URL("/api/inventory-reports", baseUrl);
+  url.search = query;
+  // console.log("query data", query)
+  return fetchData(url.href);
+}
+
+// ########################### Roster Permissions ########################
+
+export async function getRosterPermissions(
+  sort: string,
+  page: string,
+  pageSize: string,
+  filter: RosterPermissionsFilterProps,
+) {
+  let filterArr = [];
+  for (const [key, value] of Object.entries(filter)) {
+    // console.log(`${key}: ${value}`);
+    // if (value === "" || value === false || value === "false") continue;
+    // if (value === "All" || value === "") continue;
+
+    // if (key === "createdAt") {
+    //   if (!value.from && !value.to) {
+    //     continue;
+    //   } else if (!value.to) {
+    //     filterArr.push({
+    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
+    //     });
+    //     continue;
+    //   } else if (!value.from) {
+    //     filterArr.push({
+    //       [key]: {
+    //         $lte: `${new Date(value.to).toISOString()}`,
+    //       },
+    //     });
+    //     continue;
+    //   } else {
+    //     filterArr.push({
+    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
+    //     });
+    //     filterArr.push({
+    //       [key]: {
+    //         $lte: `${new Date(value.to).toISOString()}`,
+    //       },
+    //     });
+    //     continue;
+    //   }
+    // }
+
+    // if (value === "finished") {
+    //   filterArr.push({ [key]: { $eq: true } });
+    //   continue;
+    // } else if (value === "unfinished") {
+    //   filterArr.push({ [key]: { $eq: false } });
+    //   continue;
+    // }
+
+    if (value === true || value === "true") {
+      filterArr.push({ [key]: { $eq: value } });
+    } else {
+      filterArr.push({ [key]: { $containsi: value } });
+    }
+  }
+
+  // console.log(filterArr);
+
+  const query = qs.stringify({
+    populate: "*",
+    sort: [sort],
+    filters: {
+      $and: filterArr,
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/roster-permissions", baseUrl);
+  url.search = query;
+  // console.log(url.href);
+
+  return fetchData(url.href);
+}
+
+export async function getRosterPermissionById(reportId: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
+  return fetchData(`${baseUrl}/api/roster-permissions/${reportId}?populate=*`);
+}
+
+export async function getRosterPermissionsByQuery(
+  queryString: string,
+  page: string,
+  pageSize: string,
+) {
+  const query = qs.stringify({
+    populate: "*",
+    sort: ["createdAt:desc"],
+    filters: {
+      $or: [
+        { courseN: { $containsi: queryString } },
+        { courseTitle: { $containsi: queryString } },
+        { instructor: { $containsi: queryString } },
+        { permissionDetails: { $containsi: queryString } },
+        // { permittedStudios: { $containsi: queryString } },
+      ],
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/roster-permissions", baseUrl);
+  url.search = query;
+  // console.log("query data", query)
+  return fetchData(url.href);
+}
+
+// ########################### Roster Recordss ########################
+
+export async function getRosters(
+  sort: string,
+  page: string,
+  pageSize: string,
+  filter: RosterRecordsFilterProps,
+) {
+  let filterArr = [];
+  for (const [key, value] of Object.entries(filter)) {
+    // console.log(`${key}: ${value}`);
+    // if (value === "" || value === false || value === "false") continue;
+    // if (value === "All" || value === "") continue;
+
+    // if (key === "createdAt") {
+    //   if (!value.from && !value.to) {
+    //     continue;
+    //   } else if (!value.to) {
+    //     filterArr.push({
+    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
+    //     });
+    //     continue;
+    //   } else if (!value.from) {
+    //     filterArr.push({
+    //       [key]: {
+    //         $lte: `${new Date(value.to).toISOString()}`,
+    //       },
+    //     });
+    //     continue;
+    //   } else {
+    //     filterArr.push({
+    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
+    //     });
+    //     filterArr.push({
+    //       [key]: {
+    //         $lte: `${new Date(value.to).toISOString()}`,
+    //       },
+    //     });
+    //     continue;
+    //   }
+    // }
+
+    // if (value === "finished") {
+    //   filterArr.push({ [key]: { $eq: true } });
+    //   continue;
+    // } else if (value === "unfinished") {
+    //   filterArr.push({ [key]: { $eq: false } });
+    //   continue;
+    // }
+
+    if (value === true || value === "true") {
+      filterArr.push({ [key]: { $eq: value } });
+    } else {
+      filterArr.push({ [key]: { $containsi: value } });
+    }
+  }
+
+  // console.log(filterArr);
+
+  const query = qs.stringify({
+    populate: "*",
+    sort: [sort],
+    filters: {
+      $and: filterArr,
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/rosters", baseUrl);
+  url.search = query;
+  // console.log(url.href);
+
+  return fetchData(url.href);
+}
+
+export async function getRosterById(reportId: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
+  return fetchData(`${baseUrl}/api/rosters/${reportId}?populate=*`);
+}
+
+export async function getRostersByQuery(
+  queryString: string,
+  page: string,
+  pageSize: string,
+) {
+  const query = qs.stringify({
+    populate: "*",
+    sort: ["createdAt:desc"],
+    filters: {
+      $or: [
+        { stuN: { $containsi: queryString } },
+        { netId: { $containsi: queryString } },
+        { stuName: { $containsi: queryString } },
+        { academicLevel: { $containsi: queryString } },
+        { academicProgram: { $containsi: queryString } },
+        {
+          roster_permissions: {
+            $or: [
+              { courseN: { $containsi: queryString } },
+              { courseTitle: { $containsi: queryString } },
+              { instructor: { $containsi: queryString } },
+              { permissionDetails: { $containsi: queryString } },
+              { permittedStudios: { $containsi: queryString } },
+            ],
+          },
+        },
+        // { permittedStudios: { $containsi: queryString } },
+      ],
+    },
+    pagination: {
+      pageSize: pageSize,
+      page: page,
+    },
+  });
+  const url = new URL("/api/rosters", baseUrl);
   url.search = query;
   // console.log("query data", query)
   return fetchData(url.href);

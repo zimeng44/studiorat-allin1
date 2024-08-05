@@ -19,6 +19,7 @@ import {
   Barcode,
   BookPlus,
   ClipboardPlusIcon,
+  Library,
   MenuIcon,
   User,
   UserIcon,
@@ -84,7 +85,7 @@ const HeaderMenu = async ({ currentRole }: { currentRole: string }) => {
                 href="/dashboard/master-inventory"
               >
                 <DropdownMenuItem>
-                  <Vault className="mr-2 h-4 w-4" />
+                  <Library className="mr-2 h-4 w-4" />
                   Master Inventory
                 </DropdownMenuItem>
               </Link>

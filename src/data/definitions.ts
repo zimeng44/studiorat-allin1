@@ -129,6 +129,50 @@ export type InventoryReportTypePost = {
   creator?: number;
 };
 
+export interface RosterRecordType {
+  id?: number;
+  stuN?: string;
+  netId?: string;
+  stuName?: string;
+  academicLevel?: string;
+  academicProgram?: string;
+  roster_permissions?: { data: RosterPermissionType[] };
+}
+
+export interface RosterRecordTypePost {
+  stuN?: string;
+  netId?: string;
+  stuName?: string;
+  academicLevel?: string;
+  academicProgram?: string;
+  roster_permissions?: (number | undefined)[];
+}
+
+export interface RosterPermissionType {
+  id?: number;
+  courseN?: string;
+  courseTitle?: string;
+  instructor?: string;
+  permissionDetails?: string;
+  permmitedStudios?: string[];
+  startTime?: Date | string;
+  endTime?: Date | string;
+}
+
+export interface RosterPermissionTypePost {
+  courseN?: string;
+  courseTitle?: string;
+  instructor?: string;
+  permissionDetails?: string;
+  permmitedStudios?: string[];
+  startTime?: Date | string;
+  endTime?: Date | string;
+}
+
+export interface RetrievedRosterPermission {
+  data: RosterPermissionType[];
+}
+
 export const studioList = [
   "Other",
   "Floor 8 General",

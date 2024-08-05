@@ -5,48 +5,38 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { BookingTypePost } from "@/data/definitions";
+import { BookingTypePost, RosterRecordTypePost } from "@/data/definitions";
 
-export async function createBookingAction(newBooking: BookingTypePost) {
+export async function createRosterAction(
+  newRosterRecord: RosterRecordTypePost,
+) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
-  // console.log(newBooking.finishTime);
-  if (newBooking.startTime)
-    newBooking.startTime = new Date(newBooking.startTime).toISOString();
-  if (newBooking.endTime)
-    newBooking.endTime = new Date(newBooking.endTime).toISOString();
+  // console.log(newRosterRecord.finishTime);
 
   const payload = {
-    data: newBooking,
+    data: newRosterRecord,
   };
 
-  const data = await mutateData("POST", "/api/bookings", payload);
+  const data = await mutateData("POST", "/api/rosters", payload);
   const flattenedData = flattenAttributes(data);
   // console.log("data submited#########", flattenedData);
-  // redirect("/dashboard/booking/" + flattenedData.id);
-  redirect("/dashboard/booking");
+  // redirect("/dashboard/rosterRecord/" + flattenedData.id);
+  // redirect("/dashboard/roster");
 }
 
-export const updateBookingAction = async (
-  updatedBooking: BookingTypePost,
+export const updateRosterAction = async (
+  updatedRosterRecord: RosterRecordTypePost,
   id: string,
 ) => {
-  // if (updatedBooking.startTime === undefined) delete updatedBooking.startTime;
-  // else
-  //   updatedBooking.startTime = new Date(updatedBooking.startTime).toISOString();
-
-  // if (updatedBooking.endTime === undefined || updatedBooking.endTime === "")
-  //   delete updatedBooking.endTime;
-  // else updatedBooking.endTime = new Date(updatedBooking.endTime).toISOString();
-
   const payload = {
-    data: updatedBooking,
+    data: updatedRosterRecord,
   };
 
-  const responseData = await mutateData("PUT", `/api/bookings/${id}`, payload);
+  const responseData = await mutateData("PUT", `/api/rosters/${id}`, payload);
 
-  // console.log(updatedBooking);
+  // console.log(updatedRosterRecord);
 
   if (!responseData) {
     return {
@@ -66,9 +56,9 @@ export const updateBookingAction = async (
   }
 
   const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/booking");
+  revalidatePath("/dashboard/roster");
 
-  redirect("/dashboard/booking");
+  redirect("/dashboard/roster");
 
   // console.log(flattenedData);
 
@@ -80,8 +70,8 @@ export const updateBookingAction = async (
   };
 };
 
-export async function deleteBookingAction(id: string) {
-  const responseData = await mutateData("DELETE", `/api/bookings/${id}`);
+export async function deleteRosterAction(id: string) {
+  const responseData = await mutateData("DELETE", `/api/rosters/${id}`);
 
   if (!responseData) {
     return {
@@ -97,5 +87,5 @@ export async function deleteBookingAction(id: string) {
     };
   }
 
-  redirect("/dashboard/booking");
+  redirect("/dashboard/roster");
 }

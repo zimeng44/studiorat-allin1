@@ -4,6 +4,7 @@ import {
   BarcodeIcon,
   BookPlus,
   ClipboardPlusIcon,
+  Library,
   UserIcon,
   Users,
   Vault,
@@ -81,7 +82,7 @@ export default async function DashboardLayout({
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                   href="/dashboard/master-inventory"
                 >
-                  <Vault className="h-4 w-4" />
+                  <Library className="h-4 w-4" />
                   Master Inventory
                 </Link>
               ) : (
@@ -107,6 +108,18 @@ export default async function DashboardLayout({
                 >
                   <ClipboardPlusIcon className="h-4 w-4" />
                   Inventory Reports
+                </Link>
+              ) : (
+                ``
+              )}
+
+              {currentRole === "Admin" || currentRole === "Monitor" ? (
+                <Link
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                  href="/dashboard/roster"
+                >
+                  <Users className="h-4 w-4" />
+                  Roster
                 </Link>
               ) : (
                 ``

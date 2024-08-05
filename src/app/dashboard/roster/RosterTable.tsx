@@ -9,48 +9,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  SquarePen,
-  Users2,
-} from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteItemAction } from "@/data/actions/inventory-actions";
+import { deleteRosterAction } from "@/data/actions/roster-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { TableColumnStatus, userColumnsDefault } from "./userColumns";
+import { Badge } from "../../../components/ui/badge";
+import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
 
 const MAX_TEXT_LEN = 20;
 
-interface UserTableProps {
+interface RosterTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
 }
 
-const UserTable = ({ data, columnsStatus }: UserTableProps) => {
+const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
   // console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -70,13 +51,6 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
-
-  // store columns visibility
-  // const [columnsVisible, setColumnsVisible] = useState(
-  //   Array(columns.length)
-  //     .fill(true)
-  //     .map((item, index) => columns[index].visible),
-  // );
 
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
@@ -100,19 +74,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
-    // const params = new URLSearchParams(searchParams);
-    // params.delete("numRowsSelected");
-    // params.delete("isBatchOpOpen");
-    // params.delete("isAllSelected");
-    // router.replace(`${pathname}?${params.toString()}`);
   }
-
-  // store keys of columns
-  // const header = Array(columns.length)
-  //   .fill("")
-  //   .map((item, index) => columns[index].accessorKey);
-
-  // console.log(data.length);
 
   const handleAllSelected = (checked: boolean) => {
     setRowsSelected(Array(data.length).fill(checked));
@@ -155,7 +117,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
 
     rowsSelected.map((row, index) => {
       if (row) {
-        deleteItemAction(data[index].id);
+        deleteRosterAction(data[index].id);
       }
     });
     setRowsSelected(Array(data.length).fill(false));
@@ -211,7 +173,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
             </TableHead>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
-                <TableHead className="whitespace-nowrap" key={key}>
+                <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
                   {key === "mTechBarcode" ||
                   key === "make" ||
@@ -255,23 +217,27 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "blocked") {
+                  if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.blocked ? (
-                          <Badge variant="default">Blocked</Badge>
+                        {row.out ? (
+                          <Badge variant="default">Out</Badge>
                         ) : (
-                          <Badge variant="secondary">Allowed</Badge>
+                          <Badge variant="secondary">In</Badge>
                         )}
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-                  if (key === "fullName") {
+                  if (key === "broken") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row.firstName} ${row.lastName}`}
+                        {row.broken ? (
+                          <Badge variant="destructive">Broken</Badge>
+                        ) : (
+                          <Badge variant="secondary">No</Badge>
+                        )}
                       </TableCell>
                     ) : (
                       ``
@@ -280,18 +246,16 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {!row[key]
-                        ? ``
-                        : row[key].length <= MAX_TEXT_LEN
-                          ? row[key]
-                          : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                      {row[key].length <= MAX_TEXT_LEN
+                        ? row[key]
+                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
                     </TableCell>
                   ) : (
                     ``
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/users/${row.id}`}>
+                  <Link href={`/dashboard/roster/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
@@ -302,7 +266,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
           ) : (
             <TableRow>
               <TableCell
-                colSpan={Object.keys(userColumnsDefault).length}
+                colSpan={Object.keys(rosterColumnsDefault).length}
                 className="h-24 text-center"
               >
                 No results.
@@ -315,4 +279,4 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
   );
 };
 
-export default UserTable;
+export default RosterTable;
