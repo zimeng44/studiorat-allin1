@@ -10,7 +10,7 @@ import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
 // import RosterTable from "./RosterTable";
 import TabHeader from "./TabHeader";
 import { Grid, List } from "lucide-react";
-import RosterTable from "./rosterTable";
+import RosterTable from "./RosterTable";
 
 interface ViewTabsProps {
   data: any[];
