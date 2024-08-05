@@ -94,7 +94,7 @@ function FileInput({ authToken }: { authToken: string }) {
 
       await Promise.all(
         convertedData?.map(async (row) => {
-          await createRosterPermissionAction(row);
+          await createRosterPermissionAction(JSON.parse(JSON.stringify(row)));
           currentProgress += 1;
           setPermissionsProgress(
             (currentProgress / convertedData.length) * 100,
@@ -181,7 +181,8 @@ function FileInput({ authToken }: { authToken: string }) {
 
       await Promise.all(
         combinedRecords?.map(async (row) => {
-          await createRosterAction(row);
+          await createRosterAction(JSON.parse(JSON.stringify(row)));
+
           currentProgress += 1;
           setRosterProgress((currentProgress / combinedRecords.length) * 100);
         }),
@@ -204,6 +205,9 @@ function FileInput({ authToken }: { authToken: string }) {
   return (
     <div className="flex-col py-2">
       <h1 className="left-content flex-1 py-2 text-lg font-bold">Import</h1>
+      <p className="text-xs text-muted-foreground">
+        (DO NOT close browser before uploads complete)
+      </p>
       {permissionsProgress > 0 || rosterProgress > 0 ? (
         <div className="flex-1">
           <div className="flex flex-row items-center">
