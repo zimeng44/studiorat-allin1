@@ -71,6 +71,100 @@ function FileInput({ authToken }: { authToken: string }) {
 
     reader.onload = async (event) => {
       const workbook = XLSX.read(event.target?.result, { type: "binary" });
+      const sheetName = workbook.SheetNames[1];
+      const sheet = workbook.Sheets[sheetName];
+      const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+      // #########################
+
+      const convertedData: RosterPermissionTypePost[] = sheetData.map(
+        (item) => {
+          item.permittedStudios = item.permittedStudios?.split(",");
+          return item;
+        },
+      );
+      setPermissionData(convertedData);
+
+      convertedData?.map(async (row) => {
+        await createRosterPermissionAction(row);
+      });
+
+      // #########################
+
+      //   const convertedData = await Promise.all(
+      //     // find id for each roster record's related permission
+      //     sheetData.map(async (item) => {
+      //       // find courseNumber related permission
+
+      //       // Fetch the roster permissions
+      //       const { data: resPermissions, meta } = await getPermissionByCourseN(
+      //         item.courseNumber,
+      //       );
+
+      //       console.log(resPermissions);
+
+      //       // Check the result and modify the item accordingly
+      //       if (resPermissions?.length > 1) {
+      //         return "error: multiple records found";
+      //       }
+
+      //       // if only one permission found for the courseNumber we give its id to the roster record
+
+      //       item.roster_permissions = [resPermissions[0].id];
+
+      //       return item;
+      //     }),
+      //   );
+
+      //   console.log(convertedData);
+
+      //   //combine multiple roster records of the same student into one
+      //   const combinedRecords: RosterRecordTypePost[] = [];
+      //   convertedData.map((item) => {
+      //     if (
+      //       item.stuN === "" ||
+      //       combinedRecords.map((item) => item.stuN).includes(item.stuN)
+      //     ) {
+      //       return;
+      //     }
+      //     let consolidatedPermissions: any[] = [];
+      //     const dupeRecords = convertedData.filter(
+      //       (itemDupe) => itemDupe.stuN !== "" && itemDupe.stuN === item.stuN,
+      //     );
+      //     // console.log(dupeRecords);
+
+      //     if (dupeRecords.length >= 1) {
+      //       consolidatedPermissions = consolidatedPermissions.concat(
+      //         dupeRecords.map((dupeItem) => dupeItem.roster_permissions[0]),
+      //       );
+      //     }
+      //     item.roster_permissions = consolidatedPermissions;
+
+      //     if (!combinedRecords.map((i) => i.stuN).includes(item.stuN)) {
+      //       combinedRecords.push(item);
+      //     }
+      //     // return item;
+      //   });
+
+      //   // console.log(combinedRecords);
+      //   combinedRecords?.map(async (row) => {
+      //     await createRosterAction(row);
+      //   });
+      // };
+
+      // ####################################################
+
+      // reader.readAsBinaryString(file);
+      if (file) reader.readAsArrayBuffer(file);
+    };
+  };
+
+  const handleFileUpload2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : undefined;
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      const workbook = XLSX.read(event.target?.result, { type: "binary" });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
@@ -90,13 +184,11 @@ function FileInput({ authToken }: { authToken: string }) {
       // });
 
       // #########################
+
       const convertedData = await Promise.all(
         // find id for each roster record's related permission
         sheetData.map(async (item) => {
           // find courseNumber related permission
-          // const permissionFilter = {
-          //   courseN: item.courseNumber,
-          // };
 
           // Fetch the roster permissions
           const { data: resPermissions, meta } = await getPermissionByCourseN(
@@ -154,13 +246,46 @@ function FileInput({ authToken }: { authToken: string }) {
       });
     };
 
+    // ####################################################
+
     // reader.readAsBinaryString(file);
     if (file) reader.readAsArrayBuffer(file);
   };
-
+  
   return (
     <div>
       <input type="file" onChange={handleFileUpload} />
+      {permissionData && (
+        <div>
+          <h2>Imported PermissionData:</h2>
+          {/* <pre>{JSON.stringify(permissionData, null, 2)}</pre> */}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {permissionData.length
+                  ? Object.keys(permissionData[0]).map((field) => (
+                      <TableHead>{field}</TableHead>
+                    ))
+                  : ``}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {permissionData.length
+                ? permissionData
+                    .map((row) => Object.values(row))
+                    .map((fields) => (
+                      <TableRow>
+                        {fields.map((field) => (
+                          <TableCell>{field as string}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                : ``}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+      <input type="file" onChange={handleFileUpload2} />
       {permissionData && (
         <div>
           <h2>Imported PermissionData:</h2>
