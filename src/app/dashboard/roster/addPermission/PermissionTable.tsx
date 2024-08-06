@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -10,29 +9,72 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { SquarePen } from "lucide-react";
+  CirclePlus,
+  EllipsisVertical,
+  File,
+  Filter,
+  Home,
+  LineChart,
+  ListFilter,
+  MoreHorizontal,
+  Package,
+  Package2,
+  PanelLeft,
+  PlusCircle,
+  // Search,
+  Settings,
+  ShoppingCart,
+  SquarePen,
+  Users2,
+} from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteRosterAction } from "@/data/actions/roster-actions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "../../../components/ui/badge";
-import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
+import { deleteItemAction } from "@/data/actions/inventory-actions";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
+import { InventoryItem } from "@/data/definitions";
+import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 20;
 
-interface RosterTableProps {
-  data: any[];
-  columnsStatus: TableColumnStatus;
+interface TableFieldStatus {
+  header: string;
+  visible: boolean;
+}
+interface TableColumnStatus {
+  mTechBarcode: TableFieldStatus;
+  make: TableFieldStatus;
+  model: TableFieldStatus;
+  category: TableFieldStatus;
+  description: TableFieldStatus;
+  accessories: TableFieldStatus;
+  storageLocation: TableFieldStatus;
+  comments: TableFieldStatus;
 }
 
-const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
+interface InventoryTableProps {
+  data: any[];
+  columnsStatus: TableColumnStatus;
+  itemObjArr: InventoryItem[];
+  addToBooking: Function;
+}
+
+const BookingInventoryTable = ({
+  data,
+  columnsStatus,
+  itemObjArr,
+  addToBooking,
+}: InventoryTableProps) => {
   // console.log(data);
+  const pathParams = useParams<{ bookingId: string }>();
+  // const editable = pathParams.bookingId ? false : true;
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -50,7 +92,15 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
+
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
+
+  // store columns visibility
+  // const [columnsVisible, setColumnsVisible] = useState(
+  //   Array(columns.length)
+  //     .fill(true)
+  //     .map((item, index) => columns[index].visible),
+  // );
 
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
@@ -74,7 +124,19 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
+    // const params = new URLSearchParams(searchParams);
+    // params.delete("numRowsSelected");
+    // params.delete("isBatchOpOpen");
+    // params.delete("isAllSelected");
+    // router.replace(`${pathname}?${params.toString()}`);
   }
+
+  // store keys of columns
+  // const header = Array(columns.length)
+  //   .fill("")
+  //   .map((item, index) => columns[index].accessorKey);
+
+  // console.log(data.length);
 
   const handleAllSelected = (checked: boolean) => {
     setRowsSelected(Array(data.length).fill(checked));
@@ -117,7 +179,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
 
     rowsSelected.map((row, index) => {
       if (row) {
-        deleteRosterAction(data[index].id);
+        deleteItemAction(data[index].id);
       }
     });
     setRowsSelected(Array(data.length).fill(false));
@@ -131,49 +193,32 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const handleAddToBooking = (row: InventoryItem) => {
+    const newArr = structuredClone(itemObjArr);
+    if (newArr.filter((item) => item.id === row.id).length > 0) {
+      window.alert("Item Added Already.");
+      return;
+    }
+    addToBooking([...newArr, row]);
+    toast.success("Item Added.");
+
+    // addToBooking((prev: InventoryItem[]) => {
+    //   if (prev.filter((item) => item.id === row.id).length > 0) {
+    //     window.alert("Item Added Already.");
+    //     return [...prev];
+    //   }
+    //   return [...prev, row];
+    // });
+  };
+
   return (
-    <div className="rounded-md">
+    <div className="rounded-md border">
       <Table>
         <TableHeader className="sticky top-0 bg-indigo-100">
           <TableRow>
-            <TableHead key={"select"}>
-              <Popover open={isBatchOpOpen}>
-                <PopoverTrigger asChild>
-                  <Checkbox
-                    className="mr-2"
-                    checked={isAllSelected}
-                    onCheckedChange={(checked: boolean) => {
-                      handleAllSelected(checked);
-                    }}
-                    aria-label="Select all"
-                  />
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-50 space-x-2"
-                  onInteractOutside={(e) => e.preventDefault()}
-                  side="right"
-                  // asChild
-                >
-                  <Button
-                    onClick={() => handleBatchDelete()}
-                    variant="destructive"
-                  >
-                    Delete Selected
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      handleResetSelection();
-                    }}
-                    variant="secondary"
-                  >
-                    Reset
-                  </Button>
-                </PopoverContent>
-              </Popover>
-            </TableHead>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
-                <TableHead className="whitespace-nowrap p-3" key={key}>
+                <TableHead className="whitespace-nowrap" key={key}>
                   {value.header}
                   {key === "mTechBarcode" ||
                   key === "make" ||
@@ -181,11 +226,11 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                   key === "category" ||
                   key === "storageLocation" ? (
                     <Button
-                      className="p-1 text-left"
+                      className="content-center p-1 text-left"
                       variant="ghost"
                       onClick={() => handleSort(key)}
                     >
-                      <ArrowUpDown className="m-1 h-4 w-4" />
+                      <ArrowUpDown className="ml-1 h-4 w-4" />
                     </Button>
                   ) : (
                     ``
@@ -195,7 +240,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                 ``
               );
             })}
-            <TableHead className="text-center" key={"edit"}></TableHead>
+            <TableHead className="text-center" key={"addToBooking"}></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -205,25 +250,27 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                 key={row.id}
                 // data-state={row.getIsSelected() && "selected"}
               >
-                <TableCell key="select">
-                  <Checkbox
-                    checked={rowsSelected[index]}
-                    onCheckedChange={(checked: boolean) =>
-                      handleRowSelection(index, checked)
-                    }
-                    // checked={row.getIsSelected()}
-                    // onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select Row"
-                  />
-                </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "agreement") {
+                  if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.agreement ? (
-                          <Badge variant="secondary">Signed</Badge>
+                        {row.out ? (
+                          <Badge variant="default">Out</Badge>
                         ) : (
-                          <Badge variant="default">Unsigned</Badge>
+                          <Badge variant="secondary">In</Badge>
+                        )}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+                  if (key === "broken") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        {row.broken ? (
+                          <Badge variant="destructive">Broken</Badge>
+                        ) : (
+                          <Badge variant="secondary">No</Badge>
                         )}
                       </TableCell>
                     ) : (
@@ -232,7 +279,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                   }
 
                   return value.visible ? (
-                    <TableCell className="whitespace-nowrap" key={key}>
+                    <TableCell className="" key={key}>
                       {row[key].length <= MAX_TEXT_LEN
                         ? row[key]
                         : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
@@ -241,19 +288,25 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                     ``
                   );
                 })}
-                <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/roster/${row.id}`}>
-                    <Button variant="outline">
-                      <SquarePen className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                <TableCell className="text-center" key="addToBooking">
+                  <Button
+                    type="button"
+                    key="addbutton"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToBooking(row);
+                    }}
+                  >
+                    <CirclePlus className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
               <TableCell
-                colSpan={Object.keys(rosterColumnsDefault).length}
+                colSpan={Object.keys(inventoryColumnsDefault).length}
                 className="h-24 text-center"
               >
                 No results.
@@ -266,4 +319,4 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
   );
 };
 
-export default RosterTable;
+export default BookingInventoryTable;

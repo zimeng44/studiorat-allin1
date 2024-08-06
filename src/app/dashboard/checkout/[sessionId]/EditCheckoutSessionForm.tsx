@@ -234,8 +234,8 @@ const EditCheckoutSessionForm = ({
       );
       setError(res.strapiErrors);
       if (!res?.strapiErrors?.status) {
-        router.push("/dashboard/users");
-        toast.success("New Checkout Session Added");
+        router.push("/dashboard/checkout");
+        toast.success("Checkout Session Saved");
       }
     } catch (error) {
       toast.error("Error Updating Checkout Session");
@@ -248,9 +248,9 @@ const EditCheckoutSessionForm = ({
       return;
     }
 
-    toast.success("Session Saved.");
-    router.push("/dashboard/checkout");
-    router.refresh();
+    // toast.success("Session Saved.");
+    // router.push("/dashboard/checkout");
+    // router.refresh();
     // router.refresh();
   }
 

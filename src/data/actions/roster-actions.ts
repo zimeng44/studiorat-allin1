@@ -36,7 +36,7 @@ export const updateRosterAction = async (
 
   const responseData = await mutateData("PUT", `/api/rosters/${id}`, payload);
 
-  // console.log(updatedRosterRecord);
+  console.log(responseData);
 
   if (!responseData) {
     return {
@@ -58,7 +58,7 @@ export const updateRosterAction = async (
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/roster");
 
-  redirect("/dashboard/roster");
+  // redirect("/dashboard/roster");
 
   // console.log(flattenedData);
 

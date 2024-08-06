@@ -138,6 +138,11 @@ export interface RosterRecordType {
   academicProgram?: string;
   roster_permissions?: { data: RosterPermissionType[] };
   agreement?: boolean;
+  excusedAbs?: number;
+  excusedLate?: number;
+  unexcusedAbs?: number;
+  unexcusedLate?: number;
+  lateReturn?: number;
 }
 
 export interface RosterRecordTypePost {
@@ -148,6 +153,11 @@ export interface RosterRecordTypePost {
   academicProgram?: string;
   roster_permissions?: (number | undefined)[];
   agreement?: boolean;
+  excusedAbs?: number;
+  excusedLate?: number;
+  unexcusedAbs?: number;
+  unexcusedLate?: number;
+  lateReturn?: number;
 }
 
 export interface RosterPermissionType {
@@ -156,9 +166,9 @@ export interface RosterPermissionType {
   courseTitle?: string;
   instructor?: string;
   permissionDetails?: string;
-  permmitedStudios?: string[];
-  startTime?: Date | string;
-  endTime?: Date | string;
+  permittedStudios?: string[];
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface RosterPermissionTypePost {
@@ -166,9 +176,9 @@ export interface RosterPermissionTypePost {
   courseTitle?: string;
   instructor?: string;
   permissionDetails?: string;
-  permmitedStudios?: string[];
-  startTime?: Date | string;
-  endTime?: Date | string;
+  permittedStudios?: string[];
+  startDate?: Date | string;
+  endDate?: Date | string;
 }
 
 export interface RetrievedRosterPermission {

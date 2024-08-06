@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -8,16 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { TagsInput } from "react-tag-input-component";
-import { Info } from "lucide-react";
+import { CircleMinus } from "lucide-react";
 
 const MAX_TEXT_LEN = 25;
 
@@ -163,56 +160,30 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[3] ? (
-                  <TableCell className="content-center" key={header[3]}>
-                    <HoverCard>
-                      <HoverCardTrigger
-                        className="flex-col content-center"
-                        asChild
+                  <TableCell className="break-word" key={header[3]}>
+                    {row.permissionDetails.startsWith("http") ? (
+                      <a
+                        className="text-indigo-500"
+                        href={`${row.permissionDetails}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) =>
+                          !window.confirm("You're headed to a external link")
+                            ? e.preventDefault()
+                            : ""
+                        }
                       >
-                        <div>
-                          <Info className="h-5 w-5" />
-                          <p className="whitespace-nowrap text-xs text-slate-400">
-                            (hover for details)
-                          </p>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent>
-                        {row.permissionDetails.startsWith("http") ? (
-                          <a
-                            className="text-indigo-500"
-                            href={`${row.permissionDetails}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) =>
-                              !window.confirm(
-                                "You're headed to a external link",
-                              )
-                                ? e.preventDefault()
-                                : ""
-                            }
-                          >
-                            Link
-                          </a>
-                        ) : (
-                          row.permissionDetails
-                        )}
-                      </HoverCardContent>
-                    </HoverCard>
+                        Link
+                      </a>
+                    ) : (
+                      row.permissionDetails
+                    )}
                   </TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[4] ? (
-                  <TableCell className="max-w-28" key={header[4]}>
-                    {/* {row.permittedStudios}{" "} */}
-                    <TagsInput
-                      value={row.permittedStudios}
-                      // onChange={(value) => form.setValue(field.name, value)}
-                      name="permittedStudios"
-                      // placeHolder="Enter a studio"
-                      disabled
-                    />
-                  </TableCell>
+                  <TableCell key={header[4]}>{row.permittedStudios}</TableCell>
                 ) : (
                   ``
                 )}

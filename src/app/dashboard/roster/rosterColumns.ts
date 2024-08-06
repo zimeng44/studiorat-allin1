@@ -16,6 +16,12 @@ export interface TableColumnStatus {
   stuName: TableFieldStatus;
   academicLevel: TableFieldStatus;
   academicProgram: TableFieldStatus;
+  agreement: TableFieldStatus;
+  excusedAbs: TableFieldStatus;
+  excusedLate: TableFieldStatus;
+  unexcusedAbs: TableFieldStatus;
+  unexcusedLate: TableFieldStatus;
+  lateReturn: TableFieldStatus;
 }
 
 export type ColumnKey = keyof TableColumnStatus;
@@ -44,6 +50,26 @@ export const rosterColumnsDefault = {
   agreement: {
     header: "Agreement",
     visible: true,
+  },
+  excusedAbs: {
+    header: "Excused Absentce",
+    visible: false,
+  },
+  excusedLate: {
+    header: "Excused Late",
+    visible: false,
+  },
+  unexcusedAbs: {
+    header: "Unexcused Absence",
+    visible: false,
+  },
+  unexcusedLate: {
+    header: "Unexcused Lte",
+    visible: false,
+  },
+  lateReturn: {
+    header: "Late Return",
+    visible: false,
   },
 };
 
@@ -78,4 +104,9 @@ export const inventoryColumns = [
     header: "Agreement",
     visible: true,
   },
+  { accessorKey: "excusedAbs", header: "Excused Absentce", visible: false },
+  { accessorKey: "excusedLate", header: "Excused Late", visible: false },
+  { accessorKey: "unexcusedAbs", header: "Unexcused Absence", visible: false },
+  { accessorKey: "unexcusedLate", header: "Unexcused Lte", visible: false },
+  { accessorKey: "lateReturn", header: "Late Return", visible: false },
 ];

@@ -214,7 +214,7 @@ function FileInput({ authToken }: { authToken: string }) {
             Permission:
             {permissionUploaded ? (
               <h2 className="flex-1 p-1 text-sm italic text-green-400">
-                Permission Uploaded Complete
+                Complete
               </h2>
             ) : (
               ``
@@ -228,7 +228,7 @@ function FileInput({ authToken }: { authToken: string }) {
             Roster:
             {rosterUploaded ? (
               <h2 className="flex-1 p-1 text-sm italic text-green-400">
-                Roster Upload Complete
+                Complete
               </h2>
             ) : (
               ``

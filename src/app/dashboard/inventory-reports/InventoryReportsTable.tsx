@@ -75,7 +75,7 @@ const InventoryReportsTable = ({
   columnsStatus,
 }: InventoryReportsTableProps) => {
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <Table>
         <TableHeader className="sticky top-0 bg-indigo-100">
           <TableRow>

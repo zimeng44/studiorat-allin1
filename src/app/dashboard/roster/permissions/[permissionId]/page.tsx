@@ -6,16 +6,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import EditItemForm from "./EditRosterForm";
-import { getRosterById, getRosterPermissions } from "@/data/loaders";
+import { getRosterPermissionById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import EditRosterForm from "./EditRosterForm";
-import { cookies } from "next/headers";
-import { permission } from "process";
+import EditRosterPermissionForm from "./EditRosterPermissionForm";
 
 interface ParamsProps {
   params: {
-    rosterId: string;
+    permissionId: string;
   };
 }
 
@@ -28,14 +25,9 @@ export default async function EditRosterRoute({
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const data = await getRosterById(params.rosterId);
+  const data = await getRosterPermissionById(params.permissionId);
 
-  const { data: permissions, meta: permissionsMeta } =
-    await getRosterPermissions("", "1", "100", {});
-
-  const jwtCookie = cookies().get("jwt");
-
-  if (!jwtCookie) console.error("JWT cookie not found");
+  // console.log(data);
 
   return (
     <div className="flex-col p-0 md:p-5">
@@ -54,17 +46,21 @@ export default async function EditRosterRoute({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard/roster">
+              Permissions
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
             <BreadcrumbPage>Edit</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Roster</h1>
+      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Permission</h1>
       <div className="flex items-center md:px-2">
-        <EditRosterForm
-          roster={data}
-          rosterId={params.rosterId}
-          authToken={jwtCookie?.value ?? ""}
-          permissions={permissions}
+        <EditRosterPermissionForm
+          permission={data}
+          permissionId={params.permissionId}
         />
       </div>
     </div>

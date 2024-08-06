@@ -80,20 +80,6 @@ const HeaderMenu = async ({ currentRole }: { currentRole: string }) => {
               ``
             )}
 
-            {currentRole === "Admin" || currentRole === "InventoryManager" ? (
-              <Link
-                // className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                href="/dashboard/master-inventory"
-              >
-                <DropdownMenuItem>
-                  <Library className="mr-2 h-4 w-4" />
-                  Master Inventory
-                </DropdownMenuItem>
-              </Link>
-            ) : (
-              ``
-            )}
-
             {currentRole === "Admin" || currentRole === "Monitor" ? (
               <Link
                 // className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
@@ -116,6 +102,20 @@ const HeaderMenu = async ({ currentRole }: { currentRole: string }) => {
                 <DropdownMenuItem>
                   <UserCheck className="mr-2 h-4 w-4" />
                   Roster
+                </DropdownMenuItem>
+              </Link>
+            ) : (
+              ``
+            )}
+
+            {currentRole === "Admin" || currentRole === "InventoryManager" ? (
+              <Link
+                // className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                href="/dashboard/master-inventory"
+              >
+                <DropdownMenuItem>
+                  <Library className="mr-2 h-4 w-4" />
+                  Master Inventory
                 </DropdownMenuItem>
               </Link>
             ) : (

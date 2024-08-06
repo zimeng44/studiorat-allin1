@@ -10,28 +10,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { SquarePen } from "lucide-react";
+import { Info, SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { deleteRosterAction } from "@/data/actions/roster-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "../../../components/ui/badge";
-import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
+import { Badge } from "@/components/ui/badge";
+import {
+  rosterPermissionsColumnsDefault,
+  TableColumnStatus,
+} from "./rosterPermissionsColumns";
 
 const MAX_TEXT_LEN = 20;
 
-interface RosterTableProps {
+interface RosterPermissionsTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
 }
 
-const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
+const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
   // console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -217,32 +225,77 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "agreement") {
+                  if (key === "permissionDetails") {
                     return value.visible ? (
-                      <TableCell className="whitespace-nowrap" key={key}>
-                        {row.agreement ? (
-                          <Badge variant="secondary">Signed</Badge>
+                      <TableCell className="break-word" key={key}>
+                        <HoverCard>
+                          <HoverCardTrigger
+                            className="flex-col content-center"
+                            asChild
+                          >
+                            <div>
+                              <Info className="h-5 w-5" />
+                              <p className="whitespace-nowrap text-xs text-slate-400">
+                                (hover for details)
+                              </p>
+                            </div>
+                          </HoverCardTrigger>
+                          <HoverCardContent>
+                            {row.permissionDetails.startsWith("http") ? (
+                              <a
+                                className="text-indigo-500"
+                                href={`${row.permissionDetails}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) =>
+                                  !window.confirm(
+                                    "You're headed to a external link",
+                                  )
+                                    ? e.preventDefault()
+                                    : ""
+                                }
+                              >
+                                Link
+                              </a>
+                            ) : (
+                              row.permissionDetails
+                            )}
+                          </HoverCardContent>
+                        </HoverCard>
+                        {/* {row[key].startsWith("http") ? (
+                          <a
+                            className="text-indigo-500"
+                            href={`${row[key]}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) =>
+                              !window.confirm(
+                                "You're headed to a external link",
+                              )
+                                ? e.preventDefault()
+                                : ""
+                            }
+                          >
+                            Link
+                          </a>
                         ) : (
-                          <Badge variant="default">Unsigned</Badge>
-                        )}
+                          row[key]
+                        )} */}
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-
                   return value.visible ? (
-                    <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                    <TableCell className="break-words" key={key}>
+                      {row[key]}
                     </TableCell>
                   ) : (
                     ``
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/roster/${row.id}`}>
+                  <Link href={`/dashboard/roster/permissions/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
@@ -253,7 +306,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
           ) : (
             <TableRow>
               <TableCell
-                colSpan={Object.keys(rosterColumnsDefault).length}
+                colSpan={Object.keys(rosterPermissionsColumnsDefault).length}
                 className="h-24 text-center"
               >
                 No results.

@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-  BookOpenCheck,
   EllipsisVertical,
   File,
   Filter,
@@ -28,6 +27,7 @@ import {
   PlusCircle,
   Settings,
   ShoppingCart,
+  UserCheck,
   Users2,
 } from "lucide-react";
 import { Search } from "@/components/custom/Search";
@@ -35,9 +35,9 @@ import Link from "next/link";
 import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
 import {
   ColumnKey,
-  rosterColumnsDefault,
+  rosterPermissionsColumnsDefault,
   TableColumnStatus,
-} from "./rosterColumns";
+} from "./rosterPermissionsColumns";
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
@@ -62,7 +62,7 @@ const TabHeader = ({
   };
 
   const resetColumnsVisibility = () => {
-    setColumnsStatus(structuredClone(rosterColumnsDefault));
+    setColumnsStatus(structuredClone(rosterPermissionsColumnsDefault));
     // setRowsSelected(Array(data.length).fill(false));
     const params = new URLSearchParams(searchParams);
     params.delete("sort");
@@ -99,19 +99,7 @@ const TabHeader = ({
       </div>
 
       <div className="item-end ml-auto flex">
-        <Link href="/dashboard/roster/permissions">
-          <Button variant="outline" className="h10 ml-5">
-            <BookOpenCheck className="mr-2 h-4 w-4" />
-            Permissions
-          </Button>
-        </Link>
-        <Link href="/dashboard/roster/data-import">
-          <Button variant="outline" className="h10 ml-5">
-            <Import className="mr-2 h-4 w-4" />
-            Import
-          </Button>
-        </Link>
-        <Link href="/dashboard/roster/add">
+        <Link href="/dashboard/roster/permissions/add">
           <Button variant="outline" className="h10 ml-1">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add
