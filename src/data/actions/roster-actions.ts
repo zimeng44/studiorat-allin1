@@ -36,7 +36,7 @@ export const updateRosterAction = async (
 
   const responseData = await mutateData("PUT", `/api/rosters/${id}`, payload);
 
-  console.log(responseData);
+  // console.log(responseData);
 
   if (!responseData) {
     return {

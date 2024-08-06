@@ -14,13 +14,13 @@ export async function createRosterPermissionAction(
   if (!authToken) throw new Error("No auth token found");
 
   // console.log(newRosterPermission.finishTime);
-  if (newRosterPermission.startTime)
-    newRosterPermission.startTime = new Date(
-      newRosterPermission.startTime,
+  if (newRosterPermission.startDate)
+    newRosterPermission.startDate = new Date(
+      newRosterPermission.startDate,
     ).toISOString();
-  if (newRosterPermission.endTime)
-    newRosterPermission.endTime = new Date(
-      newRosterPermission.endTime,
+  if (newRosterPermission.endDate)
+    newRosterPermission.endDate = new Date(
+      newRosterPermission.endDate,
     ).toISOString();
 
   const payload = {
@@ -78,7 +78,7 @@ export const updateRosterPermissionAction = async (
   const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/roster");
 
-  redirect("/dashboard/roster");
+  redirect("/dashboard/roster/permissions");
 
   // console.log(flattenedData);
 
@@ -110,5 +110,5 @@ export async function deleteRosterPermissionAction(id: string) {
     };
   }
 
-  redirect("/dashboard/roster");
+  redirect("/dashboard/roster/permissions");
 }
