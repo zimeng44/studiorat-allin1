@@ -153,7 +153,7 @@ const EditRosterForm = ({
   );
 
   const [open, setOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
+  // const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
 
   const [error, setError] = useState(INITIAL_STATE);
 
@@ -478,11 +478,12 @@ const EditRosterForm = ({
                     variant="outline"
                     className="min-w-[150px] justify-start"
                   >
-                    {selectedStatus ? (
+                    {/* {selectedStatus ? (
                       <>{selectedStatus.label}</>
                     ) : (
                       <>+ Add a new permission</>
-                    )}
+                    )} */}
+                    + Add a new permission
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0" align="start">
