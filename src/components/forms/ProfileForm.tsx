@@ -26,15 +26,15 @@ interface ProfileFormProps {
   credits: number;
 }
 
-function CountBox({ text }: { readonly text: number }) {
-  const style = "font-bold text-md mx-1";
-  const color = text > 0 ? "text-primary" : "text-red-500";
-  return (
-    <div className="flex h-9 w-full items-center justify-center rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none">
-      You have<span className={cn(style, color)}>{text}</span>credit(s)
-    </div>
-  );
-}
+// function CountBox({ text }: { readonly text: number }) {
+//   const style = "font-bold text-md mx-1";
+//   const color = text > 0 ? "text-primary" : "text-red-500";
+//   return (
+//     <div className="flex h-9 w-full items-center justify-center rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none">
+//       You have<span className={cn(style, color)}>{text}</span>credit(s)
+//     </div>
+//   );
+// }
 
 export function ProfileForm({
   data,
@@ -53,7 +53,7 @@ export function ProfileForm({
   return (
     <form action={formAction} className={cn("space-y-4", className)}>
       <div className="grid space-y-4 ">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Input
             id="username"
             name="username"
@@ -68,7 +68,7 @@ export function ProfileForm({
             defaultValue={data.email || ""}
             disabled
           />
-          <CountBox text={data.credits} />
+          {/* <CountBox text={data.credits} /> */}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -89,7 +89,7 @@ export function ProfileForm({
           id="bio"
           name="bio"
           placeholder="Write your bio here..."
-          className="h-[224px] w-full resize-none rounded-md border p-2"
+          className="h-[124px] w-full resize-none rounded-md border p-2"
           defaultValue={data.bio || ""}
           required
         />
