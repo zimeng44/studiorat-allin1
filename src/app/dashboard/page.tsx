@@ -71,7 +71,7 @@ export default async function DashboardRoute() {
       inventoryReportsFilter,
     );
 
-  // console.log(inventoryReportsItems);
+  console.log(inventoryReportsFilter);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">

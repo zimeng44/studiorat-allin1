@@ -699,6 +699,36 @@ export async function getInventoryReports(
     // if (value === "" || value === false || value === "false") continue;
     if (value === "All" || value === "") continue;
 
+    if (key === "createdAt") {
+      if (!value.from && !value.to) {
+        continue;
+      } else if (!value.to) {
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        continue;
+      } else if (!value.from) {
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      } else {
+        // console.log(new Date(value.to).toISOString());
+        // console.log("Value to is ", value.to);
+        filterArr.push({
+          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+        });
+        filterArr.push({
+          [key]: {
+            $lte: `${new Date(value.to).toISOString()}`,
+          },
+        });
+        continue;
+      }
+    }
+
     if (value === "finished") {
       filterArr.push({ [key]: { $eq: true } });
       continue;
