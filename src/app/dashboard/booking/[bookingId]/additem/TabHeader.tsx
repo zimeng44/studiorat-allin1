@@ -1,14 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -19,41 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
+import { Settings } from "lucide-react";
 import { Search } from "@/components/custom/Search";
-import Link from "next/link";
-import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
-// import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
-// type ColumnKey =
-//   | "creationTime"
-//   | "stuIDCheckout"
-//   | "stuIDCheckin"
-//   | "userName"
-//   | "finished"
-//   | "studio"
-//   | "otherLocation"
-//   | "creationMonitor"
-//   | "finishMonitor"
-//   | "finishTime"
-//   | "notes";
 
 interface TableFieldStatus {
   header: string;

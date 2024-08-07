@@ -16,28 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
+import { Filter, PlusCircle, Settings } from "lucide-react";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
-import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
-// import { userColumnsDefault } from "./userColumns";
 import {
   userColumnsDefault,
   TableColumnStatus,
