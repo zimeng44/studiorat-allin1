@@ -246,11 +246,18 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/booking/${row.id}?view=${view}`}>
-                    <Button variant="outline">
-                      <SquarePen className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                  {/* <Link href={`/dashboard/booking/${row.id}?view=${view}`}> */}
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      const params = new URLSearchParams(searchParams);
+                      params.set("view", view);
+                      router.push(`${pathname}/${row.id}?${params.toString()}`);
+                    }}
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
+                  {/* </Link> */}
                 </TableCell>
               </TableRow>
             ))

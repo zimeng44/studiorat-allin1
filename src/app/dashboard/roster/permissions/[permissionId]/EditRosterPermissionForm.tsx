@@ -15,22 +15,10 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  deleteRosterAction,
-  updateRosterAction,
-} from "@/data/actions/roster-actions";
-import {
-  RetrievedRosterPermission,
-  RosterPermissionType,
-  RosterRecordType,
-} from "@/data/definitions";
-import Link from "next/link";
+import { RosterPermissionType } from "@/data/definitions";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
-import RosterEmbededTable from "../RosterEmbededTable";
-import { rosterPermissionsColumns } from "../rosterPermissionsColumns";
-import { Switch } from "@/components/ui/switch";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import {
   deleteRosterPermissionAction,
@@ -75,6 +63,7 @@ const EditRosterPermissionForm = ({
 }) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
+  const searchParams = useSearchParams();
   // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
   // const rosterPermissions =
   //   roster.roster_permissions as RetrievedRosterPermission;
@@ -401,7 +390,7 @@ const EditRosterPermissionForm = ({
             >
               Delete
             </Button>
-            <Link href="/dashboard/roster/permissions">
+            {/* <Link href="/dashboard/roster/permissions">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"
                 type="button"
@@ -409,7 +398,20 @@ const EditRosterPermissionForm = ({
               >
                 Cancel
               </Button>
-            </Link>
+            </Link> */}
+            <Button
+              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              variant="secondary"
+              onClick={(e) => {
+                const params = new URLSearchParams(searchParams);
+                router.push(
+                  `/dashboard/roster/permissions?${params.toString()}`,
+                );
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </form>
       </Form>

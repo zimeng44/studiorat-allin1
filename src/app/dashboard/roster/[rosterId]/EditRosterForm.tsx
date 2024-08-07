@@ -34,7 +34,7 @@ import {
 } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import RosterEmbededTable from "../RosterEmbededTable";
 import { rosterPermissionsColumnsInEditRoster } from "../permissions/rosterPermissionsColumns";
@@ -84,6 +84,8 @@ const EditRosterForm = ({
   userRole: string;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const rosterPermissions =
     roster.roster_permissions as RetrievedRosterPermission;
   const [itemObjArr, setItemObjArr] = useState(
@@ -468,7 +470,7 @@ const EditRosterForm = ({
             >
               Delete
             </Button>
-            <Link href="/dashboard/roster">
+            {/* <Link href="/dashboard/roster">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"
                 type="button"
@@ -476,7 +478,18 @@ const EditRosterForm = ({
               >
                 Cancel
               </Button>
-            </Link>
+            </Link> */}
+            <Button
+              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              variant="secondary"
+              onClick={(e) => {
+                const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/roster?${params.toString()}`);
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </form>
       </Form>

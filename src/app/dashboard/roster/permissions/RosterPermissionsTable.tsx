@@ -312,11 +312,20 @@ const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/roster/permissions/${row.id}`}>
+                  {/* <Link href={`/dashboard/roster/permissions/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
-                  </Link>
+                  </Link> */}
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      const params = new URLSearchParams(searchParams);
+                      router.push(`${pathname}/${row.id}?${params.toString()}`);
+                    }}
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

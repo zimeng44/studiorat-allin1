@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -10,61 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
-import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-
-// import InventoryFilterForm from "@/components/forms/InventoryFilterForm";
-
-import { deleteItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search } from "@/components/custom/Search";
 import { Badge } from "@/components/ui/badge";
 import {
-  ColumnKeys,
   inventoryReportsColumnsDefault,
   TableColumnStatus,
 } from "./inventoryReportsColumns";
-import { InventoryReportType } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 8;
-
-// interface TableFieldStatus {
-//   header: string;
-//   visible: boolean;
-// }
-// interface TableColumnStatus {
-//   creationTime: TableFieldStatus;
-//   stuIDCheckout: TableFieldStatus;
-//   stuIDCheckin: TableFieldStatus;
-//   studio: TableFieldStatus;
-//   otherLocation: TableFieldStatus;
-//   creationMonitor: TableFieldStatus;
-//   finishMonitor: TableFieldStatus;
-//   finishTime: TableFieldStatus;
-//   notes: TableFieldStatus;
-//   finished: TableFieldStatus;
-// }
-
 interface InventoryReportsTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
@@ -74,6 +28,10 @@ const InventoryReportsTable = ({
   data,
   columnsStatus,
 }: InventoryReportsTableProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   return (
     <div className="rounded-md">
       <Table>
@@ -145,11 +103,20 @@ const InventoryReportsTable = ({
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/inventory-reports/${row.id}`}>
+                  {/* <Link href={`/dashboard/inventory-reports/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
-                  </Link>
+                  </Link> */}
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      const params = new URLSearchParams(searchParams);
+                      router.push(`${pathname}/${row.id}?${params.toString()}`);
+                    }}
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

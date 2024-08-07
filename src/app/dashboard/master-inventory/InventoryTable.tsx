@@ -275,11 +275,20 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/master-inventory/${row.id}`}>
+                  {/* <Link href={`/dashboard/master-inventory/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
-                  </Link>
+                  </Link> */}
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      const params = new URLSearchParams(searchParams);
+                      router.push(`${pathname}/${row.id}?${params.toString()}`);
+                    }}
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

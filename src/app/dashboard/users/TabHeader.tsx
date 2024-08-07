@@ -63,6 +63,7 @@ const TabHeader = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   let filterOpen = searchParams.get("filterOpen") === "true";
+  const filterOn = searchParams.get("filterOn") === "true";
 
   const setColumnsVisibility = (key: ColumnKey, checked: boolean) => {
     let newState = structuredClone(columnsStatus);
@@ -91,7 +92,10 @@ const TabHeader = ({
         }}
       >
         <PopoverTrigger asChild>
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            className={`${filterOn ? "brightness-50" : ""}`}
+          >
             <Filter className="h-4 w-4" />
           </Button>
         </PopoverTrigger>

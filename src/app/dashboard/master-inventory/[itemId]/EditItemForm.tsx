@@ -29,7 +29,7 @@ import {
 import { InventoryItem } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
 
 const INITIAL_STATE = {
@@ -61,23 +61,7 @@ const EditItemForm = ({
 }) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
-  // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
-
-  // const [deleteState, deleteAction] = useFormState(
-  //   deleteSummaryById,
-  //   INITIAL_STATE,
-  // );
-
-  // const [updateState, updateAction] = useFormState(
-  //   updateInventoryItemAction,
-  //   INITIAL_STATE,
-  // );
-
-  // const [data, setData] = useState(item);
-  // const [currentRowId, setCurrentRowId] = useState(itemId);
-  // const data = item;
-
-  // console.log(itemId);
+  const searchParams = useSearchParams();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -321,7 +305,7 @@ const EditItemForm = ({
             >
               Delete
             </Button>
-            <Link href="/dashboard/master-inventory">
+            {/* <Link href="/dashboard/master-inventory">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"
                 type="button"
@@ -329,7 +313,18 @@ const EditItemForm = ({
               >
                 Cancel
               </Button>
-            </Link>
+            </Link> */}
+            <Button
+              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              variant="secondary"
+              onClick={(e) => {
+                const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/master-inventory?${params.toString()}`);
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </form>
       </Form>

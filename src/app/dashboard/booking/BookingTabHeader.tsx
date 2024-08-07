@@ -82,6 +82,7 @@ const BookingTabHeader = ({
   const pathname = usePathname();
   const view = searchParams.get("view") ?? "calendar";
   let filterOpen = searchParams.get("filterOpen") === "true";
+  const filterOn = searchParams.get("filterOn") === "true";
 
   // console.log("yes!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
@@ -113,7 +114,10 @@ const BookingTabHeader = ({
         }}
       >
         <PopoverTrigger asChild>
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            className={`${filterOn ? "brightness-50" : ""}`}
+          >
             <Filter className="h-4 w-4" />
           </Button>
         </PopoverTrigger>

@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { checkoutColumnsDefault, TableColumnStatus } from "./checkoutColumns";
 import { Badge } from "@/components/ui/badge";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const MAX_TEXT_LEN = 8;
 
@@ -42,6 +43,9 @@ const CheckoutSessionsTable = ({
   data,
   columnsStatus,
 }: CheckoutSessionsTableProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   return (
     <div className="rounded-md">
       <Table>
@@ -99,11 +103,20 @@ const CheckoutSessionsTable = ({
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  <Link href={`/dashboard/checkout/${row.id}`}>
+                  {/* <Link href={`/dashboard/checkout/${row.id}`}>
                     <Button variant="outline">
                       <SquarePen className="h-4 w-4" />
                     </Button>
-                  </Link>
+                  </Link> */}
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      const params = new URLSearchParams(searchParams);
+                      router.push(`${pathname}/${row.id}?${params.toString()}`);
+                    }}
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

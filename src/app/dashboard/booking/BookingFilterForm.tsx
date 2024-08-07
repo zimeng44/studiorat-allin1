@@ -53,7 +53,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 //   z.string().min(12).and(z.string().max(13)),
 //   z.string().length(0),
 // ]);
-interface CheckoutFilterFormProps {
+interface FilterFormProps {
   startTime?: { from?: Date; to?: Date };
   endTime?: { from?: Date; to?: Date };
   type?: string;
@@ -78,15 +78,16 @@ const formSchema = z.object({
   // username: z.string().min(2).max(50),
 });
 
-const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
+const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const [data, setData] = useState<CheckoutFilterFormProps>(filter);
+  const [data, setData] = useState<FilterFormProps>(filter);
 
-  const createPageURL = (filterValues: CheckoutFilterFormProps) => {
+  const createPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "true");
     for (const [key, value] of Object.entries(filterValues)) {
       if (value === "" || value === "All") {
         params.delete(key);
@@ -118,9 +119,10 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
     return `${pathname}?${params.toString()}`;
   };
 
-  const resetPageURL = (filterValues: CheckoutFilterFormProps) => {
+  const resetPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "false");
     for (const [key, value] of Object.entries(filterValues)) {
       // if (!params.has(key)) continue;
       if (key === "startTime" || key === "endTime") {

@@ -32,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
@@ -86,13 +86,9 @@ const EditCheckoutSessionForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
-  // router.refresh();
-  // const [tempSession, setTempSession] = useState(session);
-  // console.log("Item Details Render!!", session);
-  // const router = useRouter();
-  // const [data, setData] = useState(rowData);
-  // const [scan, setScan] = useState("");
   const inventoryItems = session.inventory_items as RetrievedItems;
   const [noTagItems, setNoTagItems] = useState(session.noTagItems ?? [""]);
   // const [itemObjArr, setItemObjArr] = useState(
@@ -548,8 +544,9 @@ const EditCheckoutSessionForm = ({
               type="button"
               variant="secondary"
               onClick={(e) => {
-                router.push("/dashboard/checkout");
-                router.refresh();
+                const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/checkout?${params.toString()}`);
+                // router.refresh();
               }}
             >
               Cancel

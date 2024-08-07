@@ -65,6 +65,7 @@ const InventoryFilterForm = ({
   const createPageURL = (filterValues: InventoryFilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "true");
     for (const [key, value] of Object.entries(filterValues)) {
       if ((key === "out" || key === "broken") && value === false) {
         params.delete(key);
@@ -85,6 +86,7 @@ const InventoryFilterForm = ({
   const resetPageURL = (filterValues: InventoryFilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "false");
     for (const [key, value] of Object.entries(filterValues)) {
       if (
         (value === "" || value === false || value === "All") &&

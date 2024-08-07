@@ -58,6 +58,7 @@ const UserFilterForm = ({
   const createPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "true");
     for (const [key, value] of Object.entries(filterValues)) {
       if (key === "blocked" && value === false) {
         params.delete(key);
@@ -78,6 +79,7 @@ const UserFilterForm = ({
   const resetPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
+    params.set("filterOn", "false");
     for (const [key, value] of Object.entries(filterValues)) {
       if (
         (value === "" || value === false || value === "All") &&

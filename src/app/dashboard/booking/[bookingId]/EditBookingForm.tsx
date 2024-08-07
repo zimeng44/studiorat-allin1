@@ -809,7 +809,10 @@ const EditBookingForm = ({
               onClick={(e) => {
                 // deleteCookie(`tempBookingItems${bookingId}`);
                 // localStorage.removeItem(`tempBookingItems${bookingId}`);
-                router.push(`/dashboard/booking?view=${view}`);
+                const params = new URLSearchParams(searchParams);
+                // params.set("view", view);
+                router.push(`/dashboard/booking?${params.toString()}`);
+                // router.push(`/dashboard/booking?view=${view}`);
                 // router.refresh();
               }}
             >

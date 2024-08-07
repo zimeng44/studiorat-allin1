@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
@@ -71,6 +71,7 @@ const EditInventoryReportForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
   const itemsChecked = report.itemsChecked as RetrievedItems;
 
@@ -251,8 +252,12 @@ const EditInventoryReportForm = ({
               type="button"
               variant="secondary"
               onClick={(e) => {
-                router.push("/dashboard/inventory-reports");
+                // router.push("/dashboard/inventory-reports");
                 // router.refresh();
+                const params = new URLSearchParams(searchParams);
+                router.push(
+                  `/dashboard/inventory-reports?${params.toString()}`,
+                );
               }}
             >
               Cancel

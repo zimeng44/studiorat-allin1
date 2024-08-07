@@ -22,14 +22,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import {
-  deleteItemAction,
-  updateItemAction,
-} from "@/data/actions/inventory-actions";
-import { InventoryItem, UserRole, UserType } from "@/data/definitions";
+import { UserRole, UserType } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import {
   deleteUserAction,
@@ -109,6 +105,8 @@ const EditUserForm = ({
 }) => {
   // console.log(currentUserRole.id);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
   // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
 
@@ -392,15 +390,19 @@ const EditUserForm = ({
             >
               Delete
             </Button>
-            <Link href="/dashboard/users">
-              <Button
-                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
-                type="button"
-                variant="secondary"
-              >
-                Cancel
-              </Button>
-            </Link>
+            {/* <Link href="/dashboard/users"> */}
+            <Button
+              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              type="button"
+              variant="secondary"
+              onClick={(e) => {
+                const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/users?${params.toString()}`);
+              }}
+            >
+              Cancel
+            </Button>
+            {/* </Link> */}
           </div>
         </form>
       </Form>
