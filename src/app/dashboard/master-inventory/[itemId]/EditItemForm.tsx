@@ -319,8 +319,10 @@ const EditItemForm = ({
               type="button"
               variant="secondary"
               onClick={(e) => {
-                const params = new URLSearchParams(searchParams);
-                router.push(`/dashboard/master-inventory?${params.toString()}`);
+                // const params = new URLSearchParams(searchParams);
+                router.push(
+                  `/dashboard/master-inventory?${searchParams.toString()}`,
+                );
               }}
             >
               Cancel

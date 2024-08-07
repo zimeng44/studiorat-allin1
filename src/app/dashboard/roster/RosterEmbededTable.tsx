@@ -145,7 +145,11 @@ const BookingEmbededTable = ({
             ) : (
               ``
             )}
-            <TableHead className="text-center" key="deleteButton"></TableHead>
+            {isEditable ? (
+              <TableHead className="text-center" key="deleteButton"></TableHead>
+            ) : (
+              ``
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -244,20 +248,24 @@ const BookingEmbededTable = ({
                 ) : (
                   ``
                 )}
-                <TableCell className="text-center" key="deleteButton">
-                  <Button
-                    type="button"
-                    key="deleteButton"
-                    variant="outline"
-                    onClick={(e) => {
-                      // e.preventDefault();
-                      handleRemoveFromBooking(row);
-                    }}
-                    disabled={!isEditable}
-                  >
-                    <CircleMinus className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+                {isEditable ? (
+                  <TableCell className="text-center" key="deleteButton">
+                    <Button
+                      type="button"
+                      key="deleteButton"
+                      variant="outline"
+                      onClick={(e) => {
+                        // e.preventDefault();
+                        handleRemoveFromBooking(row);
+                      }}
+                      disabled={!isEditable}
+                    >
+                      <CircleMinus className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                ) : (
+                  ``
+                )}
               </TableRow>
             ))
           ) : (

@@ -122,9 +122,10 @@ const DashboardCards = ({
             ``
           )}
         </div>
-        <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
           {userRole !== "InventoryManager" ? (
-            <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
+            // className="xl:col-span-2"
+            <Card x-chunk="dashboard-01-chunk-4">
               <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
                   <CardTitle>Bookings</CardTitle>
@@ -213,7 +214,8 @@ const DashboardCards = ({
           )}
           {userRole === "Admin" || userRole === "Monitor" ? (
             <>
-              <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
+              {/* className="xl:col-span-2" */}
+              <Card x-chunk="dashboard-01-chunk-4">
                 <CardHeader className="flex flex-row items-center">
                   <div className="grid gap-2">
                     <CardTitle>Checkout Sessions</CardTitle>

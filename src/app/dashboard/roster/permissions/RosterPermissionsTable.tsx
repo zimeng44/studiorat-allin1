@@ -38,9 +38,14 @@ const MAX_TEXT_LEN = 20;
 interface RosterPermissionsTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
+  userRole: string;
 }
 
-const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
+const RosterTable = ({
+  data,
+  columnsStatus,
+  userRole,
+}: RosterPermissionsTableProps) => {
   // console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -145,41 +150,46 @@ const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
       <Table>
         <TableHeader className="sticky top-0 bg-indigo-100">
           <TableRow>
-            <TableHead key={"select"}>
-              <Popover open={isBatchOpOpen}>
-                <PopoverTrigger asChild>
-                  <Checkbox
-                    className="mr-2"
-                    checked={isAllSelected}
-                    onCheckedChange={(checked: boolean) => {
-                      handleAllSelected(checked);
-                    }}
-                    aria-label="Select all"
-                  />
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-50 space-x-2"
-                  onInteractOutside={(e) => e.preventDefault()}
-                  side="right"
-                  // asChild
-                >
-                  <Button
-                    onClick={() => handleBatchDelete()}
-                    variant="destructive"
+            {userRole === "Admin" ? (
+              <TableHead key={"select"}>
+                <Popover open={isBatchOpOpen}>
+                  <PopoverTrigger asChild>
+                    <Checkbox
+                      className="mr-2"
+                      checked={isAllSelected}
+                      onCheckedChange={(checked: boolean) => {
+                        handleAllSelected(checked);
+                      }}
+                      aria-label="Select all"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-50 space-x-2"
+                    onInteractOutside={(e) => e.preventDefault()}
+                    side="right"
+                    // asChild
                   >
-                    Delete Selected
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      handleResetSelection();
-                    }}
-                    variant="secondary"
-                  >
-                    Reset
-                  </Button>
-                </PopoverContent>
-              </Popover>
-            </TableHead>
+                    <Button
+                      onClick={() => handleBatchDelete()}
+                      variant="destructive"
+                    >
+                      Delete Selected
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        handleResetSelection();
+                      }}
+                      variant="secondary"
+                    >
+                      Reset
+                    </Button>
+                  </PopoverContent>
+                </Popover>
+              </TableHead>
+            ) : (
+              ``
+            )}
+
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
@@ -214,17 +224,21 @@ const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
                 key={row.id}
                 // data-state={row.getIsSelected() && "selected"}
               >
-                <TableCell key="select">
-                  <Checkbox
-                    checked={rowsSelected[index]}
-                    onCheckedChange={(checked: boolean) =>
-                      handleRowSelection(index, checked)
-                    }
-                    // checked={row.getIsSelected()}
-                    // onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select Row"
-                  />
-                </TableCell>
+                {userRole === "Admin" ? (
+                  <TableCell key="select">
+                    <Checkbox
+                      checked={rowsSelected[index]}
+                      onCheckedChange={(checked: boolean) =>
+                        handleRowSelection(index, checked)
+                      }
+                      // checked={row.getIsSelected()}
+                      // onCheckedChange={(value) => row.toggleSelected(!!value)}
+                      aria-label="Select Row"
+                    />
+                  </TableCell>
+                ) : (
+                  ``
+                )}
                 {Object.entries(columnsStatus).map(([key, value]) => {
                   if (key === "permissionDetails") {
                     return value.visible ? (

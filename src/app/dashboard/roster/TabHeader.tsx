@@ -42,12 +42,14 @@ interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
+  userRole: string;
 }
 
 const TabHeader = ({
   columnsStatus,
   filter,
   setColumnsStatus,
+  userRole,
 }: TableHeaderProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,18 +84,26 @@ const TabHeader = ({
             Permissions
           </Button>
         </Link>
-        <Link href="/dashboard/roster/data-import">
-          <Button variant="outline" className="h10 ml-5">
-            <Import className="mr-2 h-4 w-4" />
-            Import
-          </Button>
-        </Link>
-        <Link href="/dashboard/roster/add">
-          <Button variant="outline" className="h10 ml-1">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add
-          </Button>
-        </Link>
+        {userRole === "Admin" ? (
+          <Link href="/dashboard/roster/data-import">
+            <Button variant="outline" className="h10 ml-5">
+              <Import className="mr-2 h-4 w-4" />
+              Import
+            </Button>
+          </Link>
+        ) : (
+          ``
+        )}
+        {userRole === "Admin" ? (
+          <Link href="/dashboard/roster/add">
+            <Button variant="outline" className="h10 ml-1">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add
+            </Button>
+          </Link>
+        ) : (
+          ``
+        )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

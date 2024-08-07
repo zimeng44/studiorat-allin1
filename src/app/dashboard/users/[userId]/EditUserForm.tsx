@@ -396,8 +396,8 @@ const EditUserForm = ({
               type="button"
               variant="secondary"
               onClick={(e) => {
-                const params = new URLSearchParams(searchParams);
-                router.push(`/dashboard/users?${params.toString()}`);
+                // const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/users?${searchParams.toString()}`);
               }}
             >
               Cancel

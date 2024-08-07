@@ -24,12 +24,14 @@ interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
+  userRole: string;
 }
 
 const TabHeader = ({
   columnsStatus,
   filter,
   setColumnsStatus,
+  userRole,
 }: TableHeaderProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,12 +60,16 @@ const TabHeader = ({
       </div>
 
       <div className="item-end ml-auto flex">
-        <Link href="/dashboard/roster/permissions/add">
-          <Button variant="outline" className="h10 ml-1">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add
-          </Button>
-        </Link>
+        {userRole === "Admin" ? (
+          <Link href="/dashboard/roster/permissions/add">
+            <Button variant="outline" className="h10 ml-1">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add
+            </Button>
+          </Link>
+        ) : (
+          ``
+        )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

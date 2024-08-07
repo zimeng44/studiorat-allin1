@@ -87,7 +87,12 @@ export default async function RosterPage({
         </BreadcrumbList>
       </Breadcrumb>
       <Suspense fallback={<h1>Loading . . .</h1>}>
-        <RosterPageTabs data={data} meta={meta} filter={filter} />
+        <RosterPageTabs
+          data={data}
+          meta={meta}
+          filter={filter}
+          userRole={thisUser.role.name}
+        />
       </Suspense>
     </div>
   );

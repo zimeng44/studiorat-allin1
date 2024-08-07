@@ -227,7 +227,11 @@ const EditRosterForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Student Number</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Student Number"} {...field}></Input>
+                    <Input
+                      placeholder={"Student Number"}
+                      {...field}
+                      disabled={userRole !== "Admin"}
+                    ></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -240,7 +244,7 @@ const EditRosterForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>NetID</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -253,7 +257,7 @@ const EditRosterForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Student Name</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -266,7 +270,7 @@ const EditRosterForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Level</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,7 +283,7 @@ const EditRosterForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Program</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -394,51 +398,56 @@ const EditRosterForm = ({
             </div>
             {/* <div className="col-span-1"></div> */}
             <div className="col-span-1">
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="min-w-[150px] justify-start"
-                  >
-                    + Add a new permission
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Filter permissions..." />
-                    <CommandList>
-                      <CommandEmpty>No results found.</CommandEmpty>
-                      <CommandGroup>
-                        {permissions.map((permission) => (
-                          <CommandItem
-                            key={permission.permissionCode}
-                            value={permission.permissionCode}
-                            onSelect={(value) => {
-                              // console.log(value);
-                              if (
-                                !itemObjArr
-                                  .map((item) => item.permissionCode)
-                                  .includes(value)
-                              ) {
-                                const newItem = permissions.filter(
-                                  (perm) => perm.permissionCode === value,
-                                );
-                                const newArr = [...itemObjArr, ...newItem];
-                                setItemObjArr(newArr);
-                                setOpen(false);
-                              } else {
-                                window.alert("Permission Added Already");
-                              }
-                            }}
-                          >
-                            {`${permission.permissionCode}`}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              {userRole === "Admin" ? (
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="min-w-[150px] justify-start"
+                      disabled={userRole !== "Admin"}
+                    >
+                      + Add a new permission
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Filter permissions..." />
+                      <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup>
+                          {permissions.map((permission) => (
+                            <CommandItem
+                              key={permission.permissionCode}
+                              value={permission.permissionCode}
+                              onSelect={(value) => {
+                                // console.log(value);
+                                if (
+                                  !itemObjArr
+                                    .map((item) => item.permissionCode)
+                                    .includes(value)
+                                ) {
+                                  const newItem = permissions.filter(
+                                    (perm) => perm.permissionCode === value,
+                                  );
+                                  const newArr = [...itemObjArr, ...newItem];
+                                  setItemObjArr(newArr);
+                                  setOpen(false);
+                                } else {
+                                  window.alert("Permission Added Already");
+                                }
+                              }}
+                            >
+                              {`${permission.permissionCode}`}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                ``
+              )}
             </div>
           </div>
 
@@ -456,39 +465,38 @@ const EditRosterForm = ({
           </Button> */}
 
           <div className="col-span-1 flex size-full max-w-xl gap-1 md:col-span-2">
-            <SubmitButton
-              className="flex-1"
-              text="Save"
-              loadingText="Saving"
-              loading={form.formState.isSubmitting}
-            />
-            <Button
-              className="flex-1"
-              type="button"
-              variant="destructive"
-              onClick={(e) => handleDelete(e)}
-            >
-              Delete
-            </Button>
-            {/* <Link href="/dashboard/roster">
+            {userRole === "Admin" ? (
+              <SubmitButton
+                className="flex-1"
+                text="Save"
+                loadingText="Saving"
+                loading={form.formState.isSubmitting}
+              />
+            ) : (
+              ``
+            )}
+            {userRole === "Admin" ? (
               <Button
-                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+                className="flex-1"
                 type="button"
-                variant="secondary"
+                variant="destructive"
+                onClick={(e) => handleDelete(e)}
               >
-                Cancel
+                Delete
               </Button>
-            </Link> */}
+            ) : (
+              ``
+            )}
             <Button
-              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+              className="size-fit flex-1 hover:bg-slate-200 active:bg-slate-300"
               type="button"
               variant="secondary"
               onClick={(e) => {
-                const params = new URLSearchParams(searchParams);
-                router.push(`/dashboard/roster?${params.toString()}`);
+                // const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/roster?${searchParams.toString()}`);
               }}
             >
-              Cancel
+              {userRole === "Admin" ? "Cancel" : "Close"}
             </Button>
           </div>
         </form>

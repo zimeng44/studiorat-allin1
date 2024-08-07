@@ -254,9 +254,9 @@ const EditInventoryReportForm = ({
               onClick={(e) => {
                 // router.push("/dashboard/inventory-reports");
                 // router.refresh();
-                const params = new URLSearchParams(searchParams);
+                // const params = new URLSearchParams(searchParams);
                 router.push(
-                  `/dashboard/inventory-reports?${params.toString()}`,
+                  `/dashboard/inventory-reports?${searchParams.toString()}`,
                 );
               }}
             >

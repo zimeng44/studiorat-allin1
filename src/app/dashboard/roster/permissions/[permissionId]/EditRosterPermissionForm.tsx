@@ -57,9 +57,11 @@ const formSchema = z.object({
 const EditRosterPermissionForm = ({
   permissionId,
   permission,
+  userRole,
 }: {
   permissionId: string;
   permission: RosterPermissionType;
+  userRole: string;
 }) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
@@ -188,7 +190,11 @@ const EditRosterPermissionForm = ({
                 <FormItem className="col-span-1 size-fit md:col-span-2">
                   <FormLabel>Permission Code</FormLabel>
                   <FormControl>
-                    <Input placeholder={"Permission Code"} {...field}></Input>
+                    <Input
+                      placeholder={"Permission Code"}
+                      {...field}
+                      disabled={userRole !== "Admin"}
+                    ></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -201,7 +207,7 @@ const EditRosterPermissionForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -214,7 +220,7 @@ const EditRosterPermissionForm = ({
                 <FormItem className="col-span-1">
                   <FormLabel>Instructor</FormLabel>
                   <FormControl>
-                    <Input {...field}></Input>
+                    <Input {...field} disabled={userRole !== "Admin"}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -236,7 +242,7 @@ const EditRosterPermissionForm = ({
                             "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
-                          // disabled={isPast}
+                          disabled={userRole !== "Admin"}
                         >
                           {field.value ? (
                             format(field.value, "LL/dd/y")
@@ -285,7 +291,7 @@ const EditRosterPermissionForm = ({
                             "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
                             !field.value && "text-muted-foreground",
                           )}
-                          // disabled={isPast}
+                          disabled={userRole !== "Admin"}
                         >
                           {field.value ? (
                             format(field.value, "LL/dd/y")
@@ -332,6 +338,7 @@ const EditRosterPermissionForm = ({
                       onChange={(value) => form.setValue(field.name, value)}
                       name="permittedStudios"
                       placeHolder="Enter a studio"
+                      disabled={userRole !== "Admin"}
                     />
                   </FormControl>
                   <FormMessage className="text-slate-400">
@@ -352,6 +359,7 @@ const EditRosterPermissionForm = ({
                       {...field}
                       className="min-h-32 whitespace-normal"
                       placeholder="Leave a note"
+                      disabled={userRole !== "Admin"}
                     ></Textarea>
                   </FormControl>
                   <FormMessage />
@@ -376,41 +384,42 @@ const EditRosterPermissionForm = ({
           </Button> */}
 
           <div className="col-span-1 flex size-fit max-w-xl gap-1 md:col-span-2">
-            <SubmitButton
-              className="flex-1"
-              text="Save"
-              loadingText="Saving"
-              loading={form.formState.isSubmitting}
-            />
-            <Button
-              className="flex-1"
-              type="button"
-              variant="destructive"
-              onClick={(e) => handleDelete(e)}
-            >
-              Delete
-            </Button>
-            {/* <Link href="/dashboard/roster/permissions">
+            {userRole === "Admin" ? (
+              <SubmitButton
+                className="flex-1"
+                text="Save"
+                loadingText="Saving"
+                loading={form.formState.isSubmitting}
+              />
+            ) : (
+              ``
+            )}
+
+            {userRole === "Admin" ? (
               <Button
-                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+                className="flex-1"
                 type="button"
-                variant="secondary"
+                variant="destructive"
+                onClick={(e) => handleDelete(e)}
               >
-                Cancel
+                Delete
               </Button>
-            </Link> */}
+            ) : (
+              ``
+            )}
+
             <Button
               className="flex-1 hover:bg-slate-200 active:bg-slate-300"
               type="button"
               variant="secondary"
               onClick={(e) => {
-                const params = new URLSearchParams(searchParams);
+                // const params = new URLSearchParams(searchParams);
                 router.push(
-                  `/dashboard/roster/permissions?${params.toString()}`,
+                  `/dashboard/roster/permissions?${searchParams.toString()}`,
                 );
               }}
             >
-              Cancel
+              {userRole === "Admin" ? "Cancel" : "Close"}
             </Button>
           </div>
         </form>

@@ -544,8 +544,8 @@ const EditCheckoutSessionForm = ({
               type="button"
               variant="secondary"
               onClick={(e) => {
-                const params = new URLSearchParams(searchParams);
-                router.push(`/dashboard/checkout?${params.toString()}`);
+                // const params = new URLSearchParams(searchParams);
+                router.push(`/dashboard/checkout?${searchParams.toString()}`);
                 // router.refresh();
               }}
             >

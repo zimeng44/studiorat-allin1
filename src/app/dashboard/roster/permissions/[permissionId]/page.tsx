@@ -61,6 +61,7 @@ export default async function EditRosterRoute({
         <EditRosterPermissionForm
           permission={data}
           permissionId={params.permissionId}
+          userRole={thisUser?.role?.name ?? ""}
         />
       </div>
     </div>

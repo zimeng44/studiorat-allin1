@@ -41,19 +41,6 @@ export function LoggedInUser({
   // console.log(userData);
   return (
     <div className="flex items-center gap-4">
-      {(userData.role?.name ?? "") === "Monitor" ? (
-        <Link href="/dashboard/inventory-reports/new">
-          <Button
-            variant="outline"
-            className="h10 ml-2 flex whitespace-normal text-xs md:ml-5 md:text-sm"
-          >
-            <PlusCircle className="hide h-3 w-3 md:mr-2 md:h-4 md:w-4" />
-            Inventory Reports
-          </Button>
-        </Link>
-      ) : (
-        ``
-      )}
       <Link
         href="/dashboard/account"
         className="flex hover:text-primary md:gap-2 md:font-semibold"

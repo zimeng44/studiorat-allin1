@@ -20,6 +20,7 @@ interface ViewTabsProps {
   data: any[];
   meta: { pagination: { pageCount: number; total: number } };
   filter: {};
+  userRole: string;
 }
 
 function LinkCard(item: Readonly<RosterPermissionType>) {
@@ -42,7 +43,12 @@ function LinkCard(item: Readonly<RosterPermissionType>) {
   );
 }
 
-const RosterPermissionsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
+const RosterPermissionsPageTabs = ({
+  data,
+  meta,
+  filter,
+  userRole,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(rosterPermissionsColumnsDefault),
   );
@@ -85,9 +91,14 @@ const RosterPermissionsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
         columnsStatus={columnsStatus}
         filter={filter}
         setColumnsStatus={setColumnsStatus}
+        userRole={userRole}
       />
 
-      <RosterPermissionsTable data={data} columnsStatus={columnsStatus} />
+      <RosterPermissionsTable
+        data={data}
+        columnsStatus={columnsStatus}
+        userRole={userRole}
+      />
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls

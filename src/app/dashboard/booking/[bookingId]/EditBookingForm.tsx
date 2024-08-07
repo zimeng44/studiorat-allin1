@@ -809,9 +809,9 @@ const EditBookingForm = ({
               onClick={(e) => {
                 // deleteCookie(`tempBookingItems${bookingId}`);
                 // localStorage.removeItem(`tempBookingItems${bookingId}`);
-                const params = new URLSearchParams(searchParams);
+                // const params = new URLSearchParams(searchParams);
                 // params.set("view", view);
-                router.push(`/dashboard/booking?${params.toString()}`);
+                router.push(`/dashboard/booking?${searchParams.toString()}`);
                 // router.push(`/dashboard/booking?view=${view}`);
                 // router.refresh();
               }}
