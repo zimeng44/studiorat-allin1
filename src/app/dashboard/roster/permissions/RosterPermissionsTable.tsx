@@ -184,11 +184,11 @@ const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
-                  {key === "mTechBarcode" ||
-                  key === "make" ||
-                  key === "model" ||
-                  key === "category" ||
-                  key === "storageLocation" ? (
+                  {key === "permissionCode" ||
+                  key === "permissionTitle" ||
+                  key === "instructor" ||
+                  key === "startDate" ||
+                  key === "endDate" ? (
                     <Button
                       className="p-1 text-left"
                       variant="ghost"

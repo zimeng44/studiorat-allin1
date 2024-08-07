@@ -23,6 +23,8 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
 import { format } from "date-fns";
+import { deleteBookingAction } from "@/data/actions/booking-actions";
+import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 8;
 
@@ -124,7 +126,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
     // console.log("All Selected is ", allSelected);
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     const counter = rowsSelected.filter((item) => item === true).length;
 
     const confirm = window.confirm(
@@ -133,12 +135,19 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
 
     if (!confirm) return;
 
-    rowsSelected.map((row, index) => {
-      if (row) {
-        // deleteItemAction(data[index].id);
-      }
-    });
+    console.log(data);
+    // return;
+
+    await Promise.all(
+      rowsSelected.map(async (row, index) => {
+        if (row) {
+          await deleteBookingAction(data[index].id);
+        }
+      }),
+    );
+
     setRowsSelected(Array(data.length).fill(false));
+    toast.success("Entries Deleted");
   };
 
   return (

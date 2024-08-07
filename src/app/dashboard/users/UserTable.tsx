@@ -174,7 +174,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
       <Table>
         <TableHeader className="sticky top-0 bg-indigo-100">
           <TableRow>
-            <TableHead key={"select"}>
+            {/* <TableHead key={"select"}>
               <Popover open={isBatchOpOpen}>
                 <PopoverTrigger asChild>
                   <Checkbox
@@ -208,7 +208,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                   </Button>
                 </PopoverContent>
               </Popover>
-            </TableHead>
+            </TableHead> */}
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap" key={key}>
@@ -243,7 +243,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                 key={row.id}
                 // data-state={row.getIsSelected() && "selected"}
               >
-                <TableCell key="select">
+                {/* <TableCell key="select">
                   <Checkbox
                     checked={rowsSelected[index]}
                     onCheckedChange={(checked: boolean) =>
@@ -253,7 +253,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                     // onCheckedChange={(value) => row.toggleSelected(!!value)}
                     aria-label="Select Row"
                   />
-                </TableCell>
+                </TableCell> */}
                 {Object.entries(columnsStatus).map(([key, value]) => {
                   if (key === "blocked") {
                     return value.visible ? (

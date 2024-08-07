@@ -23,6 +23,7 @@ import { deleteRosterAction } from "@/data/actions/roster-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "../../../components/ui/badge";
 import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
+import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 20;
 
@@ -105,7 +106,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     const counter = rowsSelected.filter((item) => item === true).length;
     // console.log("Size of rowSelected is ", rowsSelected.length);
 
@@ -115,12 +116,21 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
 
     if (!confirm) return;
 
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteRosterAction(data[index].id);
-      }
-    });
+    await Promise.all(
+      rowsSelected.map(async (row, index) => {
+        if (row) {
+          await deleteRosterAction(data[index].id);
+        }
+      }),
+    );
+
+    // rowsSelected.map((row, index) => {
+    //   if (row) {
+    //     deleteRosterAction(data[index].id);
+    //   }
+    // });
     setRowsSelected(Array(data.length).fill(false));
+    toast.success("Entries Deleted");
   };
 
   const handleSort = (field: string) => {
@@ -175,11 +185,14 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
-                  {key === "mTechBarcode" ||
-                  key === "make" ||
-                  key === "model" ||
-                  key === "category" ||
-                  key === "storageLocation" ? (
+                  {key === "stuN" ||
+                  key === "netId" ||
+                  key === "stuName" ||
+                  key === "excusedAbs" ||
+                  key === "excusedLate" ||
+                  key === "unexcusedAbs" ||
+                  key === "unexcusedLate" ||
+                  key === "lateReturn" ? (
                     <Button
                       className="p-1 text-left"
                       variant="ghost"
@@ -233,9 +246,7 @@ const RosterTable = ({ data, columnsStatus }: RosterTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                      {row[key]}
                     </TableCell>
                   ) : (
                     ``

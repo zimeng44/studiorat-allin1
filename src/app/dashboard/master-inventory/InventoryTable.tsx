@@ -43,6 +43,7 @@ import {
   inventoryColumnsDefault,
   TableColumnStatus,
 } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 20;
 
@@ -125,7 +126,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     const counter = rowsSelected.filter((item) => item === true).length;
     // console.log("Size of rowSelected is ", rowsSelected.length);
 
@@ -135,12 +136,21 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
     if (!confirm) return;
 
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteItemAction(data[index].id);
-      }
-    });
+    await Promise.all(
+      rowsSelected.map(async (row, index) => {
+        if (row) {
+          await deleteItemAction(data[index].id);
+        }
+      }),
+    );
+
+    // rowsSelected.map((row, index) => {
+    //   if (row) {
+    //     deleteItemAction(data[index].id);
+    //   }
+    // });
     setRowsSelected(Array(data.length).fill(false));
+    toast.success("Entries Deleted");
   };
 
   const handleSort = (field: string) => {
