@@ -2,13 +2,10 @@
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -46,47 +43,22 @@ import {
   TableColumnStatus,
   ColumnKey,
 } from "./userColumns";
-// type ColumnKey =
-//   | "creationTime"
-//   | "stuIDCheckout"
-//   | "stuIDCheckin"
-//   | "userName"
-//   | "finished"
-//   | "studio"
-//   | "otherLocation"
-//   | "creationMonitor"
-//   | "finishMonitor"
-//   | "finishTime"
-//   | "notes";
-
-//   interface TableFieldStatus {
-//   header: string;
-//   visible: boolean;
-// }
-// interface TableColumnStatus {
-//   mTechBarcode: TableFieldStatus;
-//   make: TableFieldStatus;
-//   model: TableFieldStatus;
-//   description: TableFieldStatus;
-//   category: TableFieldStatus;
-//   accessories: TableFieldStatus;
-//   comments: TableFieldStatus;
-//   storageLocation: TableFieldStatus;
-//   out: TableFieldStatus;
-//   broken: TableFieldStatus;
-// }
+import UserFilterForm from "./UserFilterForm";
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
+  currentUserRole: string;
 }
 
 const TabHeader = ({
   columnsStatus,
   filter,
   setColumnsStatus,
+  currentUserRole,
 }: TableHeaderProps) => {
+  // console.log(filter);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -109,7 +81,25 @@ const TabHeader = ({
 
   return (
     <div className="flex items-center py-1">
-      <Sheet
+      <Popover
+        open={filterOpen}
+        onOpenChange={(open) => {
+          filterOpen = open;
+          const params = new URLSearchParams(searchParams);
+          params.set("filterOpen", filterOpen ? "true" : "false");
+          router.replace(`${pathname}?${params.toString()}`);
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <Filter className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <UserFilterForm filter={filter} currentUserRole={currentUserRole} />
+        </PopoverContent>
+      </Popover>
+      {/* <Sheet
         open={filterOpen}
         onOpenChange={(open) => {
           filterOpen = open;
@@ -121,7 +111,7 @@ const TabHeader = ({
         <SheetTrigger asChild>
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
-            {/* Filter */}
+           
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
@@ -130,7 +120,7 @@ const TabHeader = ({
           </SheetHeader>
           <InventoryFilterForm filter={filter} />
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

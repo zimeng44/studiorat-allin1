@@ -26,47 +26,40 @@ import {
 import { SheetClose } from "@/components/ui/sheet";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-interface InventoryFilterFormProps {
-  mTechBarcode?: string;
-  make?: string;
-  model?: string;
-  category?: string;
-  description?: string;
-  accessories?: string;
-  storageLocation?: string;
-  comments?: string;
-  out?: boolean;
-  broken?: boolean;
+interface FilterFormProps {
+  blocked?: boolean;
+  academicLevel?: string;
+  role?: string;
 }
 
-const mTechBarcode = z.union([
-  z.string().min(12).and(z.string().max(13)),
-  z.string().length(0),
-]);
+// const mTechBarcode = z.union([
+//   z.string().min(12).and(z.string().max(13)),
+//   z.string().length(0),
+// ]);
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-
-  storageLocation: z.string(),
-
-  out: z.boolean(),
-  broken: z.boolean(),
+  academicLevel: z.string().optional(),
+  blocked: z.boolean().optional(),
+  role: z.string().optional(),
 });
 
-const InventoryFilterForm = ({
+const UserFilterForm = ({
   filter,
+  currentUserRole,
 }: {
-  filter: InventoryFilterFormProps;
+  filter: FilterFormProps;
+  currentUserRole: string;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const createPageURL = (filterValues: InventoryFilterFormProps) => {
+  const createPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
     for (const [key, value] of Object.entries(filterValues)) {
-      if ((key === "out" || key === "broken") && value === false) {
+      if (key === "blocked" && value === false) {
         params.delete(key);
         continue;
       }
@@ -82,7 +75,7 @@ const InventoryFilterForm = ({
     return `${pathname}?${params.toString()}`;
   };
 
-  const resetPageURL = (filterValues: InventoryFilterFormProps) => {
+  const resetPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
     for (const [key, value] of Object.entries(filterValues)) {
@@ -115,9 +108,8 @@ const InventoryFilterForm = ({
 
   const handleReset = () => {
     const blankFilter = {
-      storageLocation: "All",
-      out: false,
-      broken: false,
+      academicLevel: "All",
+      blocked: false,
     };
     router.push(resetPageURL(blankFilter));
     // console.log(resetPageURL(blankFilter));
@@ -130,15 +122,45 @@ const InventoryFilterForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid grid-cols-1 gap-2"
         >
+          {currentUserRole === "Admin" ? (
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="size-fit">
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select A Role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="All">All</SelectItem>
+                      <SelectItem value="Admin">Admin</SelectItem>
+                      <SelectItem value="Monitor">Monitor</SelectItem>
+                      <SelectItem value="InventoryManager">
+                        Inventory Manager
+                      </SelectItem>
+                      <SelectItem value="Authenticated">User</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            ``
+          )}
           <FormField
             control={form.control}
-            name="storageLocation"
+            name="academicLevel"
             render={({ field }) => (
               <FormItem className="size-fit">
-                <FormLabel>Storage Location</FormLabel>
-                {/* <FormControl>
-                <Input {...field}></Input>
-              </FormControl> */}
+                <FormLabel>Academic Level</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -150,9 +172,9 @@ const InventoryFilterForm = ({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="Floor 8">Floor 8</SelectItem>
-                    <SelectItem value="Floor 6">Floor 6</SelectItem>
-                    <SelectItem value="Studio G">Studio G</SelectItem>
+                    <SelectItem value="Grad">Grad</SelectItem>
+                    <SelectItem value="Undergrad">Undergrad</SelectItem>
+                    <SelectItem value="Faculty">Faculty</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -163,31 +185,11 @@ const InventoryFilterForm = ({
           <div className="col-span-1 flex grid-cols-2 justify-evenly gap-2 bg-slate-300">
             <FormField
               control={form.control}
-              name="out"
+              name="blocked"
               render={({ field }) => (
                 <FormItem className="col-span-2 grid grid-cols-2 items-center">
-                  <FormLabel className="col-span-1">Out</FormLabel>
+                  <FormLabel className="col-span-1">Blocked</FormLabel>
                   <FormControl className="col-span-1 size-fit">
-                    <div className="pb-4">
-                      <Checkbox
-                        className="ml-2"
-                        // disabled
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="broken"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-2 items-center">
-                  <FormLabel className="col-span-1">Broken</FormLabel>
-                  <FormControl className="col-span-1">
                     <div className="pb-4">
                       <Checkbox
                         className="ml-2"
@@ -219,4 +221,4 @@ const InventoryFilterForm = ({
   );
 };
 
-export default InventoryFilterForm;
+export default UserFilterForm;

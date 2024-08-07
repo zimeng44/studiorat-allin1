@@ -31,6 +31,7 @@ import {
   rosterPermissionsColumnsDefault,
   TableColumnStatus,
 } from "./rosterPermissionsColumns";
+import { TagsInput } from "react-tag-input-component";
 
 const MAX_TEXT_LEN = 20;
 
@@ -286,6 +287,22 @@ const RosterTable = ({ data, columnsStatus }: RosterPermissionsTableProps) => {
                       ``
                     );
                   }
+                  if (key === "permittedStudios") {
+                    return value.visible ? (
+                      <TableCell className="break-word" key={key}>
+                        <TagsInput
+                          value={row.permittedStudios}
+                          // onChange={(value) => form.setValue(field.name, value)}
+                          name="permittedStudios"
+                          // placeHolder="Enter a studio"
+                          disabled
+                        />
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+
                   return value.visible ? (
                     <TableCell className="break-words" key={key}>
                       {row[key]}

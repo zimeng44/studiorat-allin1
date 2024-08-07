@@ -6,13 +6,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { getRosterPermissionById } from "@/data/loaders";
+import { getRosterPermissions } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import EditRosterPermissionForm from "./EditRosterPermissionForm";
+import AddRosterForm from "./AddRosterForm";
 
 interface ParamsProps {
   params: {
-    permissionId: string;
+    rosterId: string;
   };
 }
 
@@ -25,9 +25,11 @@ export default async function EditRosterRoute({
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const data = await getRosterPermissionById(params.permissionId);
+  // const data = await getRosterById(params.rosterId);
+  const data = {};
 
-  // console.log(data);
+  const { data: permissions, meta: permissionsMeta } =
+    await getRosterPermissions("", "1", "100", {});
 
   return (
     <div className="flex-col p-0 md:p-5">
@@ -46,21 +48,17 @@ export default async function EditRosterRoute({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/roster">
-              Roster Permissions
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Edit</BreadcrumbPage>
+            <BreadcrumbPage>Add</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Permission</h1>
+      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Roster</h1>
       <div className="flex items-center md:px-2">
-        <EditRosterPermissionForm
-          permission={data}
-          permissionId={params.permissionId}
+        <AddRosterForm
+          roster={data}
+          rosterId={params.rosterId}
+          permissions={permissions}
+          userRole={thisUser?.role?.name ?? ""}
         />
       </div>
     </div>

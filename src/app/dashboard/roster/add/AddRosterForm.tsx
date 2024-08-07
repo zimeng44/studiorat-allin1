@@ -59,9 +59,9 @@ const formSchema = z.object({
   // mTechBarcode: z.string().min(12).and(z.string().max(13)),
   stuN: z.string().min(2),
   netId: z.string().min(2),
-  stuName: z.string(),
-  academicLevel: z.string(),
-  academicProgram: z.string(),
+  stuName: z.string().min(2),
+  academicLevel: z.string().optional(),
+  academicProgram: z.string().optional(),
   agreement: z.boolean(),
   excusedAbs: z.number(),
   excusedLate: z.number(),
@@ -79,7 +79,6 @@ const EditRosterForm = ({
 }: {
   rosterId: string;
   roster: RosterRecordType;
-
   permissions: RosterPermissionType[];
   userRole: string;
 }) => {
@@ -98,11 +97,11 @@ const EditRosterForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      stuN: roster.stuN,
-      netId: roster.netId,
-      stuName: roster.stuName,
-      academicLevel: roster.academicLevel,
-      academicProgram: roster.academicProgram,
+      stuN: roster.stuN ?? "",
+      netId: roster.netId ?? "",
+      stuName: roster.stuName ?? "",
+      academicLevel: roster.academicLevel ?? "",
+      academicProgram: roster.academicProgram ?? "",
       agreement: roster.agreement ?? false,
       excusedAbs: roster.excusedAbs ?? 0,
       excusedLate: roster.excusedLate ?? 0,
@@ -196,18 +195,6 @@ const EditRosterForm = ({
     // router.refresh();
     // console.log("item should be removed")
   };
-
-  function handleDelete(e: any) {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this roster record?",
-    );
-
-    if (!confirm) return;
-
-    const res = deleteRosterAction(rosterId);
-
-    if (!res) toast.success("Roster Deleted");
-  }
 
   return (
     <div>
@@ -460,14 +447,7 @@ const EditRosterForm = ({
               loadingText="Saving"
               loading={form.formState.isSubmitting}
             />
-            <Button
-              className="flex-1"
-              type="button"
-              variant="destructive"
-              onClick={(e) => handleDelete(e)}
-            >
-              Delete
-            </Button>
+
             <Link href="/dashboard/roster">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"

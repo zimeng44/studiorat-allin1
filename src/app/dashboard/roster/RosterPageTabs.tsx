@@ -44,18 +44,18 @@ const RosterPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
   );
   return (
     <div className="py-2">
-      <Tabs defaultValue="list">
+      {/* <Tabs defaultValue="list">
         <div className="flex items-center justify-between">
           <h1 className="left-content text-lg font-bold">Roster</h1>
           <div className="right-content">
             <TabsList>
               <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
-                {/* List */}
+               
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                {/* Grid */}
+             
               </TabsTrigger>
             </TabsList>
           </div>
@@ -76,7 +76,15 @@ const RosterPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
             ))}
           </div>
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
+      <h1 className="left-content p-2 text-lg font-bold">Roster</h1>
+      <TabHeader
+        columnsStatus={columnsStatus}
+        filter={filter}
+        setColumnsStatus={setColumnsStatus}
+      />
+
+      <RosterTable data={data} columnsStatus={columnsStatus} />
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls

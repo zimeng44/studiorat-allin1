@@ -17,7 +17,9 @@ import { useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TagsInput } from "react-tag-input-component";
-import { Info } from "lucide-react";
+import { CircleMinus, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 25;
 
@@ -25,16 +27,16 @@ interface RosterEmbeddedTableProps {
   data: any[];
   columns: any[];
   handleRemoveFromBooking: Function;
-  isPast: boolean;
+  isEditable: boolean;
 }
 
 const BookingEmbededTable = ({
   data,
   columns,
   handleRemoveFromBooking,
-  isPast,
+  isEditable,
 }: RosterEmbeddedTableProps) => {
-  // console.log(data);
+  // console.log(isEditable);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -92,7 +94,7 @@ const BookingEmbededTable = ({
                 className="whitespace-nowrap p-1 md:p-2"
                 key={header[0]}
               >
-                Course Number
+                Permission code
               </TableHead>
             ) : (
               ``
@@ -132,6 +134,18 @@ const BookingEmbededTable = ({
             ) : (
               ``
             )}
+            {data.length ? (
+              data.filter((row) => row.startDate).length > 0 ? (
+                <TableHead className="text-center" key="startEndDate">
+                  Date
+                </TableHead>
+              ) : (
+                ``
+              )
+            ) : (
+              ``
+            )}
+            <TableHead className="text-center" key="deleteButton"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -143,14 +157,14 @@ const BookingEmbededTable = ({
                     className="whitespace-nowrap p-1 md:p-2"
                     key={header[0]}
                   >
-                    {row.courseN}
+                    {row.permissionCode}
                   </TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[1] ? (
                   <TableCell className="p-1 md:p-2" key={header[1]}>
-                    {row.courseTitle}
+                    {row.permissionTitle}
                   </TableCell>
                 ) : (
                   ``
@@ -216,6 +230,34 @@ const BookingEmbededTable = ({
                 ) : (
                   ``
                 )}
+                {data.filter((row) => row.startDate).length > 0 ? (
+                  row.startDate ? (
+                    <TableCell className="text-center" key="startEndDate">
+                      {`${format(new Date(row.startDate), "MM/dd/y")} to ${format(new Date(row.endDate), "MM/dd/y")}`}
+                    </TableCell>
+                  ) : (
+                    <TableCell
+                      className="text-center"
+                      key="startEndDate"
+                    ></TableCell>
+                  )
+                ) : (
+                  ``
+                )}
+                <TableCell className="text-center" key="deleteButton">
+                  <Button
+                    type="button"
+                    key="deleteButton"
+                    variant="outline"
+                    onClick={(e) => {
+                      // e.preventDefault();
+                      handleRemoveFromBooking(row);
+                    }}
+                    disabled={!isEditable}
+                  >
+                    <CircleMinus className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (

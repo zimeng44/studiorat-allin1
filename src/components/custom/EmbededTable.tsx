@@ -110,7 +110,7 @@ const EmbededInventoryTable = ({
               )}
               {columnsVisible[8] ? (
                 <TableHead className="p-1 text-center md:p-4" key={header[8]}>
-                  Out
+                  Returned
                 </TableHead>
               ) : (
                 ``
@@ -204,7 +204,7 @@ const EmbededInventoryTable = ({
                     >
                       <Checkbox
                         disabled
-                        checked={row.out}
+                        checked={!row.out}
                         // className={`${disabled ? "invisible" : ""}`}
                       />
                     </TableCell>

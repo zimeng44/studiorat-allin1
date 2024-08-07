@@ -16,25 +16,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  deleteRosterAction,
-  updateRosterAction,
-} from "@/data/actions/roster-actions";
-import {
-  RetrievedRosterPermission,
+  // RetrievedRosterPermission,
   RosterPermissionType,
-  RosterRecordType,
 } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
-import RosterEmbededTable from "../RosterEmbededTable";
-import { rosterPermissionsColumns } from "../rosterPermissionsColumns";
-import { Switch } from "@/components/ui/switch";
+
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import {
-  deleteRosterPermissionAction,
-  updateRosterPermissionAction,
+  createRosterPermissionAction,
+  // deleteRosterPermissionAction,
 } from "@/data/actions/rosterPermission-actions";
 import { TagsInput } from "react-tag-input-component";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,7 +59,7 @@ const formSchema = z.object({
   endDate: z.string().nullable(),
 });
 
-const EditRosterPermissionForm = ({
+const AddRosterPermissionForm = ({
   permissionId,
   permission,
 }: {
@@ -127,13 +120,13 @@ const EditRosterPermissionForm = ({
     // ✅ This will be type-safe and validated.
 
     // console.log(values);
+    // values.permittedStudios = permittedStudios;
+
     if (values.startDate === "") values.startDate = null;
     if (values.endDate === "") values.endDate = null;
 
-    // values.permittedStudios = permittedStudios;
-
     try {
-      const res = await updateRosterPermissionAction(values, permissionId);
+      const res = await createRosterPermissionAction(values);
       setError(res?.strapiErrors ?? null);
       if (!res?.strapiErrors?.status) {
         router.push("/dashboard/roster/permissions");
@@ -164,24 +157,6 @@ const EditRosterPermissionForm = ({
   //   // router.refresh();
   //   // console.log("item should be removed")
   // };
-
-  async function handleDelete(e: any) {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this roster record?",
-    );
-
-    if (!confirm) return;
-
-    const res = await deleteRosterPermissionAction(permissionId);
-
-    if (!res) toast.success("Roster Deleted");
-
-    // if ((totalEntries - 1) % pageSize === 0) {
-    //   setPageIndex((pageIndex) => pageIndex - 1);
-    // }
-    // console.log("Item Deleted!!!!!!!!!!!!!");
-    // closeDetail();
-  }
 
   return (
     <div>
@@ -317,9 +292,8 @@ const EditRosterPermissionForm = ({
                         selected={
                           field.value ? new Date(field?.value) : undefined
                         }
-                        onSelect={(value) => {
+                        onSelect={(value: Date | undefined) => {
                           field.onChange(value ? value.toISOString() : "");
-                          // handleStartDateSelect(value);
                         }}
                         disabled={(date) => date < new Date()}
                         // initialFocus
@@ -393,14 +367,7 @@ const EditRosterPermissionForm = ({
               loadingText="Saving"
               loading={form.formState.isSubmitting}
             />
-            <Button
-              className="flex-1"
-              type="button"
-              variant="destructive"
-              onClick={(e) => handleDelete(e)}
-            >
-              Delete
-            </Button>
+
             <Link href="/dashboard/roster/permissions">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"
@@ -417,4 +384,4 @@ const EditRosterPermissionForm = ({
   );
 };
 
-export default EditRosterPermissionForm;
+export default AddRosterPermissionForm;

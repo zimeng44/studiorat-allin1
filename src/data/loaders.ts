@@ -84,8 +84,8 @@ interface InventoryReportsFilterProps {
 }
 
 interface RosterPermissionsFilterProps {
-  courseN?: string;
-  courseTitle?: string;
+  permissionCode?: string;
+  permissionTitle?: string;
   instructor?: string;
   permissionDetails?: string;
   permittedStudios?: string;
@@ -385,6 +385,20 @@ export async function getCheckoutSessionsByQuery(
             ],
           },
         },
+        {
+          inventory_items: {
+            $or: [
+              { mTechBarcode: { $containsi: queryString } },
+              { make: { $containsi: queryString } },
+              { model: { $containsi: queryString } },
+              { category: { $containsi: queryString } },
+              { description: { $containsi: queryString } },
+              { accessories: { $containsi: queryString } },
+              { storageLocation: { $containsi: queryString } },
+              { comments: { $containsi: queryString } },
+            ],
+          },
+        },
       ],
     },
     pagination: {
@@ -603,6 +617,16 @@ export async function getUsers(
     // console.log(`${key}: ${value}`);
     if (value === "" || value === false || value === "false") continue;
 
+    if (key === "role") {
+      filterArr.push({ [key]: { name: { $eq: value } } });
+      continue;
+    }
+
+    if (key === "academicLevel") {
+      filterArr.push({ [key]: { $eq: value } });
+      continue;
+    }
+
     if (value === true || value === "true") {
       filterArr.push({ [key]: { $eq: value } });
     } else {
@@ -674,34 +698,6 @@ export async function getInventoryReports(
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
     if (value === "All" || value === "") continue;
-
-    if (key === "createdAt") {
-      if (!value.from && !value.to) {
-        continue;
-      } else if (!value.to) {
-        filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
-        });
-        continue;
-      } else if (!value.from) {
-        filterArr.push({
-          [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
-          },
-        });
-        continue;
-      } else {
-        filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
-        });
-        filterArr.push({
-          [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
-          },
-        });
-        continue;
-      }
-    }
 
     if (value === "finished") {
       filterArr.push({ [key]: { $eq: true } });
@@ -884,11 +880,11 @@ export async function getRosterPermissionsByQuery(
     sort: ["createdAt:desc"],
     filters: {
       $or: [
-        { courseN: { $containsi: queryString } },
-        { courseTitle: { $containsi: queryString } },
+        { permissionCode: { $containsi: queryString } },
+        { permissionTitle: { $containsi: queryString } },
         { instructor: { $containsi: queryString } },
         { permissionDetails: { $containsi: queryString } },
-        // { permittedStudios: { $containsi: queryString } },
+        { permittedStudios: { $containsi: queryString } },
       ],
     },
     pagination: {
@@ -1002,8 +998,8 @@ export async function getRostersByQuery(
         {
           roster_permissions: {
             $or: [
-              { courseN: { $containsi: queryString } },
-              { courseTitle: { $containsi: queryString } },
+              { permissionCode: { $containsi: queryString } },
+              { permissionTitle: { $containsi: queryString } },
               { instructor: { $containsi: queryString } },
               { permissionDetails: { $containsi: queryString } },
               { permittedStudios: { $containsi: queryString } },

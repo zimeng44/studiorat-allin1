@@ -3,7 +3,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,67 +33,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // const mTechBarcode = z.union([
 //   z.string().min(12).and(z.string().max(13)),
 //   z.string().length(0),
 // ]);
-interface CheckoutFilterFormProps {
+interface FilterFormProps {
   creationTime?: { from?: Date; to?: Date };
   finishTime?: { from?: Date; to?: Date };
-  stuIDCheckout?: string;
-  stuIDCheckin?: string;
+  // stuIDCheckout?: string;
+  // stuIDCheckin?: string;
   studio?: string;
-  otherLocation?: string;
-  creationMonitor?: string;
-  finishMonitor?: string;
-  notes?: string;
+  // otherLocation?: string;
+  // creationMonitor?: string;
+  // finishMonitor?: string;
+  // notes?: string;
   finished?: string;
-  userName?: string;
+  // userName?: string;
 }
 
 const formSchema = z.object({
   creationTime: z
     .object({
-      from: z.date(),
-      to: z.date(),
+      from: z.date().optional(),
+      to: z.date().optional(),
     })
     .optional(),
   finishTime: z
     .object({
-      from: z.date(),
-      to: z.date(),
+      from: z.date().optional(),
+      to: z.date().optional(),
     })
     .optional(),
-  stuIDCheckout: z.string().optional(),
-  stuIDCheckin: z.string().optional(),
   studio: z.string().optional(),
-  otherLocation: z.string().optional(),
-  creationMonitor: z.string().optional(),
-  finishMonitor: z.string().optional(),
-  notes: z.string().optional(),
   finished: z.string().optional(),
-  inventory_items: z.string().optional(),
-  studio_user: z.string().optional(),
+  // inventory_items: z.string().optional(),
+  // user: z.string().optional(),
   // username: z.string().min(2).max(50),
 });
 
-const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
+const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const createPageURL = (filterValues: CheckoutFilterFormProps) => {
+  const createPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
     for (const [key, value] of Object.entries(filterValues)) {
@@ -128,7 +112,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
     return `${pathname}?${params.toString()}`;
   };
 
-  const resetPageURL = (filterValues: CheckoutFilterFormProps) => {
+  const resetPageURL = (filterValues: FilterFormProps) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
     for (const [key, value] of Object.entries(filterValues)) {
@@ -151,7 +135,23 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: filter,
+    defaultValues: {
+      creationTime: {
+        from: filter.creationTime?.from
+          ? new Date(filter.creationTime.from)
+          : undefined,
+        to: filter.creationTime?.to
+          ? new Date(filter.creationTime.to)
+          : undefined,
+      },
+      finishTime: {
+        from: filter.finishTime?.from
+          ? new Date(filter.finishTime.from)
+          : undefined,
+        to: filter.finishTime?.to ? new Date(filter.finishTime.to) : undefined,
+      },
+      ...filter,
+    },
   });
 
   // 2. Define a submit handler.
@@ -166,16 +166,16 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
   const handleReset = () => {
     const blankFilter = {
       creationTime: { from: undefined, to: undefined },
-      stuIDCheckout: "",
-      stuIDCheckin: "",
+      // stuIDCheckout: "",
+      // stuIDCheckin: "",
       studio: "",
-      otherLocation: "",
-      creationMonitor: "",
-      finishMonitor: "",
+      // otherLocation: "",
+      // creationMonitor: "",
+      // finishMonitor: "",
       finishTime: { from: undefined, to: undefined },
-      notes: "",
+      // notes: "",
       finished: "",
-      userName: "",
+      // userName: "",
     };
     router.push(resetPageURL(blankFilter));
   };
@@ -186,7 +186,6 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           // className="grid grid-cols-2 gap-4"
-          className="flex flex-col gap-2 space-y-1 "
         >
           <FormField
             control={form.control}
@@ -205,7 +204,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
                         )}
                       >
                         {field.value?.from ? (
-                          field.value?.to ? (
+                          field.value.to ? (
                             <>
                               {format(field.value.from, "LLL dd, y")} -{" "}
                               {format(field.value.to, "LLL dd, y")}
@@ -227,13 +226,20 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
                   >
                     <Calendar
                       mode="range"
-                      selected={field.value}
+                      selected={
+                        field.value
+                          ? {
+                              from: field.value?.from,
+                              to: field.value?.to,
+                            }
+                          : undefined
+                      }
                       onSelect={field.onChange}
                       // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("2024-01-01")
-                      }
-                      initialFocus
+                      // disabled={(date) =>
+                      //   date > new Date() || date < new Date("2024-01-01")
+                      // }
+                      // initialFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -280,12 +286,22 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
                   >
                     <Calendar
                       mode="range"
-                      selected={field.value}
+                      selected={
+                        field.value
+                          ? {
+                              from: field.value?.from,
+                              to: field.value?.to,
+                            }
+                          : {
+                              from: undefined,
+                              to: undefined,
+                            }
+                      }
                       onSelect={field.onChange}
                       // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("2024-01-01")
-                      }
+                      // disabled={(date) =>
+                      //   date > new Date() || date < new Date("2024-01-01")
+                      // }
                       // initialFocus
                     />
                   </PopoverContent>
@@ -294,32 +310,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="stuIDCheckout"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Checkout ID</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="stuIDCheckin"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Checkin ID</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <FormField
             control={form.control}
             name="studio"
@@ -331,7 +322,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="ml-2">
+                    <SelectTrigger className="">
                       <SelectValue placeholder="Select a stuido" />
                     </SelectTrigger>
                   </FormControl>
@@ -349,65 +340,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="otherLocation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Other Location</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="creationMonitor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Creation Monitor</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="finishMonitor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Finish Monitor</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="ml-2 align-bottom">Notes</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                  {/* <Checkbox
-                      className="ml-2 align-middle"
-                      // disabled
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    /> */}
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div className="col-span-1 mt-3 flex gap-10 bg-slate-300">
             <FormField
               control={form.control}
@@ -446,7 +379,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
               Reset
             </Button>
 
-            <SheetClose asChild>
+            {/* <SheetClose asChild>
               <Button
                 className="hover:bg-slate-200 active:bg-slate-300"
                 type="button"
@@ -454,7 +387,7 @@ const FilterForm = ({ filter }: { filter: CheckoutFilterFormProps }) => {
               >
                 Close
               </Button>
-            </SheetClose>
+            </SheetClose> */}
           </div>
         </form>
       </Form>

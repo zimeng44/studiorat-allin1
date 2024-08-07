@@ -2,14 +2,6 @@
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -37,11 +29,16 @@ import {
   ShoppingCart,
   Users2,
 } from "lucide-react";
-import FilterForm from "./FilterForm";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 // import { bookingColumnsDefault } from "@/data/bookingColumns";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
+import BookingFilterForm from "./BookingFilterForm";
 
 interface TableFieldStatus {
   header: string;
@@ -106,7 +103,25 @@ const BookingTabHeader = ({
 
   return (
     <div className="flex items-center py-1">
-      <Sheet
+      <Popover
+        open={filterOpen}
+        onOpenChange={(open) => {
+          filterOpen = open;
+          const params = new URLSearchParams(searchParams);
+          params.set("filterOpen", filterOpen ? "true" : "false");
+          router.replace(`${pathname}?${params.toString()}`);
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <Filter className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <BookingFilterForm filter={filter} />
+        </PopoverContent>
+      </Popover>
+      {/* <Sheet
         open={filterOpen}
         onOpenChange={(open) => {
           filterOpen = open;
@@ -118,7 +133,7 @@ const BookingTabHeader = ({
         <SheetTrigger asChild>
           <Button variant="outline">
             <Filter className="h-4 w-4" />
-            {/* Filter */}
+      
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
@@ -127,7 +142,7 @@ const BookingTabHeader = ({
           </SheetHeader>
           <FilterForm filter={filter} />
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

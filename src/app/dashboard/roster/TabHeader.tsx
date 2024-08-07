@@ -72,7 +72,7 @@ const TabHeader = ({
 
   return (
     <div className="flex items-center py-1">
-      <Sheet
+      {/* <Sheet
         open={filterOpen}
         onOpenChange={(open) => {
           filterOpen = open;
@@ -84,7 +84,7 @@ const TabHeader = ({
         <SheetTrigger asChild>
           <Button variant="outline">
             <Filter className="h-4 w-4" />
-            {/* Filter */}
+            
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
@@ -93,7 +93,7 @@ const TabHeader = ({
           </SheetHeader>
           <InventoryFilterForm filter={filter} />
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

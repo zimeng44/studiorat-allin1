@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { getRosterPermissionById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import EditRosterPermissionForm from "./EditRosterPermissionForm";
+import EditRosterPermissionForm from "./AddRosterPermissionForm";
+import AddRosterPermissionForm from "./AddRosterPermissionForm";
 
 interface ParamsProps {
   params: {
@@ -25,7 +26,8 @@ export default async function EditRosterRoute({
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const data = await getRosterPermissionById(params.permissionId);
+  // const data = await getRosterPermissionById(params.permissionId);
+  const data = {};
 
   // console.log(data);
 
@@ -46,19 +48,19 @@ export default async function EditRosterRoute({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/roster">
+            <BreadcrumbLink href="/dashboard/roster/permissions">
               Roster Permissions
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Edit</BreadcrumbPage>
+            <BreadcrumbPage>Add</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Permission</h1>
+      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Add Permission</h1>
       <div className="flex items-center md:px-2">
-        <EditRosterPermissionForm
+        <AddRosterPermissionForm
           permission={data}
           permissionId={params.permissionId}
         />

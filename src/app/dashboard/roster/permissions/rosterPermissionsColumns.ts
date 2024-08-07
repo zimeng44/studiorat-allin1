@@ -11,8 +11,8 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  courseN: TableFieldStatus;
-  courseTitle: TableFieldStatus;
+  permissionCode: TableFieldStatus;
+  permissionTitle: TableFieldStatus;
   instructor: TableFieldStatus;
   permissionDetails: TableFieldStatus;
   permittedStudios: TableFieldStatus;
@@ -23,11 +23,11 @@ export interface TableColumnStatus {
 export type ColumnKey = keyof TableColumnStatus;
 
 export const rosterPermissionsColumnsDefault = {
-  courseN: {
-    header: "Course Number",
+  permissionCode: {
+    header: "Permission Code",
     visible: true,
   },
-  courseTitle: {
+  permissionTitle: {
     header: "Title",
     visible: true,
   },
@@ -55,12 +55,12 @@ export const rosterPermissionsColumnsDefault = {
 
 export const rosterPermissionsColumnsInEditRoster = [
   {
-    accessorKey: "courseN",
-    header: "Course Number",
+    accessorKey: "permissionCode",
+    header: "Permission Code",
     visible: true,
   },
   {
-    accessorKey: "courseTitle",
+    accessorKey: "permissionTitle",
     header: "Title",
     visible: true,
   },
@@ -93,12 +93,12 @@ export const rosterPermissionsColumnsInEditRoster = [
 
 export const rosterPermissionsColumns = [
   {
-    accessorKey: "courseN",
-    header: "Course Number",
+    accessorKey: "permissionCode",
+    header: "Permission Code",
     visible: true,
   },
   {
-    accessorKey: "courseTitle",
+    accessorKey: "permissionTitle",
     header: "Title",
     visible: true,
   },

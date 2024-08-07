@@ -9,47 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
-import { ArrowUpDown } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-
-import { deleteItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { bookingColumnsDefault } from "@/data/bookingColumns";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 8;
 
@@ -265,7 +238,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
                       {key === "startTime" || key === "endTime"
-                        ? new Date(row[key]).toLocaleString()
+                        ? format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

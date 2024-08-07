@@ -30,8 +30,10 @@ interface SearchParamsProps {
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    courseN?: string;
-    courseTitle?: string;
+    permissionCode?: string;
+    permissionTitle?: string;
+    instructor?: string;
+    permittedStudios?: string;
   };
 }
 
@@ -49,8 +51,10 @@ export default async function RosterPermissionPage({
   const sort = searchParams?.sort ?? "";
 
   const filter = {
-    courseN: searchParams?.courseN ?? "",
-    courseTitle: searchParams?.courseTitle ?? "",
+    permissionCode: searchParams?.permissionCode ?? "",
+    permissionTitle: searchParams?.permissionTitle ?? "",
+    instructor: searchParams?.instructor ?? "",
+    permittedStudios: searchParams?.permittedStudios ?? "",
   };
 
   // console.log(filter.broken);

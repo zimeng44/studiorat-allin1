@@ -29,6 +29,7 @@ export async function createRosterPermissionAction(
 
   const data = await mutateData("POST", "/api/roster-permissions", payload);
   const flattenedData = flattenAttributes(data);
+  return flattenedData;
   // console.log("data submited#########", flattenedData);
   // redirect("/dashboard/rosterPermission/" + flattenedData.id);
   // redirect("/dashboard/roster");

@@ -46,12 +46,20 @@ export default async function BookingPage({
 
   const filter = {
     startTime: {
-      from: searchParams?.startTimeFrom ?? undefined,
-      to: searchParams?.startTimeTo ?? undefined,
+      from: searchParams?.startTimeFrom
+        ? new Date(searchParams?.startTimeFrom).toISOString()
+        : undefined,
+      to: searchParams?.startTimeTo
+        ? new Date(searchParams?.startTimeTo).toISOString()
+        : undefined,
     },
     endTime: {
-      from: searchParams?.endTimeFrom ?? undefined,
-      to: searchParams?.endTimeTo ?? undefined,
+      from: searchParams?.endTimeFrom
+        ? new Date(searchParams?.endTimeFrom).toISOString()
+        : undefined,
+      to: searchParams?.endTimeTo
+        ? new Date(searchParams.endTimeTo).toISOString()
+        : undefined,
     },
     user: searchParams?.user ?? "",
     useLocation: searchParams?.useLocation ?? "",

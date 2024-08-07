@@ -28,7 +28,7 @@ function LinkCard(item: Readonly<RosterPermissionType>) {
       <Card className="relative">
         <CardHeader>
           <CardTitle className="break-all leading-8 text-pink-500">
-            {item.courseTitle || "Title Missing"}
+            {item.permissionTitle || "Title Missing"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
@@ -48,18 +48,16 @@ const RosterPermissionsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
   );
   return (
     <div className="py-2">
-      <Tabs defaultValue="list">
+      {/* <Tabs defaultValue="list">
         <div className="flex items-center justify-between">
           <h1 className="left-content text-lg font-bold">Roster Permissions</h1>
           <div className="right-content">
             <TabsList>
               <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
-                {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                {/* Grid */}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -80,7 +78,16 @@ const RosterPermissionsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
             ))}
           </div>
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
+
+      <h1 className="left-content p-2 text-lg font-bold">Roster Permissions</h1>
+      <TabHeader
+        columnsStatus={columnsStatus}
+        filter={filter}
+        setColumnsStatus={setColumnsStatus}
+      />
+
+      <RosterPermissionsTable data={data} columnsStatus={columnsStatus} />
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls

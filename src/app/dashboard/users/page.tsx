@@ -31,7 +31,7 @@ interface SearchParamsProps {
     academicLevel?: string;
     email?: string;
     bio?: string;
-    blocked?: boolean;
+    blocked?: string;
     role?: string;
   };
 }
@@ -56,12 +56,8 @@ export default async function Users({
     academicLevel: searchParams?.academicLevel ?? "",
     email: searchParams?.email ?? "",
     bio: searchParams?.bio ?? "",
-    blocked: searchParams?.blocked ?? false,
-    role: searchParams?.role
-      ? thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor"
-        ? "Authenticated"
-        : ""
-      : "",
+    blocked: searchParams?.blocked === "true",
+    role: searchParams?.role ?? "",
   };
 
   // console.log(filter.broken);
@@ -98,7 +94,12 @@ export default async function Users({
         </BreadcrumbList>
       </Breadcrumb>
       <Suspense fallback={<h1>Loading . . .</h1>}>
-        <UsersPageTabs data={data} meta={meta} filter={filter} />
+        <UsersPageTabs
+          data={data}
+          meta={meta}
+          filter={filter}
+          currentUserRole={thisUser.role?.name ?? ""}
+        />
       </Suspense>
     </div>
   );

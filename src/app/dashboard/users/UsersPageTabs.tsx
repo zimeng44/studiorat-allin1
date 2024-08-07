@@ -32,6 +32,7 @@ interface ViewTabsProps {
   data: any[];
   meta: { pagination: { pageCount: number; total: number } };
   filter: {};
+  currentUserRole: string;
 }
 
 function LinkCard(user: Readonly<UserType>) {
@@ -52,7 +53,12 @@ function LinkCard(user: Readonly<UserType>) {
   );
 }
 
-const UsersPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
+const UsersPageTabs = ({
+  data,
+  meta,
+  filter,
+  currentUserRole,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(userColumnsDefault),
   );
@@ -78,6 +84,7 @@ const UsersPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
           columnsStatus={columnsStatus}
           filter={filter}
           setColumnsStatus={setColumnsStatus}
+          currentUserRole={currentUserRole}
         />
 
         <TabsContent value="list">

@@ -55,22 +55,30 @@ export default async function CheckoutSessions({
 
   const filter = {
     creationTime: {
-      from: searchParams?.creationTimeFrom ?? undefined,
-      to: searchParams?.creationTimeTo ?? undefined,
+      from: searchParams?.creationTimeFrom
+        ? new Date(searchParams?.creationTimeFrom).toISOString()
+        : undefined,
+      to: searchParams?.creationTimeTo
+        ? new Date(searchParams?.creationTimeTo).toISOString()
+        : undefined,
     },
     finishTime: {
-      from: searchParams?.finishTimeFrom ?? undefined,
-      to: searchParams?.finishTimeTo ?? undefined,
+      from: searchParams?.finishTimeFrom
+        ? new Date(searchParams?.finishTimeFrom).toISOString()
+        : undefined,
+      to: searchParams?.finishTimeTo
+        ? new Date(searchParams?.finishTimeTo).toISOString()
+        : undefined,
     },
-    stuIDCheckout: searchParams?.stuIDCheckout ?? "",
-    stuIDCheckin: searchParams?.stuIDCheckin ?? "",
+    // stuIDCheckout: searchParams?.stuIDCheckout ?? "",
+    // stuIDCheckin: searchParams?.stuIDCheckin ?? "",
     studio: searchParams?.studio ?? "",
-    otherLocation: searchParams?.otherLocation ?? "",
-    creationMonitor: searchParams?.creationMonitor ?? "",
-    finishMonitor: searchParams?.finishMonitor ?? "",
-    notes: searchParams?.notes ?? "",
+    // otherLocation: searchParams?.otherLocation ?? "",
+    // creationMonitor: searchParams?.creationMonitor ?? "",
+    // finishMonitor: searchParams?.finishMonitor ?? "",
+    // notes: searchParams?.notes ?? "",
     finished: searchParams?.finished ?? "All",
-    userName: searchParams?.userName ?? "",
+    // userName: searchParams?.userName ?? "",
   };
 
   // console.log(filter);

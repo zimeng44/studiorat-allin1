@@ -162,8 +162,8 @@ export interface RosterRecordTypePost {
 
 export interface RosterPermissionType {
   id?: number;
-  courseN?: string;
-  courseTitle?: string;
+  permissionCode?: string;
+  permissionTitle?: string;
   instructor?: string;
   permissionDetails?: string;
   permittedStudios?: string[];
@@ -172,13 +172,13 @@ export interface RosterPermissionType {
 }
 
 export interface RosterPermissionTypePost {
-  courseN?: string;
-  courseTitle?: string;
+  permissionCode?: string;
+  permissionTitle?: string;
   instructor?: string;
   permissionDetails?: string;
   permittedStudios?: string[];
-  startDate?: Date | string;
-  endDate?: Date | string;
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 export interface RetrievedRosterPermission {

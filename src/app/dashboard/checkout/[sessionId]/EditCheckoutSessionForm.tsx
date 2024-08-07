@@ -217,7 +217,8 @@ const EditCheckoutSessionForm = ({
       studio: values.studio,
       otherLocation: values.otherLocation,
       creationMonitor: values.creationMonitor,
-      finishTime: values.finishTime === "" ? undefined : values.finishTime,
+      // finishTime:
+      //   values.finishTime === "" ? undefined : new Date().toISOString(),
       finishMonitor: values.finishMonitor,
       finished: values.finished,
       notes: values.notes ?? "",

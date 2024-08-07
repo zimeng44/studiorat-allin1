@@ -22,12 +22,12 @@ interface SearchParamsProps {
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    createdFrom?: string;
-    createdTo?: string;
-    notes?: string;
+    // createdFrom?: string;
+    // createdTo?: string;
+    // notes?: string;
     isFinished?: string;
-    itemChecked?: string;
-    creator?: string;
+    // itemChecked?: string;
+    // creator?: string;
   };
 }
 
@@ -49,14 +49,14 @@ export default async function InventoryReportsPage({
   // console.log(sort);
 
   const filter = {
-    createdAt: {
-      from: searchParams?.createdFrom ?? undefined,
-      to: searchParams?.createdTo ?? undefined,
-    },
-    itemChecked: searchParams?.itemChecked ?? "",
-    notes: searchParams?.notes ?? "",
+    // createdAt: {
+    //   from: searchParams?.createdFrom ?? undefined,
+    //   to: searchParams?.createdTo ?? undefined,
+    // },
+    // itemChecked: searchParams?.itemChecked ?? "",
+    // notes: searchParams?.notes ?? "",
     isFinished: searchParams?.isFinished ?? "All",
-    creator: searchParams?.creator ?? "",
+    // creator: searchParams?.creator ?? "",
   };
 
   // console.log(filter);

@@ -6,12 +6,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import EditItemForm from "./EditRosterForm";
 import { getRosterById, getRosterPermissions } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import EditRosterForm from "./EditRosterForm";
-import { cookies } from "next/headers";
-import { permission } from "process";
 
 interface ParamsProps {
   params: {
@@ -32,10 +29,6 @@ export default async function EditRosterRoute({
 
   const { data: permissions, meta: permissionsMeta } =
     await getRosterPermissions("", "1", "100", {});
-
-  const jwtCookie = cookies().get("jwt");
-
-  if (!jwtCookie) console.error("JWT cookie not found");
 
   return (
     <div className="flex-col p-0 md:p-5">
@@ -63,8 +56,8 @@ export default async function EditRosterRoute({
         <EditRosterForm
           roster={data}
           rosterId={params.rosterId}
-          authToken={jwtCookie?.value ?? ""}
           permissions={permissions}
+          userRole={thisUser?.role?.name ?? ""}
         />
       </div>
     </div>
