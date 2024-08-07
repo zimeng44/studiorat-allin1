@@ -61,6 +61,9 @@ const PaginationControls: FC<PaginationControlsProps> = ({
       <div className="mr-3 hidden flex-1 text-sm text-muted-foreground lg:flex">
         {numRowsSelected} of {displayNumRows} row(s) selected.
       </div>
+      <div className="mr-3 hidden flex-1 text-sm text-muted-foreground lg:flex">
+         Total: {totalEntries}
+      </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Items per page</p>
