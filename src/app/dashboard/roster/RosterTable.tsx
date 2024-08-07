@@ -252,6 +252,21 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
                       ``
                     );
                   }
+                  if (
+                    key === "excusedAbs" ||
+                    key === "excusedLate" ||
+                    key === "unexcusedAbs" ||
+                    key === "unexcusedLate" ||
+                    key === "lateReturn"
+                  ) {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        <Badge variant="secondary">{row[key]}</Badge>
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
