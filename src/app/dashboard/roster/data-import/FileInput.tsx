@@ -61,7 +61,7 @@ function FileInput({ authToken }: { authToken: string }) {
     const query = qs.stringify({
       sort: ["createdAt:desc"],
       filters: {
-        $or: [{ permissionCode: { $containsi: permissionCode } }],
+        permissionCode: { $eq: permissionCode },
       },
     });
     const url = new URL("/api/roster-permissions", baseUrl);
@@ -70,118 +70,252 @@ function FileInput({ authToken }: { authToken: string }) {
     return fetchData(url.href);
   }
 
-  const uploadPermission = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const uploadPermission = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setPermissionUploaded(false);
+  //   setPermissionsProgress(0);
+  //   setPermissionData(undefined);
+  //   const file = e.target.files ? e.target.files[0] : undefined;
+  //   const reader = new FileReader();
+
+  //   reader.onload = async (event) => {
+  //     const workbook = XLSX.read(event.target?.result, {
+  //       type: "binary",
+  //       // cellText: false,
+  //       // cellDates: true,
+  //     });
+  //     const sheetName = workbook.SheetNames[1];
+  //     const sheet = workbook.Sheets[sheetName];
+  //     const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, {
+  //       defval: "",
+  //       // header: 1,
+  //       raw: false,
+  //       dateNF: "mm-dd-yyyy",
+  //     });
+
+  //     const convertedData: RosterPermissionTypePost[] = sheetData.map(
+  //       (item) => {
+  //         item.permittedStudios = item.permittedStudios?.split(",");
+  //         if (item.startDate === "") item.startDate = undefined;
+  //         if (item.endDate === "") item.endDate = undefined;
+  //         if (item.startDate)
+  //           item.startDate = new Date(item.startDate).toISOString();
+  //         if (item.endDate) item.endDate = new Date(item.endDate).toISOString();
+  //         // console.log(item);
+  //         return item;
+  //       },
+  //     );
+
+  //     // console.log(convertedData);
+
+  //     let currentProgress = 0;
+
+  //     await Promise.all(
+  //       convertedData?.map(async (row) => {
+  //         const res = await createRosterPermissionAction(
+  //           JSON.parse(JSON.stringify(row)),
+  //         );
+  //         // console.log(res);
+  //         currentProgress += 1;
+  //         setPermissionsProgress(
+  //           (currentProgress / convertedData.length) * 100,
+  //         );
+  //       }),
+  //     );
+  //     // console.log(convertedData);
+  //     setPermissionData(convertedData);
+  //     setPermissionUploaded(true);
+  //   };
+
+  //   // reader.readAsBinaryString(file);
+  //   if (file) reader.readAsArrayBuffer(file);
+  // };
+
+  // const uploadRoster = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setRosterUploaded(false);
+  //   setRosterProgress(0);
+  //   setRosterData(undefined);
+  //   const file = e.target.files ? e.target.files[0] : undefined;
+  //   const reader = new FileReader();
+
+  //   reader.onload = async (event) => {
+  //     const workbook = XLSX.read(event.target?.result, { type: "binary" });
+  //     const sheetName2 = workbook.SheetNames[0];
+  //     const sheet2 = workbook.Sheets[sheetName2];
+  //     const sheetData2: any[] = XLSX.utils.sheet_to_json(sheet2, {
+  //       defval: "",
+  //     });
+
+  //     const convertedData2 = await Promise.all(
+  //       // find id for each roster record's related permission
+  //       sheetData2.map(async (item) => {
+  //         // Fetch the roster permissions that are related to the permissionCode
+  //         const { data: permissions, meta } =
+  //           await getPermissionByPermissionCode(item.permissionCode);
+
+  //         // console.log(permissions);
+  //         // Check the result and modify the item accordingly
+  //         if (permissions?.length === 1) {
+  //           // if only one permission found for the permissionCode we give its id to the roster record
+  //           item.roster_permissions = [permissions[0].id];
+  //         } else {
+  //           item.roster_permissions = [];
+  //           console.log("permissionCode Not Found in Permissions for");
+  //         }
+  //         return item;
+  //       }),
+  //     );
+
+  //     // console.log(convertedData2);
+
+  //     // combine multiple roster records of the same student into one
+  //     const combinedRecords: RosterRecordTypePost[] = [];
+
+  //     convertedData2.map((item) => {
+  //       if (
+  //         item.stuN === "" ||
+  //         combinedRecords.map((item) => item.stuN).includes(item.stuN)
+  //       ) {
+  //         return;
+  //       }
+  //       let consolidatedPermissions: any[] = [];
+  //       const dupeRecords = convertedData2.filter(
+  //         (itemDupe) => itemDupe.stuN !== "" && itemDupe.stuN === item.stuN,
+  //       );
+  //       // console.log(dupeRecords);
+
+  //       if (dupeRecords.length >= 1) {
+  //         consolidatedPermissions = consolidatedPermissions.concat(
+  //           dupeRecords.map((dupeItem) => dupeItem.roster_permissions[0]),
+  //         );
+  //       }
+  //       item.roster_permissions = consolidatedPermissions;
+
+  //       if (!combinedRecords.map((i) => i.stuN).includes(item.stuN)) {
+  //         combinedRecords.push(item);
+  //       }
+  //       // return item;
+  //     });
+
+  //     // console.log(combinedRecords);
+  //     let currentProgress = 0;
+
+  //     await Promise.all(
+  //       combinedRecords?.map(async (row) => {
+  //         await createRosterAction(JSON.parse(JSON.stringify(row)));
+
+  //         currentProgress += 1;
+  //         setRosterProgress((currentProgress / combinedRecords.length) * 100);
+  //       }),
+  //     );
+  //     setRosterData(combinedRecords);
+  //     setRosterUploaded(true);
+  //   };
+
+  //   // reader.readAsBinaryString(file);
+  //   if (file) reader.readAsArrayBuffer(file);
+  // };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Initialize state variables for both permissions and roster
     setPermissionUploaded(false);
     setPermissionsProgress(0);
     setPermissionData(undefined);
+    setRosterUploaded(false);
+    setRosterProgress(0);
+    setRosterData(undefined);
+
+    // Get the file
     const file = e.target.files ? e.target.files[0] : undefined;
     const reader = new FileReader();
 
     reader.onload = async (event) => {
       const workbook = XLSX.read(event.target?.result, {
         type: "binary",
-        // cellText: false,
-        // cellDates: true,
-      });
-      const sheetName = workbook.SheetNames[1];
-      const sheet = workbook.Sheets[sheetName];
-      const sheetData: any[] = XLSX.utils.sheet_to_json(sheet, {
-        defval: "",
-        // header: 1,
-        raw: false,
-        dateNF: "mm-dd-yyyy",
       });
 
-      const convertedData: RosterPermissionTypePost[] = sheetData.map(
-        (item) => {
+      // Process Permissions
+      const sheetNamePermissions = workbook.SheetNames[1];
+      const sheetPermissions = workbook.Sheets[sheetNamePermissions];
+      const sheetDataPermissions: any[] = XLSX.utils.sheet_to_json(
+        sheetPermissions,
+        {
+          defval: "",
+          raw: false,
+          dateNF: "mm-dd-yyyy",
+        },
+      );
+
+      const convertedPermissionsData: RosterPermissionTypePost[] =
+        sheetDataPermissions.map((item) => {
           item.permittedStudios = item.permittedStudios?.split(",");
           if (item.startDate === "") item.startDate = undefined;
           if (item.endDate === "") item.endDate = undefined;
           if (item.startDate)
             item.startDate = new Date(item.startDate).toISOString();
           if (item.endDate) item.endDate = new Date(item.endDate).toISOString();
-          // console.log(item);
           return item;
-        },
-      );
+        });
 
-      // console.log(convertedData);
-
-      let currentProgress = 0;
+      let currentPermissionsProgress = 0;
 
       await Promise.all(
-        convertedData?.map(async (row) => {
-          const res = await createRosterPermissionAction(
-            JSON.parse(JSON.stringify(row)),
-          );
-          // console.log(res);
-          currentProgress += 1;
+        convertedPermissionsData.map(async (row) => {
+          await createRosterPermissionAction(JSON.parse(JSON.stringify(row)));
+          currentPermissionsProgress += 1;
           setPermissionsProgress(
-            (currentProgress / convertedData.length) * 100,
+            (currentPermissionsProgress / convertedPermissionsData.length) *
+              100,
           );
         }),
       );
-      // console.log(convertedData);
-      setPermissionData(convertedData);
+
+      setPermissionData(convertedPermissionsData);
       setPermissionUploaded(true);
-    };
 
-    // reader.readAsBinaryString(file);
-    if (file) reader.readAsArrayBuffer(file);
-  };
-
-  const uploadRoster = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRosterUploaded(false);
-    setRosterProgress(0);
-    setRosterData(undefined);
-    const file = e.target.files ? e.target.files[0] : undefined;
-    const reader = new FileReader();
-
-    reader.onload = async (event) => {
-      const workbook = XLSX.read(event.target?.result, { type: "binary" });
-      const sheetName2 = workbook.SheetNames[0];
-      const sheet2 = workbook.Sheets[sheetName2];
-      const sheetData2: any[] = XLSX.utils.sheet_to_json(sheet2, {
+      // Process Roster
+      const sheetNameRoster = workbook.SheetNames[0];
+      const sheetRoster = workbook.Sheets[sheetNameRoster];
+      const sheetDataRoster: any[] = XLSX.utils.sheet_to_json(sheetRoster, {
         defval: "",
       });
 
-      const convertedData2 = await Promise.all(
-        // find id for each roster record's related permission
-        sheetData2.map(async (item) => {
-          // Fetch the roster permissions that are related to the permissionCode
+      // console.log("roster length: ", sheetDataRoster.length);
+
+      const convertedRosterData = await Promise.all(
+        sheetDataRoster.map(async (item) => {
           const { data: permissions, meta } =
             await getPermissionByPermissionCode(item.permissionCode);
-
-          // console.log(permissions);
-          // Check the result and modify the item accordingly
           if (permissions?.length === 1) {
-            // if only one permission found for the permissionCode we give its id to the roster record
             item.roster_permissions = [permissions[0].id];
           } else {
             item.roster_permissions = [];
-            console.log("permissionCode Not Found in Permissions for");
+            // console.log(
+            //   "permissionCode Not Found in Permissions for",
+            //   item.stuName,
+            // );
           }
           return item;
         }),
       );
 
-      // console.log(convertedData2);
+      // console.log(
+      //   "entries that found a matched permission: ",
+      //   convertedRosterData.length,
+      // );
 
-      // combine multiple roster records of the same student into one
-      const combinedRecords: RosterRecordTypePost[] = [];
+      const combinedRosterRecords: RosterRecordTypePost[] = [];
 
-      convertedData2.map((item) => {
+      convertedRosterData.map((item) => {
         if (
           item.stuN === "" ||
-          combinedRecords.map((item) => item.stuN).includes(item.stuN)
+          combinedRosterRecords.map((item) => item.stuN).includes(item.stuN)
         ) {
           return;
         }
         let consolidatedPermissions: any[] = [];
-        const dupeRecords = convertedData2.filter(
+        const dupeRecords = convertedRosterData.filter(
           (itemDupe) => itemDupe.stuN !== "" && itemDupe.stuN === item.stuN,
         );
-        // console.log(dupeRecords);
 
         if (dupeRecords.length >= 1) {
           consolidatedPermissions = consolidatedPermissions.concat(
@@ -190,34 +324,28 @@ function FileInput({ authToken }: { authToken: string }) {
         }
         item.roster_permissions = consolidatedPermissions;
 
-        if (!combinedRecords.map((i) => i.stuN).includes(item.stuN)) {
-          combinedRecords.push(item);
+        if (!combinedRosterRecords.map((i) => i.stuN).includes(item.stuN)) {
+          combinedRosterRecords.push(item);
         }
-        // return item;
       });
 
-      // console.log(combinedRecords);
-      let currentProgress = 0;
+      let currentRosterProgress = 0;
 
       await Promise.all(
-        combinedRecords?.map(async (row) => {
+        combinedRosterRecords.map(async (row) => {
           await createRosterAction(JSON.parse(JSON.stringify(row)));
-
-          currentProgress += 1;
-          setRosterProgress((currentProgress / combinedRecords.length) * 100);
+          currentRosterProgress += 1;
+          setRosterProgress(
+            (currentRosterProgress / combinedRosterRecords.length) * 100,
+          );
         }),
       );
-      setRosterData(combinedRecords);
+
+      setRosterData(combinedRosterRecords);
       setRosterUploaded(true);
     };
 
-    // reader.readAsBinaryString(file);
     if (file) reader.readAsArrayBuffer(file);
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await uploadPermission(e);
-    await uploadRoster(e);
   };
 
   // const handleFileUpload2 = (e: React.ChangeEvent<HTMLInputElement>) => {};
