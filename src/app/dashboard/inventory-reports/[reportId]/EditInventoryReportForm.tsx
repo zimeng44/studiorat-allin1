@@ -231,7 +231,7 @@ const EditInventoryReportForm = ({
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
               className="flex-1"
-              text="Save Draft"
+              text={report.isFinished ? "Save Notes" : "Save Draft"}
               loadingText="Saving Report"
               loading={form.formState.isSubmitting}
             />
