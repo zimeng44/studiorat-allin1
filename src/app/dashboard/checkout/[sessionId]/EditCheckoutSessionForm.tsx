@@ -528,7 +528,7 @@ const EditCheckoutSessionForm = ({
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
               className="flex-1"
-              text="Save"
+              text={session.finished ? "Save Notes" : "Save Unfinished"}
               loadingText="Saving Session"
               loading={form.formState.isSubmitting}
             />
