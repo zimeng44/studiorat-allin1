@@ -67,12 +67,21 @@ const InventoryReportsTable = ({
                       ``
                     );
                   }
-                  if (key === "numItemsChecked" || key === "inventorySize") {
+                  if (key === "numItemsChecked") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         <Badge variant="secondary">
-                          {row[key]?.data?.length ?? ""}
+                          {row.itemsChecked?.data?.length ?? ""}
                         </Badge>
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+                  if (key === "inventorySize") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        <Badge variant="secondary">{row[key]}</Badge>
                       </TableCell>
                     ) : (
                       ``
@@ -81,7 +90,7 @@ const InventoryReportsTable = ({
                   if (key === "isFinished") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row[key] ? (
+                        {row.isFinished ? (
                           <Badge variant="secondary">Finished</Badge>
                         ) : (
                           <Badge variant="default">In Progress</Badge>
