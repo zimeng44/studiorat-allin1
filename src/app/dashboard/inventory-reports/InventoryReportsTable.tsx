@@ -67,7 +67,7 @@ const InventoryReportsTable = ({
                       ``
                     );
                   }
-                  if (key === "numItemsChecked") {
+                  if (key === "numItemsChecked" || key === "inventorySize") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         <Badge variant="secondary">
