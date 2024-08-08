@@ -398,24 +398,28 @@ const EditCheckoutSessionForm = ({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="otherLocation"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Other Location</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={
-                      form.getValues("studio") !== "Other" || session.finished
-                    }
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {form.getValues("studio") === "Other" ? (
+            <FormField
+              control={form.control}
+              name="otherLocation"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Other Location</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={
+                        form.getValues("studio") !== "Other" || session.finished
+                      }
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <div className="col-span-1"></div>
+          )}
           <FormField
             control={form.control}
             name="creationMonitor"

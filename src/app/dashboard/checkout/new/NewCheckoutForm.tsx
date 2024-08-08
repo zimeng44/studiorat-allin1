@@ -302,6 +302,7 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
+          <div className="col-span-1"></div>
 
           <FormField
             control={form.control}
@@ -376,36 +377,26 @@ const NewCheckoutForm = ({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="otherLocation"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Other Location</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={form.getValues("studio") !== "Other"}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* <FormField
-            control={form.control}
-            name="creationMonitor"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Created by</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          <div className="col-span-1"></div>
+          {form.getValues("studio") === "Other" ? (
+            <FormField
+              control={form.control}
+              name="otherLocation"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Other Location</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={form.getValues("studio") !== "Other"}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <div className="col-span-1"></div>
+          )}
 
           <FormField
             control={form.control}
