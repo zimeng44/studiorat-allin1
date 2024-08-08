@@ -71,7 +71,7 @@ const InventoryReportsTable = ({
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         <Badge variant="secondary">
-                          {row.itemsChecked?.data?.length ?? ""}
+                          {row[key]?.data?.length ?? ""}
                         </Badge>
                       </TableCell>
                     ) : (
@@ -81,7 +81,7 @@ const InventoryReportsTable = ({
                   if (key === "isFinished") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.isFinished ? (
+                        {row[key] ? (
                           <Badge variant="secondary">Finished</Badge>
                         ) : (
                           <Badge variant="default">In Progress</Badge>
