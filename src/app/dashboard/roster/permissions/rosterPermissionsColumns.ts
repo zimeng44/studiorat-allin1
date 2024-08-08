@@ -37,7 +37,7 @@ export const rosterPermissionsColumnsDefault = {
   },
   permissionDetails: {
     header: "Details",
-    visible: false,
+    visible: true,
   },
   permittedStudios: {
     header: "Permitted Studios",

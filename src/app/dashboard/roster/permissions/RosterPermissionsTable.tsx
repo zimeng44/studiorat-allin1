@@ -32,6 +32,7 @@ import {
   TableColumnStatus,
 } from "./rosterPermissionsColumns";
 import { TagsInput } from "react-tag-input-component";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 20;
 
@@ -311,6 +312,18 @@ const RosterTable = ({
                           // placeHolder="Enter a studio"
                           disabled
                         />
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+
+                  if (key === "startDate" || key === "endDate") {
+                    return value.visible ? (
+                      <TableCell className="break-word" key={key}>
+                        {row[key] === null
+                          ? ``
+                          : format(new Date(row[key]), "MM/dd/y")}
                       </TableCell>
                     ) : (
                       ``
