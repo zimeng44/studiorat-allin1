@@ -73,7 +73,9 @@ const formSchema = z.object({
   endTime: z.string().min(4),
   // user: z.string().min(2),
   netId: z.string().optional(),
-  userName: z.string().min(1),
+  userName: z.string().min(2, {
+    message: "Type in a NetID to retrieve the user name",
+  }),
   useLocation: z.enum([
     "Outside",
     "Studio A",

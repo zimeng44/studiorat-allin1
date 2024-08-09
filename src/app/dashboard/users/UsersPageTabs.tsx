@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 
-import { InventoryItem, UserType } from "@/data/definitions";
+import { UserType } from "@/data/definitions";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,20 +13,6 @@ import { TableColumnStatus, userColumnsDefault } from "./userColumns";
 import TabHeader from "./TabHeader";
 import { Grid, List } from "lucide-react";
 import UserTable from "./UserTable";
-
-// interface TableFieldStatus {
-//   header: string;
-//   visible: boolean;
-// }
-// interface TableColumnStatus {
-//   username: TableFieldStatus;
-//   stuId: TableFieldStatus;
-//   fullName: TableFieldStatus;
-//   academicLevel: TableFieldStatus;
-//   email: TableFieldStatus;
-//   bio: TableFieldStatus;
-//   blocked: TableFieldStatus;
-// }
 
 interface ViewTabsProps {
   data: any[];

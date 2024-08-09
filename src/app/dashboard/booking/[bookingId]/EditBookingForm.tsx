@@ -15,15 +15,7 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  format,
-  compareAsc,
-  formatISO,
-  addDays,
-  nextMonday,
-  nextFriday,
-  isFriday,
-} from "date-fns";
+import { format, addDays, nextMonday, nextFriday, isFriday } from "date-fns";
 import {
   Form,
   FormControl,
@@ -41,15 +33,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 // import Link from "next/link";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
-import { useDebouncedCallback } from "use-debounce";
 import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
@@ -74,7 +63,9 @@ const formSchema = z.object({
   endDate: z.date(),
   endTime: z.string(),
   // stuIDCheckout: z.string().min(15).max(16),
-  userName: z.string().min(2),
+  userName: z.string().min(2, {
+    message: "Type in a NetID to retrieve the user name",
+  }),
   // studio: z.enum(bookingLocationList),
   useLocation: z.string(),
   type: z.string(),

@@ -59,8 +59,17 @@ const formSchema = z.object({
   // username: z.string().min(2).max(50),
   creationTime: z.date().or(z.string()),
   finishTime: z.date().or(z.string()).optional(),
-  stuIDCheckout: z.string().min(15).max(16),
-  userName: z.string().optional(),
+  stuIDCheckout: z
+    .string()
+    .min(15, {
+      message: "ID Barcode should be at least 15 characters",
+    })
+    .max(16, {
+      message: "ID Barcode should be at least 15 characters",
+    }),
+  userName: z.string().min(2, {
+    message: "Scan a ID barcode to retrieve the user name",
+  }),
   stuIDCheckin: z.string(),
   studio: z.string(),
   otherLocation: z.string().optional(),

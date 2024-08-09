@@ -4,7 +4,6 @@ import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -23,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SheetClose } from "@/components/ui/sheet";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface FilterFormProps {
@@ -31,11 +29,6 @@ interface FilterFormProps {
   academicLevel?: string;
   role?: string;
 }
-
-// const mTechBarcode = z.union([
-//   z.string().min(12).and(z.string().max(13)),
-//   z.string().length(0),
-// ]);
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -70,9 +63,6 @@ const UserFilterForm = ({
       }
       params.set(key, value);
     }
-    // console.log(params.toString());
-    // params.set("page", pageNumber.toString());
-    // params.set("pageSize", newPageSize.toString());
     return `${pathname}?${params.toString()}`;
   };
 
@@ -87,8 +77,6 @@ const UserFilterForm = ({
       )
         params.delete(key);
     }
-    // params.set("page", pageNumber.toString());
-    // params.set("pageSize", newPageSize.toString());
     return `${pathname}?${params.toString()}`;
   };
 
@@ -169,7 +157,7 @@ const UserFilterForm = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select A Storage Location" />
+                      <SelectValue placeholder="Select A Level" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

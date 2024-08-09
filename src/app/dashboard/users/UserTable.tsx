@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -10,41 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  SquarePen,
-  Users2,
-} from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteItemAction } from "@/data/actions/inventory-actions";
+// import { deleteItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { TableColumnStatus, userColumnsDefault } from "./userColumns";
 
 const MAX_TEXT_LEN = 20;
-
 interface UserTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
@@ -63,8 +37,8 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
   // let filterOpen = searchParams.get("filterOpen") === "true";
   const pageIndex = searchParams.get("page") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
-  const isAllSelected = searchParams.get("isAllSelected") === "true";
-  const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
+  // const isAllSelected = searchParams.get("isAllSelected") === "true";
+  // const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
@@ -114,52 +88,52 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
 
   // console.log(data.length);
 
-  const handleAllSelected = (checked: boolean) => {
-    setRowsSelected(Array(data.length).fill(checked));
+  // const handleAllSelected = (checked: boolean) => {
+  //   setRowsSelected(Array(data.length).fill(checked));
 
-    params.set("isAllSelected", checked ? "true" : "false");
-    params.set("isBatchOpOpen", checked ? "true" : "false");
-    params.set("numRowsSelected", data.length.toString());
-    router.replace(`${pathname}?${params.toString()}`);
-    // console.log("All Selected is ", allSelected);
-  };
+  //   params.set("isAllSelected", checked ? "true" : "false");
+  //   params.set("isBatchOpOpen", checked ? "true" : "false");
+  //   params.set("numRowsSelected", data.length.toString());
+  //   router.replace(`${pathname}?${params.toString()}`);
+  //   // console.log("All Selected is ", allSelected);
+  // };
 
-  const handleRowSelection = (
-    matchedIndex: number,
-    checked: boolean | undefined,
-  ) => {
-    setRowsSelected((rowsSelected) =>
-      rowsSelected.map((rowChecked, index) =>
-        index === matchedIndex ? checked : rowChecked,
-      ),
-    );
-  };
+  // const handleRowSelection = (
+  //   matchedIndex: number,
+  //   checked: boolean | undefined,
+  // ) => {
+  //   setRowsSelected((rowsSelected) =>
+  //     rowsSelected.map((rowChecked, index) =>
+  //       index === matchedIndex ? checked : rowChecked,
+  //     ),
+  //   );
+  // };
 
-  const handleResetSelection = () => {
-    setRowsSelected(Array(data.length).fill(false));
-    params.set("isAllSelected", "false");
-    params.set("isBatchOpOpen", "false");
-    params.set("numRowsSelected", "0");
-    router.replace(`${pathname}?${params.toString()}`);
-  };
+  // const handleResetSelection = () => {
+  //   setRowsSelected(Array(data.length).fill(false));
+  //   params.set("isAllSelected", "false");
+  //   params.set("isBatchOpOpen", "false");
+  //   params.set("numRowsSelected", "0");
+  //   router.replace(`${pathname}?${params.toString()}`);
+  // };
 
-  const handleBatchDelete = () => {
-    const counter = rowsSelected.filter((item) => item === true).length;
-    // console.log("Size of rowSelected is ", rowsSelected.length);
+  // const handleBatchDelete = () => {
+  //   const counter = rowsSelected.filter((item) => item === true).length;
+  //   // console.log("Size of rowSelected is ", rowsSelected.length);
 
-    const confirm = window.confirm(
-      `Are you sure you want to delete ${counter} item(s)?`,
-    );
+  //   const confirm = window.confirm(
+  //     `Are you sure you want to delete ${counter} item(s)?`,
+  //   );
 
-    if (!confirm) return;
+  //   if (!confirm) return;
 
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteItemAction(data[index].id);
-      }
-    });
-    setRowsSelected(Array(data.length).fill(false));
-  };
+  //   rowsSelected.map((row, index) => {
+  //     if (row) {
+  //       deleteItemAction(data[index].id);
+  //     }
+  //   });
+  //   setRowsSelected(Array(data.length).fill(false));
+  // };
 
   const handleSort = (field: string) => {
     const order = sort.split(":")[1] === "asc" ? "desc" : "asc";
