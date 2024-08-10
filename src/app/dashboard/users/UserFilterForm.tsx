@@ -100,6 +100,7 @@ const UserFilterForm = ({
     const blankFilter = {
       academicLevel: "All",
       blocked: false,
+      role: "All",
     };
     router.push(resetPageURL(blankFilter));
     // console.log(resetPageURL(blankFilter));
