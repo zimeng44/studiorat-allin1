@@ -96,7 +96,9 @@ const CheckoutSessionsTable = ({
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap p-1" key={key}>
                       {key === "creationTime" || key === "finishTime"
-                        ? format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
+                        ? row[key] === null
+                          ? ``
+                          : format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

@@ -309,30 +309,42 @@ const EditCheckoutSessionForm = ({
                     disabled
                     placeholder={"This is the time"}
                     {...field}
-                    value={format(field.value, "MM/dd/yyyy hh:mm a")}
+                    value={
+                      field.value === null
+                        ? ``
+                        : format(field.value, "MM/dd/yyyy hh:mm a")
+                    }
                   ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="finishTime"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Finish Time</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled
-                    {...field}
-                    value={field.value?.toLocaleString()}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+          {session.finished ? (
+            <FormField
+              control={form.control}
+              name="finishTime"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Finish Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled
+                      {...field}
+                      value={
+                        field.value === null || field.value === undefined
+                          ? ``
+                          : format(field.value, "MM/dd/yyyy hh:mm a")
+                      }
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            ``
+          )}
           <FormField
             control={form.control}
             name="stuIDCheckout"
@@ -430,6 +442,7 @@ const EditCheckoutSessionForm = ({
           ) : (
             <div className="col-span-1"></div>
           )}
+          {session.finished ? <div className="col-span-1"></div> : ``}
           <FormField
             control={form.control}
             name="creationMonitor"
@@ -498,29 +511,33 @@ const EditCheckoutSessionForm = ({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="scan"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel className="ml-1">Barcode Scan</FormLabel>
-                <FormControl
-                  onChange={(e) =>
-                    handleScan((e.target as HTMLInputElement).value)
-                  }
-                  // onChange={(e) => handleScan(e.target.value)}
-                >
-                  <Input
-                    className="bg-indigo-100"
-                    placeholder={"Scan a barcode"}
-                    {...field}
-                    disabled={session.finished}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {session.finished ? (
+            ``
+          ) : (
+            <FormField
+              control={form.control}
+              name="scan"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel className="ml-1">Barcode Scan</FormLabel>
+                  <FormControl
+                    onChange={(e) =>
+                      handleScan((e.target as HTMLInputElement).value)
+                    }
+                    // onChange={(e) => handleScan(e.target.value)}
+                  >
+                    <Input
+                      className="bg-indigo-100"
+                      placeholder={"Scan a barcode"}
+                      {...field}
+                      disabled={session.finished}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
             <EmbededTable

@@ -30,6 +30,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { createInventoryReportAction } from "@/data/actions/inventoryReports-actions";
+import { Badge } from "@/components/ui/badge";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -89,6 +90,7 @@ const NewInventoryReportForm = ({
   // const [userName, setUserName] = useState("");
   const [itemIdArray, setItemIdArray] = useState(Array());
   const [itemObjArr, setItemObjArr] = useState(Array());
+  const [autoSaved, setAutoSaved] = useState(false);
 
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
@@ -210,6 +212,7 @@ const NewInventoryReportForm = ({
 
   return (
     <div>
+      {autoSaved ? <p className="test-xs text-slate-400">(Auto Saved)</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -266,24 +269,6 @@ const NewInventoryReportForm = ({
 
           <FormField
             control={form.control}
-            name="inventorySize"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Scaned Amount of Total</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled
-                    value={`${itemIdArray.length?.toString() ?? "0"} of ${field.value.toString()}`}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="notes"
             render={({ field }) => (
               <FormItem className="col-span-1">
@@ -295,6 +280,34 @@ const NewInventoryReportForm = ({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="inventorySize"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>Scaned Amount of Total</FormLabel>
+                <FormControl>
+                  <div className="pt-1 text-lg">
+                    <Badge variant="default" className="ml-3 mr-2">
+                      {itemIdArray.length?.toString() ?? "0"}
+                    </Badge>
+                    of
+                    <Badge variant="secondary" className="ml-2">
+                      {field.value.toString()}
+                    </Badge>
+                  </div>
+                  {/* <Input
+                    {...field}
+                    disabled
+                    value={`${itemIdArray.length?.toString() ?? "0"} of ${field.value.toString()}`}
+                  ></Input> */}
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="scan"

@@ -33,6 +33,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { updateInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
+import { Badge } from "@/components/ui/badge";
 
 // import { useRouter } from "next/navigation";
 
@@ -288,24 +289,6 @@ const EditInventoryReportForm = ({
 
           <FormField
             control={form.control}
-            name="inventorySize"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Scaned Amount of Total</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled
-                    value={`${itemIdArray.length?.toString() ?? "0"} of ${field.value.toString()}`}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="notes"
             render={({ field }) => (
               <FormItem className="col-span-1">
@@ -317,28 +300,60 @@ const EditInventoryReportForm = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="scan"
+            name="inventorySize"
             render={({ field }) => (
               <FormItem className="col-span-1">
-                <FormLabel className="ml-1">Barcode Scan</FormLabel>
-                <FormControl
-                  onChange={(e) =>
-                    handleScan((e.target as HTMLInputElement).value)
-                  }
-                >
-                  <Input
-                    disabled={report.isFinished ?? false}
-                    className="bg-indigo-100"
-                    placeholder={"Scan a barcode"}
+                <FormLabel>Scaned Amount of Total</FormLabel>
+                <FormControl>
+                  <div className="pt-1 text-lg">
+                    <Badge variant="default" className="ml-3 mr-2">
+                      {itemIdArray.length?.toString() ?? "0"}
+                    </Badge>
+                    of
+                    <Badge variant="secondary" className="ml-2">
+                      {field.value.toString()}
+                    </Badge>
+                  </div>
+                  {/* <Input
                     {...field}
-                  ></Input>
+                    disabled
+                    value={`${itemIdArray.length?.toString() ?? "0"} of ${field.value.toString()}`}
+                  ></Input> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {report.isFinished ? (
+            ``
+          ) : (
+            <FormField
+              control={form.control}
+              name="scan"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="ml-1">Barcode Scan</FormLabel>
+                  <FormControl
+                    onChange={(e) =>
+                      handleScan((e.target as HTMLInputElement).value)
+                    }
+                  >
+                    <Input
+                      disabled={report.isFinished ?? false}
+                      className="bg-indigo-100"
+                      placeholder={"Scan a barcode"}
+                      {...field}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
             <EmbededTable
               data={itemObjArr}

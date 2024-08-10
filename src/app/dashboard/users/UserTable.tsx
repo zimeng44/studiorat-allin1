@@ -13,7 +13,6 @@ import { SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-// import { deleteItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { TableColumnStatus, userColumnsDefault } from "./userColumns";
