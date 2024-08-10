@@ -18,6 +18,7 @@ import {
   TableColumnStatus,
 } from "./inventoryReportsColumns";
 import InventoryReportsTable from "./InventoryReportsTable";
+import { format } from "date-fns";
 
 interface ViewTabsProps {
   data: any[];
@@ -31,7 +32,8 @@ function LinkCard(report: Readonly<InventoryReportType>) {
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
-            {new Date(report.createdAt ?? "").toLocaleString() || "Report Time"}
+            {format(new Date(report.createdAt ?? ""), "MM/dd/yyyy hh:mm a") ||
+              "Report Time"}
           </CardTitle>
         </CardHeader>
         <CardContent>

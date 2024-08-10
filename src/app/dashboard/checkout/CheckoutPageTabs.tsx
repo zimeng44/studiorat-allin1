@@ -10,6 +10,7 @@ import { checkoutColumnsDefault, TableColumnStatus } from "./checkoutColumns";
 import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
 import { Grid, HomeIcon, List } from "lucide-react";
+import { format } from "date-fns";
 
 interface ViewTabsProps {
   data: any[];
@@ -33,7 +34,7 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
             {session.studio || "Studio Unknow"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {`${session.creationTime ? new Date(session.creationTime).toLocaleString() : "Time Unknown"}`}
+            {`${session.creationTime ? format(new Date(session.creationTime), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
           </p>
         </CardContent>
       </Card>

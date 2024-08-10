@@ -14,6 +14,7 @@ import { momentLocalizer } from "react-big-calendar";
 import BookingCalendar from "./BookingCalendar";
 import { CalendarDays, Grid, List, Square } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { format } from "date-fns";
 
 interface TableFieldStatus {
   header: string;
@@ -52,7 +53,7 @@ function LinkCard(booking: Readonly<BookingType>) {
             {booking.useLocation || "Studio Unknow"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {`${booking.startTime ? new Date(booking.startTime).toLocaleString() : "Time Unknown"}`}
+            {`${booking.startTime ? format(new Date(booking.startTime), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
           </p>
         </CardContent>
       </Card>
