@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BookingType, CheckoutSessionType } from "@/data/definitions";
+import { format } from "date-fns";
 
 const DashboardCards = ({
   userRole,
@@ -198,9 +199,10 @@ const DashboardCards = ({
                               {booking.useLocation}
                             </TableCell>
                             <TableCell className="text-right" key="startTime">
-                              {new Date(
-                                booking.startTime as string,
-                              ).toLocaleString()}
+                              {format(
+                                new Date(booking.startTime as string),
+                                "MM/dd/yyyy hh:mm a",
+                              )}
                             </TableCell>
                           </TableRow>
                         ))
@@ -294,9 +296,10 @@ const DashboardCards = ({
                                 className="text-right"
                                 key="creationTime"
                               >
-                                {new Date(
-                                  checkout.creationTime as string,
-                                ).toLocaleString()}
+                                {format(
+                                  new Date(checkout.creationTime as string),
+                                  "MM/dd/yyyy hh:mm a",
+                                )}
                               </TableCell>
                             </TableRow>
                           ))

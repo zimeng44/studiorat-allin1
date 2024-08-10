@@ -17,6 +17,7 @@ import {
   inventoryReportsColumnsDefault,
   TableColumnStatus,
 } from "./inventoryReportsColumns";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 8;
 interface InventoryReportsTableProps {
@@ -104,7 +105,7 @@ const InventoryReportsTable = ({
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
                       {key === "createdAt"
-                        ? new Date(row[key] ?? "").toLocaleString()
+                        ? format(new Date(row[key] ?? ""), "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

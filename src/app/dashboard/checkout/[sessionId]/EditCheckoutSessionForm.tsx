@@ -42,6 +42,7 @@ import { SubmitButton } from "@/components/custom/SubmitButton";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { TagsInput } from "react-tag-input-component";
 import { Textarea } from "@/components/ui/textarea";
+import { format } from "date-fns";
 
 // import { useRouter } from "next/navigation";
 
@@ -308,7 +309,7 @@ const EditCheckoutSessionForm = ({
                     disabled
                     placeholder={"This is the time"}
                     {...field}
-                    value={field.value?.toLocaleString()}
+                    value={format(field.value, "MM/dd/yyyy hh:mm a")}
                   ></Input>
                 </FormControl>
                 <FormMessage />

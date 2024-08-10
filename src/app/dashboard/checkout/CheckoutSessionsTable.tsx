@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { checkoutColumnsDefault, TableColumnStatus } from "./checkoutColumns";
 import { Badge } from "@/components/ui/badge";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 8;
 
@@ -95,7 +96,7 @@ const CheckoutSessionsTable = ({
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap p-1" key={key}>
                       {key === "creationTime" || key === "finishTime"
-                        ? new Date(row[key]).toLocaleString()
+                        ? format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

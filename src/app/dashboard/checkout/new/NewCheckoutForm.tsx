@@ -42,6 +42,7 @@ import { SubmitButton } from "@/components/custom/SubmitButton";
 import { useRouter } from "next/navigation";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Textarea } from "@/components/ui/textarea";
+import { format } from "date-fns";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -295,7 +296,7 @@ const NewCheckoutForm = ({
                     disabled
                     placeholder={"This is the time"}
                     {...field}
-                    value={field.value?.toLocaleString()}
+                    value={format(field.value, "MM/dd/yyyy hh:mm a")}
                   ></Input>
                 </FormControl>
                 <FormMessage />
