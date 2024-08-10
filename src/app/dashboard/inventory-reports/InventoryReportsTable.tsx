@@ -105,7 +105,12 @@ const InventoryReportsTable = ({
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
                       {key === "createdAt"
-                        ? format(new Date(row[key] ?? ""), "MM/dd/yyyy hh:mm a")
+                        ? row[key] === null || row[key] === undefined
+                          ? ``
+                          : format(
+                              new Date(row[key] ?? ""),
+                              "MM/dd/yyyy hh:mm a",
+                            )
                         : row[key]}
                     </TableCell>
                   ) : (

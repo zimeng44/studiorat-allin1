@@ -21,8 +21,8 @@ export async function createInventoryReportAction(
   const data = await mutateData("POST", "/api/inventory-reports", payload);
   const flattenedData = flattenAttributes(data);
 
-  // redirect("/dashboard/checkout/" + flattenedData.id);
-  redirect("/dashboard/inventory-reports/");
+  redirect("/dashboard/inventory-reports/" + flattenedData.id);
+  // redirect("/dashboard/inventory-reports/");
 }
 
 export const updateInventoryReportAction = async (

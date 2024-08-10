@@ -310,7 +310,7 @@ const EditCheckoutSessionForm = ({
                     placeholder={"This is the time"}
                     {...field}
                     value={
-                      field.value === null
+                      field.value === null || field.value === undefined
                         ? ``
                         : format(field.value, "MM/dd/yyyy hh:mm a")
                     }

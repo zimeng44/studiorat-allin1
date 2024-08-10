@@ -31,6 +31,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { createInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { Badge } from "@/components/ui/badge";
+import { redirect, useRouter } from "next/navigation";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -59,6 +60,7 @@ const NewInventoryReportForm = ({
   authToken: string;
   inventorySize: string;
 }) => {
+  const router = useRouter();
   const [data, setData] = useState({
     creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
     inventorySize: parseInt(inventorySize),
@@ -66,8 +68,9 @@ const NewInventoryReportForm = ({
     isFinished: false,
     scan: "",
   });
-
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
+  const [itemIdArray, setItemIdArray] = useState(Array());
+  const [itemObjArr, setItemObjArr] = useState(Array());
 
   // console.log(inventorySize);
 
@@ -88,9 +91,10 @@ const NewInventoryReportForm = ({
   // const [stuIDCheckout, setstuIDCheckout] = useState("");
   // const [userId, setUserId] = useState("");
   // const [userName, setUserName] = useState("");
-  const [itemIdArray, setItemIdArray] = useState(Array());
-  const [itemObjArr, setItemObjArr] = useState(Array());
-  const [autoSaved, setAutoSaved] = useState(false);
+
+  useEffect(() => {
+    form.setFocus("scan");
+  }, []);
 
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
@@ -147,6 +151,31 @@ const NewInventoryReportForm = ({
           } else {
             setItemIdArray([data[0].id, ...itemIdArray]);
             setItemObjArr([data[0], ...itemObjArr]);
+            if (itemObjArr.length > 4) {
+              // onSubmit(form.watch());
+              let formValue: InventoryReportTypePost = {
+                creator: thisMonitor.id,
+                inventorySize: form.getValues("inventorySize"),
+                notes: form.getValues("notes"),
+                isFinished: form.getValues("isFinished"),
+                itemsChecked: [data[0].id, ...(itemIdArray ?? [])],
+              };
+
+              try {
+                createInventoryReportAction(formValue);
+              } catch (error) {
+                toast.error("Error Creating New Inventory Report");
+                setError({
+                  ...INITIAL_STATE,
+                  message: "Error Creating New Inventory Report",
+                  name: "New Inventory Report Error",
+                });
+                // setLoading(false);
+                return;
+              }
+              toast.success("Report Autosaved.");
+              // setAutoSaved(true)
+            }
           }
         } else {
           window.alert("Item not in the inventory.");
@@ -187,8 +216,9 @@ const NewInventoryReportForm = ({
       // setLoading(false);
       return;
     }
-
-    toast.success("New Report Completed.");
+    toast.success("New Report Saved.");
+    router.push("/dashboard/inventory-reports");
+    // redirect("/dashboard/inventory-reports");
 
     // console.log("data submited is ", values);
   }
@@ -212,7 +242,6 @@ const NewInventoryReportForm = ({
 
   return (
     <div>
-      {autoSaved ? <p className="test-xs text-slate-400">(Auto Saved)</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

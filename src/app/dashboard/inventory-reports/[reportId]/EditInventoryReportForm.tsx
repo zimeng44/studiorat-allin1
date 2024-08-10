@@ -82,7 +82,7 @@ const EditInventoryReportForm = ({
   const [itemObjArr, setItemObjArr] = useState<InventoryItem[]>(
     itemsChecked?.data ?? Array(),
   );
-
+  // const [autoSaved, setAutoSaved] = useState(false);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,6 +98,10 @@ const EditInventoryReportForm = ({
 
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
+
+  useEffect(() => {
+    if (!report.isFinished) form.setFocus("scan");
+  }, []);
 
   const baseUrl = getStrapiURL();
 
@@ -149,6 +153,30 @@ const EditInventoryReportForm = ({
           } else {
             setItemIdArray([data[0].id, ...itemIdArray]);
             setItemObjArr([data[0], ...itemObjArr]);
+
+            if (itemObjArr.length > 5 && itemObjArr.length % 5 === 0) {
+              const formValue: InventoryReportTypePost = {
+                creator: thisMonitor.id,
+                inventorySize: form.getValues("inventorySize"),
+                notes: form.getValues("notes"),
+                itemsChecked: [data[0].id, ...(itemIdArray ?? [])],
+              };
+
+              try {
+                updateInventoryReportAction(formValue, reportId);
+                toast.success("Report Autosaved.");
+                // setStrapiErrors(res.strapiErrors);
+              } catch (error) {
+                toast.error("Error Autosaving Checkout Session");
+                // setError({
+                //   ...INITIAL_STATE,
+                //   message: "Error Creating Summary",
+                //   name: "Summary Error",
+                // });
+                // setLoading(false);
+                return;
+              }
+            }
           }
         } else {
           window.alert("Item not in the inventory.");
@@ -216,6 +244,7 @@ const EditInventoryReportForm = ({
 
   return (
     <div>
+      {/* {autoSaved ? <p className="test-xs text-slate-400">(Auto Saved)</p> : ``} */}
       <StrapiErrors error={strapiErrors} />
       {!report.isFinished && thisMonitor.role?.name === "Monitor" ? (
         <p className="mb-2 italic text-gray-400">
