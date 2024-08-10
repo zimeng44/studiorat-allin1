@@ -9,6 +9,7 @@ import { SummaryForm } from "@/components/forms/SummaryForm";
 import { CalendarPlus2, PlusCircle, User } from "lucide-react";
 import HeaderMenu from "./HeaderMenu";
 import { UserRole } from "@/data/definitions";
+import { notFound } from "next/navigation";
 
 interface HeaderProps {
   data: {
@@ -60,6 +61,15 @@ export async function Header({ data }: Readonly<HeaderProps>) {
   const user = await getUserMeLoader();
   // console.log(user);
   const { logoText, ctaButton } = data;
+
+  if (!logoText)
+    return (
+      <p>
+        There was an error fetching homepage header. please try clearing cookies
+        in your browser or contact admin
+      </p>
+    );
+
   return (
     <div className="flex items-center justify-between bg-white px-4 py-3 shadow-md dark:bg-gray-800">
       <Logo text={logoText.text} />
