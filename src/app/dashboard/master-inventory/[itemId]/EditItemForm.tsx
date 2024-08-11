@@ -121,7 +121,7 @@ const EditItemForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-2"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
         >
           <FormField
             control={form.control}

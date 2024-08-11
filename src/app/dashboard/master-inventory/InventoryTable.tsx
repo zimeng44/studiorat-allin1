@@ -14,24 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  SquarePen,
-  Users2,
-} from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";

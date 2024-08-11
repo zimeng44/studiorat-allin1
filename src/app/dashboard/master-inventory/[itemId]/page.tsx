@@ -29,7 +29,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
   const data = await getInventoryItemById(params.itemId);
 
   return (
-    <div className="p-5">
+    <div className="flex-col p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -52,7 +52,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">Edit Item</h1>
-      <div className="flex items-center px-4">
+      <div className="flex items-center md:px-2">
         <EditItemForm item={data} itemId={params.itemId} />
       </div>
     </div>
