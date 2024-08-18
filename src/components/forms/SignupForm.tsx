@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useState } from "react";
 
 const INITIAL_STATE = {
   data: null,
@@ -43,6 +44,7 @@ export function SignupForm({
     registerUserAction,
     INITIAL_STATE,
   );
+  const [selectedRole, setSelectedRole] = useState("3");
 
   return (
     <div className="w-full max-w-md">
@@ -56,15 +58,15 @@ export function SignupForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">NetID</Label>
+              <Label htmlFor="net_id">NetID</Label>
               <Input
-                id="username"
-                name="username"
+                id="net_id"
+                name="net_id"
                 type="text"
                 autoCapitalize="none"
                 placeholder="School Assigned NetID"
               />
-              <ZodErrors error={formState?.zodErrors?.username} />
+              <ZodErrors error={formState?.zodErrors?.net_id} />
             </div>
             <div className="space-y-2">
               {/* <Label htmlFor="email">Email</Label>
@@ -89,45 +91,36 @@ export function SignupForm({
               <ZodErrors error={formState?.zodErrors?.password} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="first_name">First Name</Label>
               <Input
-                id="firstName"
-                name="firstName"
+                id="first_name"
+                name="first_name"
                 type="text"
                 autoCapitalize="none"
                 placeholder="First Name"
               />
-              <ZodErrors error={formState?.zodErrors?.firstName} />
+              <ZodErrors error={formState?.zodErrors?.first_name} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="last_name">Last Name</Label>
               <Input
-                id="lastName"
-                name="lastName"
+                id="last_name"
+                name="last_name"
                 type="text"
                 autoCapitalize="none"
                 placeholder="Last Name"
               />
-              <ZodErrors error={formState?.zodErrors?.lastName} />
+              <ZodErrors error={formState?.zodErrors?.last_name} />
             </div>
-            {userRole === "Monitor" ? (
+            {userRole === "Admin" ? (
               <div className="space-y-2">
-                <Label htmlFor="stuId">ID Barcode</Label>
-                <Input
-                  id="stuId"
-                  name="stuId"
-                  type="text"
-                  defaultValue={stuId}
-                  autoCapitalize="none"
-                  placeholder="ID Barcode"
-                />
-                <ZodErrors error={formState?.zodErrors?.stuId} />
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="userRole">User Type</Label>
-                <Select name="userRole" defaultValue="monitor">
-                  <SelectTrigger id="userRole">
+                <Label htmlFor="user_role">User Type</Label>
+                <Select
+                  name="user_role"
+                  value={selectedRole}
+                  onValueChange={(value) => setSelectedRole(value)}
+                >
+                  <SelectTrigger id="user_role">
                     <SelectValue placeholder="User Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -135,28 +128,44 @@ export function SignupForm({
                     <SelectItem value="5">Inventory Manager</SelectItem>
                     <SelectItem value="2">User</SelectItem>
                     <SelectItem value="4">Admin</SelectItem> */}
-                    <SelectItem value="monitor">Monitor</SelectItem>
-                    <SelectItem value="inventorymanager">
-                      Inventory Manager
-                    </SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="authenticated">User</SelectItem>
+                    <SelectItem value="3">Monitor</SelectItem>
+                    <SelectItem value="4">Inventory Manager</SelectItem>
+                    <SelectItem value="1">Admin</SelectItem>
+                    <SelectItem value="2">User</SelectItem>
                   </SelectContent>
                 </Select>
-                <ZodErrors error={formState?.zodErrors?.userRole} />
+                <ZodErrors error={formState?.zodErrors?.user_role} />
               </div>
+            ) : (
+              ``
+            )}
+            {selectedRole === "2" || userRole === "Monitor" ? (
+              <div className="space-y-2">
+                <Label htmlFor="stu_id">ID Barcode</Label>
+                <Input
+                  id="stu_id"
+                  name="stu_id"
+                  type="text"
+                  defaultValue={stuId}
+                  autoCapitalize="none"
+                  placeholder="ID Barcode"
+                />
+                <ZodErrors error={formState?.zodErrors?.stu_id} />
+              </div>
+            ) : (
+              ``
             )}
             <div className="space-y-2">
-              <Label htmlFor="academicLevel">Academic Level</Label>
+              <Label htmlFor="academic_level">Academic Level</Label>
               {/* <Input
-                id="academicLevel"
-                name="academicLevel"
+                id="academic_level"
+                name="academic_level"
                 type="text"
                 autoCapitalize="none"
                 placeholder="Academic Level"
               /> */}
-              <Select name="academicLevel" defaultValue="Undergrad">
-                <SelectTrigger id="academicLevel">
+              <Select name="academic_level" defaultValue="Undergrad">
+                <SelectTrigger id="academic_level">
                   <SelectValue placeholder="Select a Level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -165,7 +174,7 @@ export function SignupForm({
                   <SelectItem value="Faculty">Faculty</SelectItem>
                 </SelectContent>
               </Select>
-              <ZodErrors error={formState?.zodErrors?.academicLevel} />
+              <ZodErrors error={formState?.zodErrors?.academic_level} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">

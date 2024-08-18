@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 // import { InventoryItem } from "@/app/lib/definitions";
 import { InventoryItem, UserType, UserTypePost } from "../definitions";
+import prisma from "@/lib/prisma";
 
 // interface Payload {
 //   data: {
@@ -35,44 +36,28 @@ export const updateUserAction = async (
   updatedUser: UserTypePost,
   id: string,
 ) => {
+  // console.log(id);
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
+
+    const payload = {
+      where: { id: id },
+      data: updatedUser,
+      include: { user_role: true },
+    };
+
+    const res = await prisma.user.update(payload);
+    // console.log("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrre");
+    // console.log("res is ############## ", res);
+
+    revalidatePath("/dashboard/users");
+    return { res: res, error: null };
+  } catch (error) {
+    console.log("Error is ########################", error);
+    return { res: null, error: error as string };
+  }
   // console.log(updatedUser);
-
-  const payload = {
-    data: updatedUser,
-  };
-
-  const responseData = await mutateData("PUT", `/api/users/${id}`, updatedUser);
-
-  // console.log(responseData);
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
-  }
-
-  if (responseData.error) {
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update summary.",
-    };
-  }
-
-  // console.log(responseData);
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/users");
-  // redirect("/dashboard/users");
-
-  return {
-    // ...prevState,
-    message: "Summary updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
 };
 
 // export async function updateInventoryItemAction(
@@ -123,25 +108,29 @@ export const updateUserAction = async (
 // }
 
 export async function deleteUserAction(id: string) {
-  const responseData = await mutateData("DELETE", `/api/users/${id}`);
+  // const responseData = await mutateData("DELETE", `/api/users/${id}`);
 
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+  // if (!responseData) {
+  //   return {
+  //     // ...prevState,
+  //     strapiErrors: null,
+  //     message: "Oops! Something went wrong. Please try again.",
+  //   };
+  // }
+
+  // if (responseData.error) {
+  //   return {
+  //     // ...prevState,
+  //     strapiErrors: responseData.error,
+  //     message: "Failed to delete Item.",
+  //   };
+  // }
+  try {
+    const responseData = await prisma.user.delete({ where: { id: id } });
+    return { res: responseData, error: null };
+  } catch (error) {
+    return { res: null, error: error };
   }
-
-  if (responseData.error) {
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/users");
 }
 
 // export async function deleteInventoryItemAction(id: string, prevState: any) {

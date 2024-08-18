@@ -21,15 +21,25 @@ export default async function EditRosterRoute({
 }: Readonly<ParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
   // const data = await getRosterById(params.rosterId);
-  const data = {};
+  const data = { permissions: [] };
 
-  const { data: permissions, meta: permissionsMeta } =
-    await getRosterPermissions("", "1", "100", {});
+  const { data: permissions, count } = await getRosterPermissions(
+    "",
+    "1",
+    "100",
+    {},
+  );
+
+  if (!permissions)
+    return <p>No permissions data found, please add permissions first</p>;
 
   return (
     <div className="flex-col p-0 md:p-5">
@@ -55,10 +65,9 @@ export default async function EditRosterRoute({
       <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Roster</h1>
       <div className="flex items-center md:px-2">
         <AddRosterForm
-          roster={data}
-          rosterId={params.rosterId}
+          // roster={data}
           permissions={permissions}
-          userRole={thisUser?.role?.name ?? ""}
+          userRole={thisUser?.user_role?.name ?? ""}
         />
       </div>
     </div>

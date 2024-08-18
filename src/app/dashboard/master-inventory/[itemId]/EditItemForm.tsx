@@ -31,6 +31,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
+import { inventory_items } from "@prisma/client";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -40,14 +41,14 @@ const INITIAL_STATE = {
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  mTechBarcode: z.string().min(12).and(z.string().max(13)),
+  m_tech_barcode: z.string().min(12).and(z.string().max(13)),
   make: z.string().min(2),
   model: z.string().min(2),
   category: z.string(),
-  description: z.string(),
-  accessories: z.string(),
-  storageLocation: z.string(),
-  comments: z.string(),
+  description: z.string().optional(),
+  accessories: z.string().optional(),
+  storage_location: z.string(),
+  comments: z.string().optional(),
   out: z.boolean(),
   broken: z.boolean(),
 });
@@ -57,7 +58,7 @@ const EditItemForm = ({
   item,
 }: {
   itemId: string;
-  item: InventoryItem;
+  item: inventory_items;
 }) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
@@ -67,53 +68,54 @@ const EditItemForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      mTechBarcode: item.mTechBarcode,
-      make: item.make,
-      model: item.model,
-      category: item.category,
-      description: item.description,
-      accessories: item.accessories,
-      storageLocation: item.storageLocation,
-      comments: item.comments,
-      out: item.out,
-      broken: item.broken,
+      m_tech_barcode: item.m_tech_barcode ?? undefined,
+      make: item.make ?? undefined,
+      model: item.model ?? undefined,
+      category: item.category ?? undefined,
+      description: item.description ?? undefined,
+      accessories: item.accessories ?? undefined,
+      storage_location: item.storage_location ?? undefined,
+      comments: item.comments ?? undefined,
+      out: item.out ?? false,
+      broken: item.broken ?? false,
     },
   });
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
     // updateAction(updatedData);
 
-    updateItemAction(values, itemId);
-    router.refresh();
-    toast.success("Item Saved.");
+    const { res, error } = await updateItemAction(values, itemId);
+
+    if (!error) {
+      router.push("/dashboard/master-inventory");
+      router.refresh();
+      toast.success("Item Saved.");
+    }
 
     // closeDetail();
     // console.log("Form Submitted!!");
     // setDialogOpen(false);
   }
 
-  function handleDelete(e: any) {
+  async function handleDelete(e: any) {
     const confirm = window.confirm(
       "Are you sure you want to delete this item?",
     );
 
     if (!confirm) return;
 
-    const res = deleteItemAction(itemId);
+    const { res, error } = await deleteItemAction(itemId);
 
-    if (!res) toast.success("Item Deleted");
-
-    // if ((totalEntries - 1) % pageSize === 0) {
-    //   setPageIndex((pageIndex) => pageIndex - 1);
-    // }
-    // console.log("Item Deleted!!!!!!!!!!!!!");
-    // closeDetail();
+    if (!error) {
+      router.push("/dashboard/master-inventory");
+      toast.success("Item Deleted");
+    }
   }
 
   return (
@@ -125,7 +127,7 @@ const EditItemForm = ({
         >
           <FormField
             control={form.control}
-            name="mTechBarcode"
+            name="m_tech_barcode"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>MTech Barcode</FormLabel>
@@ -203,7 +205,7 @@ const EditItemForm = ({
           />
           <FormField
             control={form.control}
-            name="storageLocation"
+            name="storage_location"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>Storage Location</FormLabel>

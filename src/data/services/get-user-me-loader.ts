@@ -1,6 +1,7 @@
 import { getAuthToken } from "./get-token";
 import { getStrapiURL } from "@/lib/utils";
 import qs from "qs";
+import { verifyUserService } from "./auth-services";
 
 const query = qs.stringify({
   populate: {
@@ -10,26 +11,30 @@ const query = qs.stringify({
 });
 
 export async function getUserMeLoader() {
-  const baseUrl = getStrapiURL();
+  // const baseUrl = getStrapiURL();
 
-  const url = new URL("/api/users/me", baseUrl);
-  url.search = query;
+  // const url = new URL("/api/users/me", baseUrl);
+  // url.search = query;
 
   const authToken = await getAuthToken();
-  if (!authToken) return { ok: false, data: null, error: null };
+  // console.log(await verifyUserService(authToken));
+
+  // if (!authToken) return { ok: false, data: null, error: null };
 
   try {
-    const response = await fetch(url.href, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      cache: "no-cache",
-    });
-    const data = await response.json();
-    if (data.error) return { ok: false, data: null, error: data.error };
-    return { ok: true, data: data, error: null };
+    //   const response = await fetch(url.href, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${authToken}`,
+    //     },
+    //     cache: "no-cache",
+    //   });
+    // const data = await response.json();
+    // if (data.error) return { ok: false, data: null, error: data.error };
+    // return { ok: true, data: data, error: null };
+    // console.log(await verifyUserService(authToken ?? ""));
+    return await verifyUserService(authToken ?? "");
   } catch (error) {
     console.log(error);
     return { ok: false, data: null, error: error };

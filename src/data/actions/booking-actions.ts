@@ -6,96 +6,228 @@ import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { BookingTypePost } from "@/data/definitions";
+import { inventory_items, Prisma } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-export async function createBookingAction(newBooking: BookingTypePost) {
-  const authToken = await getAuthToken();
-  if (!authToken) throw new Error("No auth token found");
+type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
+  include: {
+    user: { include: { user_role: true } };
+    created_by: true;
+    inventory_items: true;
+    // user_role: true;
+  };
+}>;
+type UserWithRole = Prisma.UserGetPayload<{
+  include: { user_role: true };
+}>;
 
-  // console.log(newBooking.finishTime);
-  if (newBooking.startTime)
-    newBooking.startTime = new Date(newBooking.startTime).toISOString();
-  if (newBooking.endTime)
-    newBooking.endTime = new Date(newBooking.endTime).toISOString();
+async function itemConflictCheck(booking: any) {
+  // console.log(booking.inventory_items);
 
-  const payload = {
-    data: newBooking,
+  if (!booking.inventory_items) return new Array();
+  if (booking.inventory_items.length === 0) return new Array();
+
+  let inventoryItems = [];
+
+  if (booking.inventory_items.connect)
+    inventoryItems = booking.inventory_items.connect;
+
+  if (booking.inventory_items.set) inventoryItems = booking.inventory_items.set;
+
+  const itemList = inventoryItems.map((item: any) => item.id);
+
+  // console.log(itemList);
+
+  const query = {
+    // sort: ["createdAt:desc"],
+    // populate: "*",
+    // include: { inventory_items: true },
+    where: {
+      AND: [
+        {
+          OR: [
+            {
+              start_time: {
+                gte: booking.start_time as Date,
+                lte: booking.end_time as Date,
+              },
+            },
+            {
+              end_time: {
+                gte: booking.start_time as Date,
+                lte: booking.end_time as Date,
+              },
+            },
+            {
+              AND: [
+                { start_time: { lte: booking.start_time as Date } },
+                { end_time: { gte: booking.end_time as Date } },
+              ],
+            },
+          ],
+        },
+        {
+          inventory_items: {
+            some: {
+              id: {
+                in: [...itemList],
+              },
+            },
+          },
+        },
+      ],
+    },
+  };
+  // const url = new URL("/api/bookings", baseUrl);
+  // url.search = query;
+  // console.log("query data", query)
+  // return fetchData(url.href);
+  return await prisma.bookings.findMany(query);
+}
+
+async function locationConflictCheck(booking: any) {
+  const query = {
+    where: {
+      AND: [
+        {
+          OR: [
+            {
+              start_time: {
+                gte: booking.start_time as Date,
+                lte: booking.end_time as Date,
+              },
+            },
+            {
+              end_time: {
+                gte: booking.start_time as Date,
+                lte: booking.end_time as Date,
+              },
+            },
+            {
+              AND: [
+                { start_time: { lte: booking.start_time as Date } },
+                { end_time: { gte: booking.end_time as Date } },
+              ],
+            },
+          ],
+        },
+        {
+          use_location: { equals: booking.use_location },
+        },
+      ],
+    },
   };
 
-  const data = await mutateData("POST", "/api/bookings", payload);
-  const flattenedData = flattenAttributes(data);
+  return await prisma.bookings.findMany(query);
+}
+
+export async function createBookingAction(newBooking: any) {
+  // const newBooking = JSON.parse()
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
+
+    const payload = {
+      data: newBooking,
+      include: { user: true, inventory_items: true, created_by: true },
+    };
+
+    const data = await itemConflictCheck(newBooking);
+
+    // console.log(data);
+
+    if (data.length !== 0) {
+      return { res: null, error: "Item Conflict Found." };
+    }
+    if (newBooking.use_location === "Outside") {
+      const res = await prisma.bookings.create(payload);
+      return { res: res, error: null };
+    } else {
+      const data = await locationConflictCheck(newBooking);
+      if (data.length !== 0) {
+        return { res: null, error: "Location Conflict Found." };
+      }
+
+      const res = await prisma.bookings.create(payload);
+      return { res: res, error: null };
+    }
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: error };
+  }
+
+  // console.log(newBooking.finishTime);
+  // if (newBooking.startTime)
+  //   newBooking.startTime = new Date(newBooking.startTime).toISOString();
+  // if (newBooking.endTime)
+  //   newBooking.endTime = new Date(newBooking.endTime).toISOString();
+
+  // const payload = {
+  //   data: newBooking,
+  // };
+
+  // const data = await mutateData("POST", "/api/bookings", payload);
+  // const flattenedData = flattenAttributes(data);
   // console.log("data submited#########", flattenedData);
   // redirect("/dashboard/booking/" + flattenedData.id);
-  redirect("/dashboard/booking");
+  // redirect("/dashboard/booking");
 }
 
 export const updateBookingAction = async (
-  updatedBooking: BookingTypePost,
-  id: string,
+  updatedBooking: Prisma.bookingsUncheckedUpdateInput,
+  id: number,
 ) => {
-  // if (updatedBooking.startTime === undefined) delete updatedBooking.startTime;
-  // else
-  //   updatedBooking.startTime = new Date(updatedBooking.startTime).toISOString();
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
 
-  // if (updatedBooking.endTime === undefined || updatedBooking.endTime === "")
-  //   delete updatedBooking.endTime;
-  // else updatedBooking.endTime = new Date(updatedBooking.endTime).toISOString();
-
-  const payload = {
-    data: updatedBooking,
-  };
-
-  const responseData = await mutateData("PUT", `/api/bookings/${id}`, payload);
-
-  // console.log(updatedBooking);
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
+    const payload = {
+      where: { id: id },
+      data: updatedBooking,
     };
+
+    const data = await itemConflictCheck(updatedBooking);
+
+    // console.log(data);
+
+    if (data.length > 1) {
+      return { res: null, error: "Item Conflict Found." };
+    }
+    if (updatedBooking.use_location === "Outside") {
+      const res = await prisma.bookings.update(payload);
+      revalidatePath("/dashboard/booking");
+      return { res: res, error: null };
+    } else {
+      const bookingForCheck = { ...updatedBooking };
+      const data = await locationConflictCheck(bookingForCheck);
+
+      if (data.length > 1) {
+        return { res: null, error: "Location Conflict Found." };
+      }
+
+      const res = await prisma.bookings.update(payload);
+      // console.log(res);
+      revalidatePath("/dashboard/booking");
+      return { res: res, error: null };
+    }
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error updateing booking" };
   }
-
-  if (responseData.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update summary.",
-    };
-  }
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/booking");
-
-  redirect("/dashboard/booking");
-
-  // console.log(flattenedData);
-
-  return {
-    // ...prevState,
-    message: "Summary updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
 };
 
 export async function deleteBookingAction(id: string) {
-  const responseData = await mutateData("DELETE", `/api/bookings/${id}`);
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
 
-  if (!responseData) {
-    return {
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+    const res = await prisma.bookings.delete({ where: { id: parseInt(id) } });
+
+    // console.log(res);
+    // revalidatePath("/dashboard/booking");
+    return { res: res, error: null };
+  } catch (error: any) {
+    // console.log(error);
+    return { res: null, error: error.toString() };
   }
-
-  if (responseData.error) {
-    return {
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/booking");
 }

@@ -11,6 +11,7 @@ import {
   UserType,
   RetrievedItems,
   BookingTypePost,
+  UserWithRole,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,20 +64,21 @@ import { createBookingAction } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { bookings, inventory_items, Prisma, User } from "@prisma/client";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   type: z.string(),
-  startDate: z.date(),
-  startTime: z.string().min(1),
-  endDate: z.date(),
-  endTime: z.string().min(4),
+  start_date: z.date().nullable(),
+  start_time: z.string().min(4),
+  end_date: z.date().nullable(),
+  end_time: z.string().min(4),
   // user: z.string().min(2),
   netId: z.string().optional(),
   userName: z.string().min(2, {
     message: "Type in a NetID to retrieve the user name",
   }),
-  useLocation: z.enum([
+  use_location: z.enum([
     "Outside",
     "Studio A",
     "Studio B",
@@ -90,16 +92,28 @@ const formSchema = z.object({
     "Paulson",
   ]),
   bookingCreatorName: z.string().min(1),
-  notes: z.string().optional(),
+  notes: z.string().nullable(),
 });
+
+// type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
+//   include: {
+//     user: { include: { user_role: true } };
+//     created_by: true;
+//     inventory_items: true;
+//     // user_role: true;
+//   };
+// }>;
+// type UserWithRole = Prisma.UserGetPayload<{
+//   include: { user_role: true };
+// }>;
 
 const NewBookingForm = ({
   booking,
   currentUser,
   authToken,
 }: {
-  booking: BookingType;
-  currentUser: UserType;
+  booking: any;
+  currentUser: UserWithRole | null;
   authToken: string;
 }) => {
   const router = useRouter();
@@ -112,22 +126,22 @@ const NewBookingForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "Same Day",
-      startDate: new Date(booking?.startTime ?? ``),
-      startTime: booking?.startTime
-        ? format(new Date(booking?.startTime ?? ``), "hh:mm a")
+      start_date: booking?.start_time ?? new Date(),
+      start_time: booking?.start_time
+        ? format(booking?.start_time ?? ``, "hh:mm a")
         : "12:00 PM",
-      endDate: new Date(booking?.startTime ?? ``),
-      endTime: booking?.startTime
-        ? format(addHours(new Date(booking?.startTime ?? ``), 1), "hh:mm a")
+      end_date: booking?.start_time ?? new Date(),
+      end_time: booking?.start_time
+        ? format(addHours(booking?.start_time ?? ``, 1), "hh:mm a")
         : "01:00 PM",
       netId: "",
       userName:
-        booking.user?.role?.name === "Authenticated"
-          ? `${booking.user.firstName} ${booking.user.lastName}`
+        booking.user?.user_role?.name === "Authenticated"
+          ? `${booking.user.first_name} ${booking.user.last_name}`
           : "",
-      useLocation: "Outside",
+      use_location: "Outside",
       bookingCreatorName:
-        `${booking.bookingCreator?.firstName} ${booking.bookingCreator?.lastName}` ??
+        `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
         "",
       notes: "",
     },
@@ -135,12 +149,12 @@ const NewBookingForm = ({
     values: tempForm,
   });
 
-  const inventoryItems = booking.inventory_items as RetrievedItems;
-  const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
+  // const inventoryItems = booking.inventory_items as RetrievedItems;
+  const [itemObjArr, setItemObjArr] = useState(Array());
 
-  const [user, setUser] = useState<UserType>(booking.user ?? {});
+  const [user, setUser] = useState<UserWithRole | null>(booking.user);
   const [bookingType, setBookingType] = useState(booking.type);
-  // const [netId, setNetId] = useState("");
+  const [error, setError] = useState("");
 
   let localItemsObj = undefined;
   // let tempBookingObj = undefined;
@@ -154,9 +168,9 @@ const NewBookingForm = ({
         const tempNewBooking = tempBookingStr
           ? JSON.parse(tempBookingStr)
           : undefined;
-        // console.log(tempNewBooking.startDate);
-        tempNewBooking.startDate = new Date(tempNewBooking.startDate);
-        tempNewBooking.endDate = new Date(tempNewBooking.endDate);
+        // console.log(tempNewBooking.start_date);
+        tempNewBooking.start_date = new Date(tempNewBooking.start_date);
+        tempNewBooking.end_date = new Date(tempNewBooking.end_date);
         setTempForm(tempNewBooking);
         setUser(tempNewBooking.user);
         localStorage.removeItem(`tempNewBooking`);
@@ -174,25 +188,31 @@ const NewBookingForm = ({
   }, []);
 
   function handleTypeSelect(value: string) {
-    if (value === "Exception" && currentUser.role?.name !== "Admin") {
+    if (value === "Exception" && currentUser?.user_role?.name !== "Admin") {
       window.alert(
         "Admin approval required, please contact admin to make exceptions.",
       );
       form.setValue("type", bookingType ?? "Same Day");
     }
     if (value === "Same Day") {
-      form.setValue("endDate", form.getValues("startDate"));
+      form.setValue("end_date", form.getValues("start_date"));
     }
     if (value === "Overnight") {
-      form.setValue("endDate", addDays(form.getValues("startDate"), 1));
-      form.setValue("endTime", "12:00 PM");
-      // console.log("End Time is ", form.getValues("endTime"));
+      form.setValue(
+        "end_date",
+        addDays(form.getValues("start_date") as Date, 1),
+      );
+      form.setValue("end_time", "12:00 PM");
+      // console.log("End Time is ", form.getValues("end_time"));
     }
     if (value === "Weekend") {
-      form.setValue("startDate", nextFriday(new Date()));
-      form.setValue("endDate", nextMonday(form.getValues("startDate")));
-      form.setValue("endTime", "12:00 PM");
-      // form.setValue("endDate", form.getValues("startDate"));
+      form.setValue("start_date", nextFriday(new Date()));
+      form.setValue(
+        "end_date",
+        nextMonday(form.getValues("start_date") as Date),
+      );
+      form.setValue("end_time", "12:00 PM");
+      // form.setValue("end_date", form.getValues("start_date"));
     }
     setBookingType(value);
   }
@@ -200,22 +220,31 @@ const NewBookingForm = ({
   function handleStartDateSelect(value: Date) {
     // window.alert(value);
     if (form.getValues("type") === "Same Day") {
-      form.setValue("endDate", new Date(value));
-      form.setValue("endTime", form.getValues("startTime"));
+      form.setValue("end_date", new Date(value));
+      form.setValue("end_time", form.getValues("start_time"));
     }
     if (form.getValues("type") === "Overnight") {
-      form.setValue("endDate", addDays(form.getValues("startDate"), 1));
-      form.setValue("endTime", "12:00 PM");
+      form.setValue(
+        "end_date",
+        addDays(form.getValues("start_date") as Date, 1),
+      );
+      form.setValue("end_time", "12:00 PM");
     }
     if (form.getValues("type") === "Weekend") {
       if (!isFriday(new Date(value))) {
         window.alert("Weekend booking has to start on Fridays");
-        form.setValue("startDate", nextFriday(new Date()));
-        form.setValue("endDate", nextMonday(form.getValues("startDate")));
-        form.setValue("endTime", "12:00 PM");
+        form.setValue("start_date", nextFriday(new Date()));
+        form.setValue(
+          "end_date",
+          nextMonday(form.getValues("start_date") as Date),
+        );
+        form.setValue("end_time", "12:00 PM");
       } else {
-        form.setValue("endDate", nextMonday(form.getValues("startDate")));
-        form.setValue("endTime", "12:00 PM");
+        form.setValue(
+          "end_date",
+          nextMonday(form.getValues("start_date") as Date),
+        );
+        form.setValue("end_time", "12:00 PM");
       }
     }
   }
@@ -235,11 +264,11 @@ const NewBookingForm = ({
   }
 
   function handleAddItem() {
-    const tempBooking: BookingType = form.watch();
+    let tempBooking: any = { ...form.watch() };
 
     tempBooking.inventory_items = itemObjArr;
     tempBooking.user = user;
-    tempBooking.bookingCreator = booking.bookingCreator;
+    tempBooking.created_by = booking.created_by;
 
     localStorage.setItem(`tempNewBooking`, JSON.stringify(tempBooking));
     router.push(`/dashboard/booking/new/additem`);
@@ -277,15 +306,22 @@ const NewBookingForm = ({
   }
 
   async function getUserByUsername(username: string) {
+    // const query = qs.stringify({
+    //   sort: ["createdAt:desc"],
+    //   filters: {
+    //     $or: [{ username: { $eqi: username } }],
+    //   },
+    // });
     const query = qs.stringify({
-      sort: ["createdAt:desc"],
-      filters: {
-        $or: [{ username: { $eqi: username } }],
-      },
+      // sort: ["createdAt:desc"],
+      // where: {
+      net_id: username,
+      // },
     });
     const url = new URL("/api/users", baseUrl);
     url.search = query;
     // console.log("query data", url.href);
+
     return fetchData(url.href);
   }
 
@@ -294,16 +330,16 @@ const NewBookingForm = ({
     if (term.length > 1) {
       getUserByUsername(term)
         // .then((res) => console.log(res))
-        .then((data) => {
+        .then(({ data }) => {
           // console.log(data);
           if (data.length !== 0) {
             setUser(data[0]);
             form.setValue(
               "userName",
-              `${data[0].firstName} ${data[0].lastName}`,
+              `${data[0].first_name} ${data[0].last_name}`,
             );
           } else {
-            console.log(data);
+            // console.log(data);
             window.alert("User not found.");
             form.setValue("userName", "");
             form.setValue("netId", "");
@@ -314,147 +350,75 @@ const NewBookingForm = ({
     // console.log(params.toString());
   }, 1000);
 
-  async function itemConflictCheck(booking: BookingTypePost) {
-    const inventoryItems = booking?.inventory_items as InventoryItem[];
-    const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
-
-    const query = qs.stringify({
-      // sort: ["createdAt:desc"],
-      populate: "*",
-      filters: {
-        $and: [
-          {
-            $or: [
-              {
-                startTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                endTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                $and: [
-                  { startTime: { $lte: booking.startTime } },
-                  { endTime: { $gte: booking.endTime } },
-                ],
-              },
-            ],
-          },
-          {
-            inventory_items: {
-              id: {
-                $in: [...itemList],
-              },
-            },
-          },
-        ],
-      },
-    });
-    const url = new URL("/api/bookings", baseUrl);
-    url.search = query;
-    // console.log("query data", query)
-    return fetchData(url.href);
-  }
-
-  async function locationConflictCheck(booking: BookingTypePost) {
-    const query = qs.stringify({
-      // sort: ["createdAt:desc"],
-      // populate: "*",
-      filters: {
-        $and: [
-          {
-            $or: [
-              {
-                startTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                endTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                $and: [
-                  { startTime: { $lte: booking.startTime } },
-                  { endTime: { $gte: booking.endTime } },
-                ],
-              },
-            ],
-          },
-          {
-            useLocation: { $eq: booking.useLocation },
-          },
-        ],
-      },
-    });
-    const url = new URL("/api/bookings", baseUrl);
-    url.search = query;
-    // console.log("query data", query)
-    return fetchData(url.href);
-  }
-
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const updatedStart = new Date(
-      `${format(new Date(form.getValues("startDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
-    ).toISOString();
+      `${format(form.getValues("start_date") as Date, "yyyy-MM-dd")}T${time12To24(form.getValues("start_time").toString())}`,
+    );
     const updatedEnd = new Date(
-      `${format(new Date(form.getValues("endDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
-    ).toISOString();
+      `${format(form.getValues("end_date") as Date, "yyyy-MM-dd")}T${time12To24(form.getValues("end_time").toString())}`,
+    );
 
     if (updatedStart >= updatedEnd) {
       window.alert("Save Failed: End Time should be larger than Start Time");
       return;
     }
 
-    const formValue: BookingTypePost = {
-      type: form.getValues("type"),
-      startTime: updatedStart,
-      endTime: updatedEnd,
-      user: user?.id ?? 0,
-      useLocation: form.getValues("useLocation") ?? "",
-      bookingCreator: booking?.bookingCreator?.id ?? 0,
-      notes: form.getValues("notes") ?? "",
-      inventory_items: itemObjArr.map((item: InventoryItem) => item.id),
-    };
-
-    if (formValue.startTime >= formValue.endTime) {
+    if (updatedStart >= updatedEnd) {
       window.alert("End Date and Time can't be less than Start Date and Time.");
       return;
     }
+    // console.log("here");
 
-    // console.log(formValue);
-    itemConflictCheck(formValue).then(({ data, meta }) => {
-      if (data.length !== 0) {
-        window.alert("Item Conflict Found.");
-        return;
-      }
-      if (formValue.useLocation === "Outside") {
-        createBookingAction(formValue).then(() => {
-          toast.success("Booking Created Successfully.");
-          router.push(`/dashboard/booking?view=${view}`);
-        });
-      } else {
-        locationConflictCheck(formValue).then(({ data, meta }) => {
-          if (data.length !== 0) {
-            window.alert("Location Conflict Found.");
-            return;
-          }
-          createBookingAction(formValue).then(() => {
-            toast.success("Booking Created Successfully.");
-            router.push(`/dashboard/booking?view=${view}`);
-          });
-        });
-      }
-    });
+    const createValues = {
+      type: form.getValues("type"),
+      start_time: updatedStart,
+      end_time: updatedEnd,
+
+      use_location: form.getValues("use_location") ?? "",
+      // bookingCreator: booking?.created_by?.id ?? 0,
+      notes: form.getValues("notes") ?? "",
+      // userId: user?.id,
+      // created_by_id: currentUser.id,
+      // inventory_items: {
+      //   connect: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
+      // },
+      user: {
+        connect: { id: user?.id },
+      },
+      created_by: {
+        connect: { id: currentUser?.id },
+      },
+      inventory_items:
+        itemObjArr.length > 0
+          ? {
+              connect: itemObjArr.map((item: inventory_items) => ({
+                id: item.id,
+              })),
+            }
+          : undefined,
+    };
+
+    // console.log(createValues);
+    // console.log("here");
+
+    const { res, error } = await createBookingAction(createValues);
+
+    // console.log(res);
+
+    if (!error) {
+      toast.success("New Booking Added Successfully");
+      setError("");
+      router.push("/dashboard/booking");
+      router.refresh();
+    }
+
+    // console.log(createValues);
   }
 
   return (
     <div>
+      {error ? <p>{error}</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -521,7 +485,7 @@ const NewBookingForm = ({
             />
           </div>
           <div className="col-span-1 flex-col md:col-span-2">
-            {booking.user?.role?.name !== "Authenticated" ? (
+            {booking.user?.user_role?.name !== "Authenticated" ? (
               <FormField
                 control={form.control}
                 name="netId"
@@ -552,7 +516,7 @@ const NewBookingForm = ({
           <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
-              name="startDate"
+              name="start_date"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>Start Date</FormLabel>
@@ -582,7 +546,7 @@ const NewBookingForm = ({
                     >
                       <Calendar
                         mode="single"
-                        selected={field.value}
+                        selected={field.value ?? undefined}
                         onSelect={(value: Date | undefined) => {
                           if (value) {
                             field.onChange(value);
@@ -600,7 +564,7 @@ const NewBookingForm = ({
             />
             <FormField
               control={form.control}
-              name="startTime"
+              name="start_time"
               render={({ field }) => (
                 <FormItem
                   className={cn(
@@ -637,7 +601,7 @@ const NewBookingForm = ({
           <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
-              name="endDate"
+              name="end_date"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>End Date</FormLabel>
@@ -668,11 +632,11 @@ const NewBookingForm = ({
                     >
                       <Calendar
                         mode="single"
-                        selected={field.value}
+                        selected={field.value ?? undefined}
                         onSelect={field.onChange}
                         // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
                         disabled={(date) =>
-                          date < new Date(form.getValues("startDate"))
+                          date < new Date(form.getValues("start_date") ?? "")
                         }
                         initialFocus
                       />
@@ -684,7 +648,7 @@ const NewBookingForm = ({
             />
             <FormField
               control={form.control}
-              name="endTime"
+              name="end_time"
               render={({ field }) => (
                 <FormItem
                   className={cn(
@@ -726,7 +690,7 @@ const NewBookingForm = ({
           <div className="col-span-2 flex size-auto flex-1 flex-row justify-start gap-2 md:col-span-4">
             <FormField
               control={form.control}
-              name="useLocation"
+              name="use_location"
               render={({ field }) => (
                 <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                   <FormLabel>Use Location</FormLabel>
@@ -779,7 +743,11 @@ const NewBookingForm = ({
                 <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                   <FormLabel className="align-bottom">Notes</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Leave a note"></Textarea>
+                    <Textarea
+                      value={field.value ?? ""}
+                      // {...field}
+                      placeholder="Leave a note"
+                    ></Textarea>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -14,6 +14,7 @@ import {
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import InventoryReportsPageTabs from "./InventoryReportsPageTabs";
 import { redirect } from "next/navigation";
+import { count } from "console";
 
 interface SearchParamsProps {
   searchParams?: {
@@ -25,7 +26,7 @@ interface SearchParamsProps {
     // createdFrom?: string;
     // createdTo?: string;
     // notes?: string;
-    isFinished?: string;
+    is_finished?: string;
     // itemChecked?: string;
     // creator?: string;
   };
@@ -36,15 +37,15 @@ export default async function InventoryReportsPage({
 }: Readonly<SearchParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name === "Monitor") redirect("/dashboard/checkout");
+  if (thisUser?.user_role.name === "Monitor") redirect("/dashboard/checkout");
 
-  if (thisUser.role.name !== "Admin") {
+  if (thisUser?.user_role.name !== "Admin") {
     return <p>User Access Forbidden</p>;
   }
 
   const pageIndex = searchParams?.page ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "createdAt:desc";
+  const sort = searchParams?.sort ?? "created_at:desc";
 
   // console.log(sort);
 
@@ -55,14 +56,15 @@ export default async function InventoryReportsPage({
     // },
     // itemChecked: searchParams?.itemChecked ?? "",
     // notes: searchParams?.notes ?? "",
-    isFinished: searchParams?.isFinished ?? "All",
+    is_finished: searchParams?.is_finished ?? "All",
     // creator: searchParams?.creator ?? "",
   };
 
   // console.log(filter);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getInventoryReportsByQuery(
+        sort,
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
@@ -98,7 +100,11 @@ export default async function InventoryReportsPage({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <InventoryReportsPageTabs data={data} meta={meta} filter={filter} />
+      <InventoryReportsPageTabs
+        data={data}
+        totalEntries={count}
+        filter={filter}
+      />
     </div>
   );
 }

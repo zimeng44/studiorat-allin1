@@ -11,14 +11,14 @@ import {
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 const INITIAL_STATE = {
-  mTechBarcode: "",
-  make: "",
-  model: "",
-  category: "",
-  description: "",
-  accessories: "",
-  storageLocation: "Floor 8",
-  comments: "",
+  m_tech_barcode: null,
+  make: null,
+  model: null,
+  category: null,
+  description: null,
+  accessories: null,
+  storage_location: "Floor 8",
+  comments: null,
   out: false,
   broken: false,
 };
@@ -27,8 +27,8 @@ const AddItem = async () => {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
-    thisUser.role.name !== "Admin" &&
-    thisUser.role.name !== "InventoryManager"
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "InventoryManager"
   ) {
     return <p>User Access Forbidden</p>;
   }

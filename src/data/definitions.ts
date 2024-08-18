@@ -1,12 +1,50 @@
+import { Prisma } from "@prisma/client";
+
+export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
+  include: {
+    user: { include: { user_role: true } };
+    created_by: true;
+    inventory_items: true;
+    // user_role: true;
+  };
+}>;
+
+export type UserWithRole = Prisma.UserGetPayload<{
+  include: { user_role: true };
+}>;
+
+export type CheckoutWithUserAndItems = Prisma.checkout_sessionsGetPayload<{
+  include: {
+    user: { include: { user_role: true } };
+    created_by: true;
+    inventory_items: true;
+    // user_role: true;
+  };
+}>;
+
+export type RosterWithPermission = Prisma.rostersGetPayload<{
+  include: { permissions: true };
+}>;
+
+export type InventoryReportWithCreatorAndItems =
+  Prisma.inventory_reportsGetPayload<{
+    include: {
+      // user: { include: { user_role: true } };
+      created_by: true;
+      inventory_items: true;
+      // user_role: true;
+    };
+  }>;
+
 export type InventoryItem = {
   id?: number;
-  mTechBarcode?: string;
+  m_tech_barcode?: string;
   make?: string;
   model?: string;
   category?: string;
   description?: string;
   accessories?: string;
-  storageLocation?: string;
+  storage_location?: string;
   comments?: string;
   out?: boolean;
   broken?: boolean;
@@ -131,54 +169,58 @@ export type InventoryReportTypePost = {
 
 export interface RosterRecordType {
   id?: number;
-  stuN?: string;
-  netId?: string;
-  stuName?: string;
-  academicLevel?: string;
-  academicProgram?: string;
+  stu_n?: string;
+  net_id?: string;
+  stu_name?: string;
+  academic_level?: string;
+  academic_program?: string;
   roster_permissions?: { data: RosterPermissionType[] };
+  permissions?: number[];
+  permission_code?: string;
   agreement?: boolean;
-  excusedAbs?: number;
-  excusedLate?: number;
-  unexcusedAbs?: number;
-  unexcusedLate?: number;
-  lateReturn?: number;
+  excused_abs?: number;
+  excused_late?: number;
+  unexcused_abs?: number;
+  unexcused_late?: number;
+  late_return?: number;
 }
 
 export interface RosterRecordTypePost {
-  stuN?: string;
-  netId?: string;
-  stuName?: string;
-  academicLevel?: string;
-  academicProgram?: string;
-  roster_permissions?: (number | undefined)[];
+  stu_n?: string;
+  net_id?: string;
+  stu_name?: string;
+  academic_level?: string;
+  academic_program?: string;
+  permissions?: (number | undefined)[];
+  // roster_permissions?: { data: RosterPermissionType[] };
+  permission_code?: string;
   agreement?: boolean;
-  excusedAbs?: number;
-  excusedLate?: number;
-  unexcusedAbs?: number;
-  unexcusedLate?: number;
-  lateReturn?: number;
+  excused_abs?: number;
+  excused_late?: number;
+  unexcused_abs?: number;
+  unexcused_late?: number;
+  late_return?: number;
 }
 
 export interface RosterPermissionType {
   id?: number;
-  permissionCode?: string;
-  permissionTitle?: string;
+  permission_code?: string;
+  permission_title?: string;
   instructor?: string;
-  permissionDetails?: string;
-  permittedStudios?: string[];
-  startDate?: string;
-  endDate?: string;
+  permission_details?: string;
+  permitted_studios?: string[];
+  start_date?: string;
+  end_date?: string;
 }
 
 export interface RosterPermissionTypePost {
-  permissionCode?: string;
-  permissionTitle?: string;
+  permission_code?: string;
+  permission_title?: string;
   instructor?: string;
-  permissionDetails?: string;
-  permittedStudios?: string[];
-  startDate?: string | null;
-  endDate?: string | null;
+  permission_details?: string;
+  permitted_studios?: string[];
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 export interface RetrievedRosterPermission {

@@ -1,9 +1,9 @@
 export const bookingColumnsDefault = {
-  startTime: {
+  start_time: {
     header: "Start Time",
     visible: true,
   },
-  endTime: {
+  end_time: {
     header: "End Time",
     visible: true,
   },
@@ -15,12 +15,12 @@ export const bookingColumnsDefault = {
     header: "Type",
     visible: true,
   },
-  useLocation: {
+  use_location: {
     header: "Use Location",
     visible: true,
   },
-  bookingCreator: {
-    header: "Booking Creator",
+  created_by: {
+    header: "Created by",
     visible: false,
   },
   notes: {

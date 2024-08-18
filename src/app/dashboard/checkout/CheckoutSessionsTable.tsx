@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -9,24 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { checkoutColumnsDefault, TableColumnStatus } from "./checkoutColumns";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +29,8 @@ const CheckoutSessionsTable = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  // console.log(format(data[0].creation_time, "MM/dd/yyyy hh:mm a"));
   return (
     <div className="rounded-md">
       <Table>
@@ -54,7 +38,7 @@ const CheckoutSessionsTable = ({
           <TableRow>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
-                <TableHead className="whitespace-nowrap p-3" key={key}>
+                <TableHead className="whitespace-nowrap p-1" key={key}>
                   {value.header}
                 </TableHead>
               ) : (
@@ -70,10 +54,28 @@ const CheckoutSessionsTable = ({
             data.map((row, index) => (
               <TableRow key={row.id}>
                 {Object.entries(columnsStatus).map(([key, value]) => {
+                  if (key === "checkout_id") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap p-1" key={key}>
+                        {`${row.user.stu_id}`}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
                   if (key === "userName") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap p-1" key={key}>
-                        {`${row.user.firstName} ${row.user.lastName}`}
+                        {`${row.user.first_name} ${row.user.last_name}`}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+                  if (key === "created_by") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap p-1" key={key}>
+                        {`${row.created_by.first_name} ${row.created_by.last_name}`}
                       </TableCell>
                     ) : (
                       ``
@@ -95,10 +97,10 @@ const CheckoutSessionsTable = ({
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap p-1" key={key}>
-                      {key === "creationTime" || key === "finishTime"
+                      {key === "creation_time" || key === "finish_time"
                         ? row[key] === null
                           ? ``
-                          : format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
+                          : format(row[key], "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

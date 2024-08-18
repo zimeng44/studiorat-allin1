@@ -7,18 +7,19 @@ import { Button } from "@/components/ui/button";
 import BookingAddItemPageTabs from "./BookingAddItemPageTabs";
 import BookingAddItemEmbededTable from "./BookingAddItemEmbededTable";
 import { ArrowLeftToLine } from "lucide-react";
+import { inventory_items } from "@prisma/client";
 
 const BookingAddItemForm = ({
   bookingId,
   // bookingData,
   inventoryData,
-  inventoryMeta,
+  // inventoryMeta,
   filter,
 }: {
   bookingId: string;
   // bookingData: BookingType;
-  inventoryData: InventoryItem[];
-  inventoryMeta: { pagination: { pageCount: number; total: number } };
+  inventoryData: inventory_items[];
+  // inventoryMeta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }) => {
   const router = useRouter();
@@ -81,7 +82,7 @@ const BookingAddItemForm = ({
       {/* <p className="py-5 font-bold">Available Items</p> */}
       <BookingAddItemPageTabs
         data={inventoryData}
-        meta={inventoryMeta}
+        // meta={inventoryMeta}
         filter={filter}
         itemObjArr={itemObjArr}
         addToBooking={setItemObjArr}

@@ -20,11 +20,12 @@ import { TagsInput } from "react-tag-input-component";
 import { CircleMinus, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { roster_permissions } from "@prisma/client";
 
 const MAX_TEXT_LEN = 25;
 
 interface RosterEmbeddedTableProps {
-  data: any[];
+  data: roster_permissions[];
   columns: any[];
   handleRemoveFromBooking: Function;
   isEditable: boolean;
@@ -135,7 +136,7 @@ const BookingEmbededTable = ({
               ``
             )}
             {data.length ? (
-              data.filter((row) => row.startDate).length > 0 ? (
+              data.filter((row) => row.start_date).length > 0 ? (
                 <TableHead className="text-center" key="startEndDate">
                   Date
                 </TableHead>
@@ -161,14 +162,14 @@ const BookingEmbededTable = ({
                     className="whitespace-nowrap p-1 md:p-2"
                     key={header[0]}
                   >
-                    {row.permissionCode}
+                    {row.permission_code}
                   </TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[1] ? (
                   <TableCell className="p-1 md:p-2" key={header[1]}>
-                    {row.permissionTitle}
+                    {row.permission_title}
                   </TableCell>
                 ) : (
                   ``
@@ -195,10 +196,10 @@ const BookingEmbededTable = ({
                         </div>
                       </HoverCardTrigger>
                       <HoverCardContent>
-                        {row.permissionDetails.startsWith("http") ? (
+                        {row.permission_details?.startsWith("http") ? (
                           <a
                             className="text-indigo-500"
-                            href={`${row.permissionDetails}`}
+                            href={`${row.permission_details}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) =>
@@ -212,7 +213,7 @@ const BookingEmbededTable = ({
                             Link
                           </a>
                         ) : (
-                          row.permissionDetails
+                          row.permission_details
                         )}
                       </HoverCardContent>
                     </HoverCard>
@@ -222,11 +223,11 @@ const BookingEmbededTable = ({
                 )}
                 {columnsVisible[4] ? (
                   <TableCell className="max-w-28" key={header[4]}>
-                    {/* {row.permittedStudios}{" "} */}
+                    {/* {row.permitted_studios}{" "} */}
                     <TagsInput
-                      value={row.permittedStudios}
+                      value={row.permitted_studios as string[]}
                       // onChange={(value) => form.setValue(field.name, value)}
-                      name="permittedStudios"
+                      name="permitted_studios"
                       // placeHolder="Enter a studio"
                       disabled
                     />
@@ -234,10 +235,10 @@ const BookingEmbededTable = ({
                 ) : (
                   ``
                 )}
-                {data.filter((row) => row.startDate).length > 0 ? (
-                  row.startDate ? (
+                {data.filter((row) => row.start_date).length > 0 ? (
+                  row.start_date && row.end_date ? (
                     <TableCell className="text-center" key="startEndDate">
-                      {`${format(new Date(row.startDate), "MM/dd/y")} to ${format(new Date(row.endDate), "MM/dd/y")}`}
+                      {`${format(new Date(row.start_date), "MM/dd/y")} to ${format(new Date(row.end_date), "MM/dd/y")}`}
                     </TableCell>
                   ) : (
                     <TableCell

@@ -2,19 +2,11 @@
 
 import { getAuthToken } from "@/data/services/get-token";
 import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-// import { InventoryItem } from "@/app/lib/definitions";
 import { InventoryItem } from "../definitions";
-
-// interface Payload {
-//   data: {
-//     title?: string;
-//     videoId: string;
-//     summary: string;
-//   };
-// }
+import prisma from "@/lib/prisma";
+import { inventory_items, Prisma } from "@prisma/client";
 
 export async function createInventoryItemAction(newItem: InventoryItem) {
   const authToken = await getAuthToken();
@@ -24,145 +16,81 @@ export async function createInventoryItemAction(newItem: InventoryItem) {
     data: newItem,
   };
 
-  const data = await mutateData("POST", "/api/inventory-items", payload);
-  // const flattenedData = flattenAttributes(data);
-  // console.log("data submited#########", flattenedData);
-  // redirect("/dashboard/master-inventory/" + flattenedData.id);
-  redirect("/dashboard/master-inventory/");
+  try {
+    const resData = prisma.inventory_items.create(payload);
+    return { res: resData, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error adding new item" };
+  }
 }
 
-export const updateItemAction = async (
-  updatedItem: InventoryItem,
-  id: string,
-) => {
-  console.log(id);
-
-  const payload = {
-    data: updatedItem,
-  };
-
-  const responseData = await mutateData(
-    "PUT",
-    `/api/inventory-items/${id}`,
-    payload,
-  );
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
-  }
-
-  if (responseData.error) {
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update summary.",
-    };
-  }
-
-  // console.log(responseData);
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/master-inventory");
-
-  return {
-    // ...prevState,
-    message: "Summary updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
-};
-
-// export async function updateInventoryItemAction(
-//   prevState: any,
-//   formData: FormData,
-// ) {
-//   const rawFormData = Object.fromEntries(formData);
-//   const id = rawFormData.id as string;
+// export const updateManyItemsAction = async (
+//   updatedItem: InventoryItem,
+//   id_list: number[],
+// ) => {
+//   // console.log(id);
 
 //   const payload = {
-//     data: {
-//       title: rawFormData.title,
-//       summary: rawFormData.summary,
+//     data: updatedItem,
+//     where: {
+//       id: { in: id_list },
 //     },
+//     include: { permissions: true },
 //   };
 
-//   const responseData = await mutateData(
-//     "PUT",
-//     `/api/inventory-items/${id}`,
-//     payload,
-//   );
+//   const responseData = await prisma.inventory_items.updateMany(payload);
 
 //   if (!responseData) {
 //     return {
-//       ...prevState,
+//       // ...prevState,
 //       strapiErrors: null,
 //       message: "Oops! Something went wrong. Please try again.",
 //     };
 //   }
 
-//   if (responseData.error) {
-//     return {
-//       ...prevState,
-//       strapiErrors: responseData.error,
-//       message: "Failed to update summary.",
-//     };
-//   }
-
-//   const flattenedData = flattenAttributes(responseData);
 //   revalidatePath("/dashboard/master-inventory");
 
 //   return {
-//     ...prevState,
+//     // ...prevState,
 //     message: "Summary updated successfully",
-//     data: flattenedData,
+//     data: responseData,
 //     strapiErrors: null,
 //   };
-// }
+// };
+
+export const updateItemAction = async (
+  updatedItem: Prisma.inventory_itemsUncheckedUpdateInput,
+  id: string,
+) => {
+  // console.log(id);
+
+  const payload = {
+    data: updatedItem,
+    where: {
+      id: parseInt(id),
+    },
+  };
+
+  try {
+    const responseData = await prisma.inventory_items.update(payload);
+    revalidatePath("/dashboard/master-inventory");
+    return { res: responseData, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error updating the item" };
+  }
+};
 
 export async function deleteItemAction(id: string) {
-  const responseData = await mutateData("DELETE", `/api/inventory-items/${id}`);
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+  try {
+    const responseData = await prisma.inventory_items.delete({
+      where: { id: parseInt(id) },
+    });
+    // revalidatePath("/dashboard/master-inventory");
+    return { res: responseData, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error updating the item" };
   }
-
-  if (responseData.error) {
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/master-inventory");
 }
-
-// export async function deleteInventoryItemAction(id: string, prevState: any) {
-//   const responseData = await mutateData("DELETE", `/api/inventory-items/${id}`);
-
-//   if (!responseData) {
-//     return {
-//       ...prevState,
-//       strapiErrors: null,
-//       message: "Oops! Something went wrong. Please try again.",
-//     };
-//   }
-
-//   if (responseData.error) {
-//     return {
-//       ...prevState,
-//       strapiErrors: responseData.error,
-//       message: "Failed to delete Item.",
-//     };
-//   }
-
-//   redirect("/dashboard/master-inventory");
-// }

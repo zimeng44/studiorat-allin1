@@ -27,6 +27,8 @@ import Link from "next/link";
 import { InventoryItem } from "@/data/definitions";
 import { createInventoryItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
+import { inventory_items } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -47,22 +49,23 @@ const mTechBarcodeType = z.union([
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  mTechBarcode: z.string().min(12).and(z.string().max(13)),
+  m_tech_barcode: z.string().min(12).and(z.string().max(13)),
   make: z.string().min(2),
   model: z.string().min(2),
   category: z.string(),
-  description: z.string(),
-  accessories: z.string(),
-  storageLocation: z
+  description: z.string().optional(),
+  accessories: z.string().optional(),
+  storage_location: z
     .literal("Floor 6")
     .or(z.literal("Floor 8"))
     .or(z.literal("Studio G")),
-  comments: z.string(),
+  comments: z.string().optional(),
   out: z.boolean(),
   broken: z.boolean(),
 });
 
-const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
+const AddItem = ({ rowData }: { rowData: any }) => {
+  const router = useRouter();
   // const [data, setData] = useState(rowData);
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
 
@@ -72,16 +75,16 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      mTechBarcode: rowData.mTechBarcode,
-      make: rowData.make,
-      model: rowData.model,
-      category: rowData.category,
-      description: rowData.description,
-      accessories: rowData.accessories,
-      storageLocation: "Floor 8",
-      comments: rowData.comments,
-      out: rowData.out,
-      broken: rowData.broken,
+      m_tech_barcode: rowData.m_tech_barcode ?? undefined,
+      make: rowData.make ?? undefined,
+      model: rowData.model ?? undefined,
+      category: rowData.category ?? undefined,
+      description: rowData.description ?? undefined,
+      accessories: rowData.accessories ?? undefined,
+      storage_location: "Floor 8",
+      comments: rowData.comments ?? undefined,
+      out: rowData.out ?? false,
+      broken: rowData.broken ?? false,
     },
   });
 
@@ -97,19 +100,21 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
     // };
 
     try {
-      await createInventoryItemAction(values);
+      const { res, error } = await createInventoryItemAction(values);
+      router.push("/dashboard/master-inventory");
+      router.refresh();
+      toast.success("New Item Added");
     } catch (error) {
       toast.error("Error Creating Summary");
-      setError({
-        ...INITIAL_STATE,
-        message: "Error Creating Inventory Item",
-        name: "Inventory Item Error",
-      });
+      // setError({
+      //   ...INITIAL_STATE,
+      //   message: "Error Creating Inventory Item",
+      //   name: "Inventory Item Error",
+      // });
       // setLoading(false);
       return;
     }
 
-    toast.success("New Item Added");
     // console.log("data submited!!!!!!!!!!!");
     // setAddOpen(false);
   }
@@ -123,7 +128,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
         >
           <FormField
             control={form.control}
-            name="mTechBarcode"
+            name="m_tech_barcode"
             render={({ field }) => (
               <FormItem className="col-span-1 ">
                 <FormLabel>MTech Barcode</FormLabel>
@@ -201,7 +206,7 @@ const AddItem = ({ rowData }: { rowData: InventoryItem }) => {
           />
           <FormField
             control={form.control}
-            name="storageLocation"
+            name="storage_location"
             render={({ field }) => (
               <FormItem className="col-span-1 ">
                 <FormLabel>Storage Location</FormLabel>

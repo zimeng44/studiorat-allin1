@@ -19,11 +19,16 @@ interface ParamsProps {
 export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
   // console.log(params.userId);
   const data = await getUserById(params.userId);
+
+  if (!data) return <p>No User Found</p>;
 
   return (
     <div className="p-5">
@@ -51,7 +56,7 @@ export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
         <EditUserForm
           user={data}
           userId={params.userId}
-          currentUserRole={thisUser.role}
+          currentUserRole={thisUser.user_role}
         />
       </div>
     </div>

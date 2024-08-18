@@ -17,7 +17,7 @@ export type InventoryColumnFields = {
 
 export const inventoryColumns = [
   {
-    accessorKey: "mTechBarcode",
+    accessorKey: "m_tech_barcode",
     header: "MTech Barcode",
     visible: true,
   },
@@ -47,7 +47,7 @@ export const inventoryColumns = [
     visible: false,
   },
   {
-    accessorKey: "storageLocation",
+    accessorKey: "storage_location",
     header: "Storage Location",
     visible: false,
   },
@@ -69,7 +69,7 @@ export const inventoryColumns = [
 ];
 
 export const inventoryColumnsDefault = {
-  mTechBarcode: {
+  m_tech_barcode: {
     header: "MTech Barcode",
     visible: true,
   },
@@ -93,7 +93,7 @@ export const inventoryColumnsDefault = {
     header: "Accessories",
     visible: false,
   },
-  storageLocation: {
+  storage_location: {
     header: "Storage Location",
     visible: false,
   },

@@ -6,130 +6,49 @@ import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { InventoryReportTypePost } from "@/data/definitions";
+import { Prisma } from "@prisma/client";
+import prisma from "@/lib/prisma";
 // import { updateItemAction } from "./inventory-actions";
 
 export async function createInventoryReportAction(
-  newSession: InventoryReportTypePost,
+  newReport: Prisma.inventory_reportsCreateInput,
 ) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
   const payload = {
-    data: newSession,
+    data: newReport,
   };
 
-  const data = await mutateData("POST", "/api/inventory-reports", payload);
-  const flattenedData = flattenAttributes(data);
-
-  redirect("/dashboard/inventory-reports/" + flattenedData.id);
-  // redirect("/dashboard/inventory-reports/");
+  try {
+    const resData = prisma.inventory_reports.create(payload);
+    return { res: resData, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error adding new item" };
+  }
 }
 
 export const updateInventoryReportAction = async (
-  updatedReport: InventoryReportTypePost,
+  updatedReport: Prisma.inventory_reportsUncheckedUpdateInput,
   id: string,
 ) => {
   const payload = {
     data: updatedReport,
+    where: {
+      id: parseInt(id),
+    },
   };
 
-  const responseData = await mutateData(
-    "PUT",
-    `/api/inventory-reports/${id}`,
-    payload,
-  );
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+  try {
+    const responseData = await prisma.inventory_reports.update(payload);
+    revalidatePath("/dashboard/inventory-reports");
+    return { res: responseData, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error updating the item" };
   }
-
-  if (responseData.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update summary.",
-    };
-  }
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/inventory-reports");
-
-  // console.log(flattenedData);
-
-  return {
-    // ...prevState,
-    message: "Summary updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
 };
-
-// export const updateInventoryReportActionWithItems = async (
-//   updatedSession: InventoryReportTypePost,
-//   id: string,
-//   items: InventoryItem[],
-// ) => {
-//   const payload = {
-//     data: updatedSession,
-//   };
-
-//   const responseData = await mutateData(
-//     "PUT",
-//     `/api/inventory-reports/${id}`,
-//     payload,
-//   );
-
-//   if (!responseData) {
-//     return {
-//       // ...prevState,
-//       strapiErrors: null,
-//       message: "Oops! Something went wrong. Please try again.",
-//     };
-//   }
-
-//   if (responseData.error) {
-//     // console.log("responseData.error", responseData.error);
-//     return {
-//       // ...prevState,
-//       strapiErrors: responseData.error,
-//       message: "Failed to update summary.",
-//     };
-//   }
-
-//   const flattenedData = flattenAttributes(responseData);
-
-//   let itemsResponses = Array(items.length);
-
-//   try {
-//     items.map((item, index) => {
-//       // console.log(item);
-//       const id = item.id as number;
-//       itemsResponses[index] = updateItemAction(
-//         { out: item.out, broken: item.broken },
-//         id.toString(),
-//       );
-//     });
-//   } catch (error) {
-//     console.log(itemsResponses);
-//     return { itemsError: itemsResponses };
-//   }
-
-//   revalidatePath("/dashboard/inventory-reports");
-
-//   // console.log(flattenedData);
-
-//   return {
-//     // ...prevState,
-//     message: "Summary updated successfully",
-//     data: flattenedData,
-//     strapiErrors: null,
-//   };
-// };
 
 export async function deleteInventoryReportAction(id: string) {
   const responseData = await mutateData(

@@ -18,7 +18,10 @@ const NewInventoryReportPage = async () => {
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
@@ -28,32 +31,35 @@ const NewInventoryReportPage = async () => {
   // console.log(thisMonitor);
   const pageIndex = "1";
   const pageSize = "10";
-  const sort = "createdAt:desc";
+  const sort = "created_at:desc";
   const filter = {};
 
-  const { data, meta } = await getInventoryReports(
+  const { data, count } = await getInventoryReports(
     sort,
     pageIndex.toString(),
     pageSize.toString(),
     filter,
   );
 
-  if (!data[0].isFinished && thisUser.role.name === "Monitor") {
+  if (
+    !(data[0]?.is_finished) &&
+    thisUser?.user_role.name === "Monitor"
+  ) {
     redirect(`/dashboard/inventory-reports/${data[0].id}?draft=yes`);
   }
 
-  const { meta: inventoryMeta } = await getInventoryItems(
-    "",
+  const { count: totalEntries } = await getInventoryItems(
+    "created_at:desc",
     pageIndex.toString(),
     pageSize.toString(),
     {
-      mTechBarcode: "MT",
+      m_tech_barcode: "MT",
       make: "",
       model: "",
       category: "",
       description: "",
       accessories: "",
-      storageLocation: "",
+      storage_location: "",
       comments: "",
       out: false,
       broken: false,
@@ -88,7 +94,7 @@ const NewInventoryReportPage = async () => {
         <NewInventoryReportForm
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}
-          inventorySize={inventoryMeta.pagination.total}
+          inventory_size={totalEntries}
         />
       </div>
     </div>

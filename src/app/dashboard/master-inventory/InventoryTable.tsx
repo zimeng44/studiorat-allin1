@@ -46,12 +46,12 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   // console.log(sort);
 
   // let filterOpen = searchParams.get("filterOpen") === "true";
-  const pageIndex = searchParams.get("page") ?? "1";
+  const pageIndex = searchParams.get("pageIndex") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
   const isAllSelected = searchParams.get("isAllSelected") === "true";
   const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
-  // remember the current page and page size to tell if navigated to a new page or set a new page size
+  // remember the current pageIndex and pageIndex size to tell if navigated to a new pageIndex or set a new pageIndex size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
@@ -73,7 +73,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     router.replace(`${pathname}?${params.toString()}`);
   }, [rowsSelected]);
 
-  // clear the row selections when moving to a new page or setting a new page size
+  // clear the row selections when moving to a new pageIndex or setting a new pageIndex size
   if (pageIndex !== currentPage || pageSize !== currentPageSize) {
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
@@ -188,11 +188,11 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
-                  {key === "mTechBarcode" ||
+                  {key === "m_tech_barcode" ||
                   key === "make" ||
                   key === "model" ||
                   key === "category" ||
-                  key === "storageLocation" ? (
+                  key === "storage_location" ? (
                     <Button
                       className="p-1 text-left"
                       variant="ghost"
@@ -212,7 +212,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.length ? (
+          {data[0] ? (
             data.map((row, index) => (
               <TableRow
                 key={row.id}
@@ -259,9 +259,9 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                      {row[key] && row[key].length >= MAX_TEXT_LEN
+                        ? `${row[key].substring(0, MAX_TEXT_LEN)}...`
+                        : row[key]}
                     </TableCell>
                   ) : (
                     ``

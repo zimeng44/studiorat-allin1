@@ -18,12 +18,11 @@ const INITIAL_STATE = {
 
 interface ProfileFormProps {
   id: string;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  bio: string;
-  credits: number;
+  net_id?: string | null;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  bio?: string | null;
 }
 
 // function CountBox({ text }: { readonly text: number }) {
@@ -58,7 +57,7 @@ export function ProfileForm({
             id="username"
             name="username"
             placeholder="Username"
-            defaultValue={data.username || ""}
+            defaultValue={data.net_id || ""}
             disabled
           />
           <Input
@@ -76,13 +75,13 @@ export function ProfileForm({
             id="firstName"
             name="firstName"
             placeholder="First Name"
-            defaultValue={data.firstName || ""}
+            defaultValue={data.first_name || ""}
           />
           <Input
             id="lastName"
             name="lastName"
             placeholder="Last Name"
-            defaultValue={data.lastName || ""}
+            defaultValue={data.last_name || ""}
           />
         </div>
         <Textarea

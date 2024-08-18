@@ -3,7 +3,11 @@ import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 
-import { InventoryItem, InventoryReportType } from "@/data/definitions";
+import {
+  InventoryItem,
+  InventoryReportType,
+  InventoryReportWithCreatorAndItems,
+} from "@/data/definitions";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,28 +25,29 @@ import InventoryReportsTable from "./InventoryReportsTable";
 import { format } from "date-fns";
 
 interface ViewTabsProps {
-  data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  data: InventoryReportWithCreatorAndItems[];
+  totalEntries: number;
+  // meta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }
 
-function LinkCard(report: Readonly<InventoryReportType>) {
+function LinkCard(report: Readonly<InventoryReportWithCreatorAndItems>) {
   return (
     <Link href={`/dashboard/checkout/${report.id}`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
-            {format(new Date(report.createdAt ?? ""), "MM/dd/yyyy hh:mm a") ||
+            {format(new Date(report.created_at ?? ""), "MM/dd/yyyy hh:mm a") ||
               "Report Time"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-2 w-full leading-5">
-            {`${report.creator?.firstName} ${report.creator?.lastName}` ||
+            {`${report.created_by?.first_name} ${report.created_by?.last_name}` ||
               "User Name Unknown"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {report.isFinished ? (
+            {report.is_finished ? (
               <Badge variant="secondary">Finished</Badge>
             ) : (
               <Badge variant="default">In Progress</Badge>
@@ -54,11 +59,15 @@ function LinkCard(report: Readonly<InventoryReportType>) {
   );
 }
 
-const InventoryReportsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
+const InventoryReportsPageTabs = ({
+  data,
+  totalEntries,
+  filter,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(inventoryReportsColumnsDefault),
   );
-
+  // console.log(data);
   return (
     <div className="py-2">
       <Tabs defaultValue="list">
@@ -87,7 +96,7 @@ const InventoryReportsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
         </TabsContent>
         <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data.map((item: InventoryItem) => (
+            {data.map((item: InventoryReportWithCreatorAndItems) => (
               <LinkCard key={item.id} {...item} />
             ))}
           </div>
@@ -96,8 +105,8 @@ const InventoryReportsPageTabs = ({ data, meta, filter }: ViewTabsProps) => {
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
+          // pageCount={meta.pagination.pageCount}
+          totalEntries={totalEntries}
         />
       </div>
     </div>

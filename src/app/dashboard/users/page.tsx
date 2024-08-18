@@ -21,18 +21,18 @@ import UsersPageTabs from "./UsersPageTabs";
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
     username?: string;
-    stuId?: string;
+    stu_id?: string;
     fullName?: string;
-    academicLevel?: string;
+    academic_level?: string;
     email?: string;
     bio?: string;
     blocked?: string;
-    role?: string;
+    user_role?: string;
   };
 }
 
@@ -41,36 +41,46 @@ export default async function Users({
 }: Readonly<SearchParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "createdAt:desc";
+  const sort = searchParams?.sort ?? "created_at:desc";
 
   const filter = {
-    username: searchParams?.username ?? "",
-    stuId: searchParams?.stuId ?? "",
-    fullName: searchParams?.fullName ?? "",
-    academicLevel: searchParams?.academicLevel ?? "",
-    email: searchParams?.email ?? "",
-    bio: searchParams?.bio ?? "",
+    username: searchParams?.username ?? null,
+    stu_id: searchParams?.stu_id ?? null,
+    fullName: searchParams?.fullName ?? null,
+    academic_level: searchParams?.academic_level ?? null,
+    email: searchParams?.email ?? null,
+    bio: searchParams?.bio ?? null,
     blocked: searchParams?.blocked === "true",
-    role: searchParams?.role ?? "",
+    user_role: searchParams?.user_role ?? null,
   };
 
   // console.log(filter.broken);
 
-  const data = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getUsersByQuery(
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
+        thisUser,
       )
-    : await getUsers(sort, pageIndex.toString(), pageSize.toString(), filter);
+    : await getUsers(
+        sort,
+        pageIndex.toString(),
+        pageSize.toString(),
+        filter,
+        thisUser,
+      );
 
-  const meta = { pagination: { pageCount: 1, total: data.length } };
+  // const meta = { pagination: { pageCount: 1, total: data.length } };
   // if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No User data</p>;
 
@@ -96,9 +106,10 @@ export default async function Users({
       <Suspense fallback={<h1>Loading . . .</h1>}>
         <UsersPageTabs
           data={data}
-          meta={meta}
+          // meta={meta}
+          totalEntries={count}
           filter={filter}
-          currentUserRole={thisUser.role?.name ?? ""}
+          currentUserRole={thisUser.user_role?.name ?? ""}
         />
       </Suspense>
     </div>

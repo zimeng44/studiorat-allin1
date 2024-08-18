@@ -5,34 +5,44 @@ import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { BookingTypePost, RosterPermissionTypePost } from "@/data/definitions";
+import { RosterPermissionTypePost } from "@/data/definitions";
+import prisma from "@/lib/prisma";
+import { Prisma, roster_permissions } from "@prisma/client";
+
+export async function getPermissionByPermissionCode(permission_code: string) {
+  const query = {
+    // sort: ["createdAt:desc"],
+    where: {
+      permission_code: { equals: permission_code },
+    },
+  };
+  // const url = new URL("/api/roster-permissions", baseUrl);
+  // url.search = query;
+  // console.log("query data", url.href);
+  try {
+    const data = await prisma.roster_permissions.findMany(query);
+    return { data: data, error: null };
+  } catch (error) {
+    return { data: null, error: error as string };
+  }
+}
 
 export async function createRosterPermissionAction(
-  newRosterPermission: RosterPermissionTypePost,
+  newRosterPermission: Prisma.roster_permissionsCreateInput,
 ) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
-
-  // console.log(newRosterPermission.finishTime);
-  if (newRosterPermission.startDate)
-    newRosterPermission.startDate = new Date(
-      newRosterPermission.startDate,
-    ).toISOString();
-  if (newRosterPermission.endDate)
-    newRosterPermission.endDate = new Date(
-      newRosterPermission.endDate,
-    ).toISOString();
 
   const payload = {
     data: newRosterPermission,
   };
 
-  const data = await mutateData("POST", "/api/roster-permissions", payload);
-  const flattenedData = flattenAttributes(data);
-  return flattenedData;
-  // console.log("data submited#########", flattenedData);
-  // redirect("/dashboard/rosterPermission/" + flattenedData.id);
-  // redirect("/dashboard/roster");
+  try {
+    const data = await prisma.roster_permissions.create(payload);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export const updateRosterPermissionAction = async (
@@ -92,24 +102,14 @@ export const updateRosterPermissionAction = async (
 };
 
 export async function deleteRosterPermissionAction(id: string) {
-  const responseData = await mutateData(
-    "DELETE",
-    `/api/roster-permissions/${id}`,
-  );
-
-  if (!responseData) {
-    return {
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+  try {
+    const res = await prisma.roster_permissions.delete({
+      where: { id: parseInt(id) },
+    });
+    revalidatePath("/dashboard/roster");
+    return { res: res, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: error as string };
   }
-
-  if (responseData.error) {
-    return {
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/roster/permissions");
 }

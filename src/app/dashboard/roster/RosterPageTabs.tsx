@@ -14,7 +14,8 @@ import RosterTable from "./RosterTable";
 
 interface ViewTabsProps {
   data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
   filter: {};
   userRole: string;
 }
@@ -25,13 +26,13 @@ function LinkCard(item: Readonly<RosterRecordType>) {
       <Card className="relative">
         <CardHeader>
           <CardTitle className="break-all leading-8 text-pink-500">
-            {item.stuName || "Student Name"}
+            {item.stu_name || "Student Name"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-4 w-full break-all leading-7">
-            {item.academicProgram ?? ""}
+            {item.academic_program ?? ""}
           </p>
         </CardContent>
       </Card>
@@ -39,7 +40,12 @@ function LinkCard(item: Readonly<RosterRecordType>) {
   );
 }
 
-const RosterPageTabs = ({ data, meta, filter, userRole }: ViewTabsProps) => {
+const RosterPageTabs = ({
+  data,
+  totalEntries,
+  filter,
+  userRole,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(rosterColumnsDefault),
   );
@@ -94,8 +100,8 @@ const RosterPageTabs = ({ data, meta, filter, userRole }: ViewTabsProps) => {
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
+          // pageCount={meta.pagination.pageCount}
+          totalEntries={totalEntries}
         />
       </div>
     </div>

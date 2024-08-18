@@ -74,13 +74,13 @@ interface TableFieldStatus {
   visible: boolean;
 }
 interface TableColumnStatus {
-  mTechBarcode: TableFieldStatus;
+  m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
   category: TableFieldStatus;
   description: TableFieldStatus;
   accessories: TableFieldStatus;
-  storageLocation: TableFieldStatus;
+  storage_location: TableFieldStatus;
   comments: TableFieldStatus;
 }
 
@@ -239,9 +239,9 @@ const BookingInventoryTable = ({
 
                   return value.visible ? (
                     <TableCell className="" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
+                      {row[key]?.length <= MAX_TEXT_LEN
                         ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                        : `${row[key]?.substring(0, MAX_TEXT_LEN)}...`}
                     </TableCell>
                   ) : (
                     ``

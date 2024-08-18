@@ -20,17 +20,17 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    mTechBarcode?: string;
+    m_tech_barcode?: string;
     make?: string;
     model?: string;
     category?: string;
     description?: string;
     accessories?: string;
-    storageLocation?: string;
+    storage_location?: string;
     comments?: string;
     out?: string;
     broken?: string;
@@ -43,24 +43,24 @@ export default async function MasterInventory({
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
-    thisUser.role.name !== "Admin" &&
-    thisUser.role.name !== "InventoryManager"
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "InventoryManager"
   ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "";
 
   const filter = {
-    mTechBarcode: searchParams?.mTechBarcode ?? "",
+    m_tech_barcode: searchParams?.m_tech_barcode ?? "",
     make: searchParams?.make ?? "",
     model: searchParams?.model ?? "",
     category: searchParams?.category ?? "",
     description: searchParams?.description ?? "",
     accessories: searchParams?.accessories ?? "",
-    storageLocation: searchParams?.storageLocation ?? "All",
+    storage_location: searchParams?.storage_location ?? "All",
     comments: searchParams?.comments ?? "",
     out: searchParams?.out === "true" ? true : false,
     broken: searchParams?.broken === "true" ? true : false,
@@ -68,8 +68,9 @@ export default async function MasterInventory({
 
   // console.log(filter.broken);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getItemsByQuery(
+        sort,
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
@@ -104,7 +105,7 @@ export default async function MasterInventory({
         </BreadcrumbList>
       </Breadcrumb>
       <Suspense fallback={<h1>Loading . . .</h1>}>
-        <InventoryPageTabs data={data} meta={meta} filter={filter} />
+        <InventoryPageTabs data={data} totalEntries={count} filter={filter} />
       </Suspense>
     </div>
   );

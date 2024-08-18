@@ -27,11 +27,18 @@ export default async function SingleInventoryReportDetails({
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const data = await getInventoryReportById(params.reportId);
+  const { data, error } = await getInventoryReportById(params.reportId);
+
+  if (!data) {
+    return <p>No data</p>;
+  }
 
   const jwtCookie = cookies().get("jwt");
 
@@ -64,7 +71,7 @@ export default async function SingleInventoryReportDetails({
       </Breadcrumb>
       <div className="flex items-center">
         <h1 className="px-2 py-4 text-lg font-bold">Edit Inventory Report</h1>
-        {data.isFinished ? (
+        {data.is_finished ? (
           <Badge variant="secondary">Finished</Badge>
         ) : (
           <Badge variant="default">In Progress</Badge>

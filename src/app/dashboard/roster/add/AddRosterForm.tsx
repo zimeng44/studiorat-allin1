@@ -24,13 +24,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  deleteRosterAction,
+  createRosterAction,
   updateRosterAction,
 } from "@/data/actions/roster-actions";
 import {
   RetrievedRosterPermission,
   RosterPermissionType,
   RosterRecordType,
+  RosterWithPermission,
 } from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -45,6 +46,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { roster_permissions } from "@prisma/client";
 // import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 // import qs from "qs";
 
@@ -57,37 +59,33 @@ const INITIAL_STATE = {
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   // mTechBarcode: z.string().min(12).and(z.string().max(13)),
-  stuN: z.string().min(2),
-  netId: z.string().min(2),
-  stuName: z.string().min(2),
-  academicLevel: z.string().optional(),
-  academicProgram: z.string().optional(),
+  stu_n: z.string().min(2),
+  net_id: z.string().min(2),
+  stu_name: z.string().min(2),
+  academic_level: z.string().optional(),
+  academic_program: z.string().optional(),
   agreement: z.boolean(),
-  excusedAbs: z.number(),
-  excusedLate: z.number(),
-  unexcusedAbs: z.number(),
-  unexcusedLate: z.number(),
-  lateReturn: z.number(),
+  excused_abs: z.number(),
+  excused_late: z.number(),
+  unexcused_abs: z.number(),
+  unexcused_late: z.number(),
+  late_return: z.number(),
   roster_permissions: z.number().optional().array().optional(),
 });
 
-const EditRosterForm = ({
-  rosterId,
-  roster,
+const AddRosterForm = ({
+  // roster,
   permissions,
   userRole,
 }: {
-  rosterId: string;
-  roster: RosterRecordType;
-  permissions: RosterPermissionType[];
+  // roster: RosterWithPermission;
+  permissions: roster_permissions[];
   userRole: string;
 }) => {
   const router = useRouter();
-  const rosterPermissions =
-    roster.roster_permissions as RetrievedRosterPermission;
-  const [itemObjArr, setItemObjArr] = useState(
-    rosterPermissions?.data ?? Array(),
-  );
+  // const rosterPermissions =
+  //   roster.roster_permissions as RetrievedRosterPermission;
+  const [itemObjArr, setItemObjArr] = useState<roster_permissions[]>();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(INITIAL_STATE);
 
@@ -97,83 +95,31 @@ const EditRosterForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      stuN: roster.stuN ?? "",
-      netId: roster.netId ?? "",
-      stuName: roster.stuName ?? "",
-      academicLevel: roster.academicLevel ?? "",
-      academicProgram: roster.academicProgram ?? "",
-      agreement: roster.agreement ?? false,
-      excusedAbs: roster.excusedAbs ?? 0,
-      excusedLate: roster.excusedLate ?? 0,
-      unexcusedAbs: roster.unexcusedAbs ?? 0,
-      unexcusedLate: roster.unexcusedLate ?? 0,
-      lateReturn: roster.lateReturn ?? 0,
+      stu_n: "",
+      net_id: "",
+      stu_name: "",
+      academic_level: "",
+      academic_program: "",
+      agreement: false,
+      excused_abs: 0,
+      excused_late: 0,
+      unexcused_abs: 0,
+      unexcused_late: 0,
+      late_return: 0,
     },
   });
-  // if (isLoading) return <p>Loading...</p>;
-  // if (!data) return <p>No profile data</p>;
-  // const baseUrl = getStrapiURL();
-
-  // async function fetchData(url: string) {
-  //   const headers = {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${authToken}`,
-  //     },
-  //   };
-
-  //   try {
-  //     const response = await fetch(url, authToken ? headers : {});
-  //     const data = await response.json();
-  //     // console.log(data);
-  //     return flattenAttributes(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     throw error; // or return null;
-  //   }
-  // }
-
-  // async function getPermissionByCouseN(permissionCode: string) {
-  //   const query = qs.stringify({
-  //     sort: ["createdAt:desc"],
-  //     filters: {
-  //       $or: [{ permissionCode: { $eqi: permissionCode } }],
-  //     },
-  //   });
-  //   const url = new URL("/api/roster-permissions", baseUrl);
-  //   url.search = query;
-  //   // console.log("query data", query)
-  //   return fetchData(url.href);
-  // }
-
-  // async function handleGetPermission(permissionCode: string) {
-  //   const res = await getPermissionByCouseN(permissionCode);
-  //   if (res.length > 0) {
-  //     if (!itemObjArr.map((item) => item.id).includes(res[0].id)) {
-  //       const newArr = [...itemObjArr, res[0]];
-  //       setItemObjArr(newArr);
-  //     } else {
-  //       window.alert("Permission is already in the list, no need to re-add");
-  //     }
-  //   } else {
-  //     window.alert("Permission not found.");
-  //   }
-  // }
-  // console.log("Form Errors:", form.formState.errors);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
-    if (values.roster_permissions?.length)
-      values.roster_permissions = itemObjArr.map((item) => item.id);
+    const createValues = {
+      ...values,
+      permissions: itemObjArr?.map((item) => item.id),
+    };
 
     try {
-      const res = await updateRosterAction(values, rosterId);
-      setError(res?.strapiErrors ?? null);
-      if (!res?.strapiErrors?.status) {
+      const { res, error } = await createRosterAction(createValues);
+      // setError(res?.strapiErrors ?? null);
+      if (!error) {
         router.push("/dashboard/roster");
         toast.success("Roster Saved.");
       }
@@ -189,8 +135,8 @@ const EditRosterForm = ({
     }
   }
 
-  const handleRemoveFromBooking = (row: RosterPermissionType) => {
-    let newArr = itemObjArr.filter((item) => item.id !== row.id);
+  const handleRemoveFromBooking = (row: roster_permissions) => {
+    let newArr = itemObjArr?.filter((item) => item.id !== row.id);
     setItemObjArr(newArr);
     // router.refresh();
     // console.log("item should be removed")
@@ -207,7 +153,7 @@ const EditRosterForm = ({
           <div className="gap-2 space-y-1 px-2 md:grid md:max-w-[600px] md:grid-cols-2">
             <FormField
               control={form.control}
-              name="stuN"
+              name="stu_n"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Student Number</FormLabel>
@@ -220,7 +166,7 @@ const EditRosterForm = ({
             />
             <FormField
               control={form.control}
-              name="netId"
+              name="net_id"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>NetID</FormLabel>
@@ -233,7 +179,7 @@ const EditRosterForm = ({
             />
             <FormField
               control={form.control}
-              name="stuName"
+              name="stu_name"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Student Name</FormLabel>
@@ -246,7 +192,7 @@ const EditRosterForm = ({
             />
             <FormField
               control={form.control}
-              name="academicLevel"
+              name="academic_level"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Level</FormLabel>
@@ -259,7 +205,7 @@ const EditRosterForm = ({
             />
             <FormField
               control={form.control}
-              name="academicProgram"
+              name="academic_program"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Program</FormLabel>
@@ -293,7 +239,7 @@ const EditRosterForm = ({
             <div className="col-span-1 flex gap-1">
               <FormField
                 control={form.control}
-                name="excusedAbs"
+                name="excused_abs"
                 render={({ field }) => (
                   <FormItem className="size-fit min-w-32 flex-1">
                     <FormLabel>Excused Absence</FormLabel>
@@ -301,7 +247,7 @@ const EditRosterForm = ({
                       <Input
                         {...field}
                         onChange={(e) =>
-                          form.setValue("excusedAbs", parseInt(e.target.value))
+                          form.setValue("excused_abs", parseInt(e.target.value))
                         }
                         type="number"
                       ></Input>
@@ -312,7 +258,7 @@ const EditRosterForm = ({
               />
               <FormField
                 control={form.control}
-                name="excusedLate"
+                name="excused_late"
                 render={({ field }) => (
                   <FormItem className="size-fit min-w-24 flex-1">
                     <FormLabel>Excused Late</FormLabel>
@@ -320,7 +266,10 @@ const EditRosterForm = ({
                       <Input
                         {...field}
                         onChange={(e) =>
-                          form.setValue("excusedLate", parseInt(e.target.value))
+                          form.setValue(
+                            "excused_late",
+                            parseInt(e.target.value),
+                          )
                         }
                         type="number"
                       ></Input>
@@ -334,7 +283,7 @@ const EditRosterForm = ({
             <div className="col-span-1 flex gap-1">
               <FormField
                 control={form.control}
-                name="unexcusedAbs"
+                name="unexcused_abs"
                 render={({ field }) => (
                   <FormItem className="size-fit min-w-36 flex-1">
                     <FormLabel>Unexcused Absence</FormLabel>
@@ -343,7 +292,7 @@ const EditRosterForm = ({
                         {...field}
                         onChange={(e) =>
                           form.setValue(
-                            "unexcusedAbs",
+                            "unexcused_abs",
                             parseInt(e.target.value),
                           )
                         }
@@ -356,7 +305,7 @@ const EditRosterForm = ({
               />
               <FormField
                 control={form.control}
-                name="unexcusedLate"
+                name="unexcused_late"
                 render={({ field }) => (
                   <FormItem className="size-fit min-w-28 flex-1">
                     <FormLabel>Unexcused Late</FormLabel>
@@ -365,7 +314,7 @@ const EditRosterForm = ({
                         {...field}
                         onChange={(e) =>
                           form.setValue(
-                            "unexcusedLate",
+                            "unexcused_late",
                             parseInt(e.target.value),
                           )
                         }
@@ -396,19 +345,21 @@ const EditRosterForm = ({
                       <CommandGroup>
                         {permissions.map((permission) => (
                           <CommandItem
-                            key={permission.permissionCode}
-                            value={permission.permissionCode}
+                            key={permission.permission_code}
+                            value={permission.permission_code ?? undefined}
                             onSelect={(value) => {
                               // console.log(value);
                               if (
                                 !itemObjArr
-                                  .map((item) => item.permissionCode)
+                                  ?.map((item) => item.permission_code)
                                   .includes(value)
                               ) {
                                 const newItem = permissions.filter(
-                                  (perm) => perm.permissionCode === value,
+                                  (perm) => perm.permission_code === value,
                                 );
-                                const newArr = [...itemObjArr, ...newItem];
+                                const newArr = itemObjArr
+                                  ? [...itemObjArr, ...newItem]
+                                  : [...newItem];
                                 setItemObjArr(newArr);
                                 setOpen(false);
                               } else {
@@ -416,7 +367,7 @@ const EditRosterForm = ({
                               }
                             }}
                           >
-                            {`${permission.permissionCode}`}
+                            {`${permission.permission_code}`}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -429,7 +380,7 @@ const EditRosterForm = ({
 
           <div className="col-span-1 flex size-full max-w-2xl justify-start gap-2 md:col-span-2 ">
             <RosterEmbededTable
-              data={itemObjArr}
+              data={itemObjArr ?? []}
               columns={rosterPermissionsColumnsInEditRoster}
               handleRemoveFromBooking={handleRemoveFromBooking}
               isEditable={userRole === "Admin"}
@@ -464,4 +415,4 @@ const EditRosterForm = ({
   );
 };
 
-export default EditRosterForm;
+export default AddRosterForm;

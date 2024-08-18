@@ -11,11 +11,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { InventoryItem } from "@/data/definitions";
+import { inventory_items } from "@prisma/client";
 
 const MAX_TEXT_LEN = 30;
 
 interface InventoryTableProps {
-  data: InventoryItem[];
+  data: inventory_items[];
   setItemObjArr: Function;
   columns: any[];
   disabled: boolean;
@@ -132,7 +133,7 @@ const EmbededInventoryTable = ({
                     <TableCell
                       className="whitespace-nowrap p-1 md:p-4"
                       key={header[0]}
-                    >{`${row.mTechBarcode}`}</TableCell>
+                    >{`${row.m_tech_barcode}`}</TableCell>
                   ) : (
                     ``
                   )}
@@ -184,7 +185,7 @@ const EmbededInventoryTable = ({
                   {columnsVisible[6] ? (
                     <TableCell
                       key={header[6]}
-                    >{`${row.storageLocation}`}</TableCell>
+                    >{`${row.storage_location}`}</TableCell>
                   ) : (
                     ``
                   )}
@@ -217,7 +218,7 @@ const EmbededInventoryTable = ({
                       key={header[9]}
                     >
                       <Checkbox
-                        checked={row.broken}
+                        checked={row.broken ?? false}
                         onCheckedChange={(checked: boolean) =>
                           setItemObjArr((prev: InventoryItem[]) =>
                             prev.map((item) => {

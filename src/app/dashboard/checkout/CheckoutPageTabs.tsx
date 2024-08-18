@@ -2,7 +2,11 @@
 import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-import { CheckoutSessionType, InventoryItem } from "@/data/definitions";
+import {
+  CheckoutSessionType,
+  CheckoutWithUserAndItems,
+  InventoryItem,
+} from "@/data/definitions";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,21 +15,23 @@ import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
 import { Grid, HomeIcon, List } from "lucide-react";
 import { format } from "date-fns";
+import { checkout_sessions } from "@prisma/client";
 
 interface ViewTabsProps {
   data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
+  // meta: { pagination: { pageCount: number; total: number } };
   filter: {};
-  studioData: InventoryItem[];
+  studioData: CheckoutWithUserAndItems[];
 }
 
-function LinkCard(session: Readonly<CheckoutSessionType>) {
+function LinkCard(session: Readonly<CheckoutWithUserAndItems>) {
   return (
     <Link href={`/dashboard/checkout/${session.id}`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
-            {`${session.user?.firstName} ${session.user?.lastName}` ||
+            {`${session.user?.first_name} ${session.user?.last_name}` ||
               "User Name Unknown"}
           </CardTitle>
         </CardHeader>
@@ -34,7 +40,7 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
             {session.studio || "Studio Unknow"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {`${session.creationTime ? format(new Date(session.creationTime), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
+            {`${session.created_at ? format(new Date(session.created_at), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
           </p>
         </CardContent>
       </Card>
@@ -42,7 +48,7 @@ function LinkCard(session: Readonly<CheckoutSessionType>) {
   );
 }
 
-function StudioCard(session: Readonly<CheckoutSessionType>) {
+function StudioCard(session: Readonly<CheckoutWithUserAndItems>) {
   return (
     <Link href={`/dashboard/checkout/${session.id}`}>
       <Card className="relative">
@@ -53,11 +59,11 @@ function StudioCard(session: Readonly<CheckoutSessionType>) {
         </CardHeader>
         <CardContent>
           <p className="mb-2 w-full leading-5">
-            {`${session.user?.firstName} ${session.user?.lastName}` ||
+            {`${session.user?.first_name} ${session.user?.last_name}` ||
               "User Name Unknown"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {`${session.creationTime ? new Date(session.creationTime).toLocaleString() : "Time Unknown"}`}
+            {`${session.created_at ? format(new Date(session.created_at), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
           </p>
         </CardContent>
       </Card>
@@ -67,7 +73,8 @@ function StudioCard(session: Readonly<CheckoutSessionType>) {
 
 const CheckoutPageTabs = ({
   data,
-  meta,
+  // meta,
+  totalEntries,
   filter,
   studioData,
 }: ViewTabsProps) => {
@@ -107,7 +114,7 @@ const CheckoutPageTabs = ({
         </TabsContent>
         <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data.map((item: InventoryItem) => (
+            {data.map((item: CheckoutWithUserAndItems) => (
               <LinkCard key={item.id} {...item} />
             ))}
           </div>
@@ -123,8 +130,8 @@ const CheckoutPageTabs = ({
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
+          // pageCount={meta.pagination.pageCount}
+          totalEntries={totalEntries}
         />
       </div>
     </div>

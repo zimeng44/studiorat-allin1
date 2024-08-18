@@ -26,11 +26,16 @@ export default async function SingleCheckoutSessionDetails({
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
   const data = await getCheckoutSessionById(params.sessionId);
+
+  if (!data) return <p>No data</p>;
 
   const jwtCookie = cookies().get("jwt");
 
@@ -68,7 +73,7 @@ export default async function SingleCheckoutSessionDetails({
       </Breadcrumb>
       <div className="flex items-center px-1 py-4 text-lg font-bold md:px-2">
         <h1 className="px-2 py-4 text-lg font-bold">Edit Checkout</h1>
-        {data.finished ? (
+        {data?.finished ? (
           <Badge className="size-fit" variant="secondary">
             Finished
           </Badge>

@@ -14,22 +14,28 @@ import {
 } from "@/data/loaders";
 import BookingPageTabs from "./BookingPageTabs";
 import { cookies } from "next/headers";
-import { BookingType } from "@/data/definitions";
+import {
+  BookingType,
+  BookingWithUserAndItems,
+  UserWithRole,
+} from "@/data/definitions";
+import { bookings } from "@prisma/client";
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    startTimeFrom?: string;
-    startTimeTo?: string;
-    endTimeFrom?: string;
-    endTimeTo?: string;
+    start_timeFrom?: string;
+    start_timeTo?: string;
+    end_timeFrom?: string;
+    end_timeTo?: string;
     user?: string;
     type?: string;
-    useLocation?: string;
+    use_location?: string;
     bookingCreator?: string;
     notes?: string;
   };
@@ -38,64 +44,64 @@ interface SearchParamsProps {
 export default async function BookingPage({
   searchParams,
 }: Readonly<SearchParamsProps>) {
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "startTime:desc";
-
-  // console.log(sort);
+  const sort = searchParams?.sort ?? "start_time:desc";
+  const { data: thisUser } = await getUserMeLoader();
+  // console.log(thisUser);
 
   const filter = {
-    startTime: {
-      from: searchParams?.startTimeFrom
-        ? new Date(searchParams?.startTimeFrom).toISOString()
-        : undefined,
-      to: searchParams?.startTimeTo
-        ? new Date(searchParams?.startTimeTo).toISOString()
-        : undefined,
+    start_time: {
+      from: searchParams?.start_timeFrom
+        ? new Date(searchParams?.start_timeFrom)
+        : null,
+      to: searchParams?.start_timeTo
+        ? new Date(searchParams?.start_timeTo)
+        : null,
     },
-    endTime: {
-      from: searchParams?.endTimeFrom
-        ? new Date(searchParams?.endTimeFrom).toISOString()
-        : undefined,
-      to: searchParams?.endTimeTo
-        ? new Date(searchParams.endTimeTo).toISOString()
-        : undefined,
+    end_time: {
+      from: searchParams?.end_timeFrom
+        ? new Date(searchParams?.end_timeFrom)
+        : null,
+      to: searchParams?.end_timeTo ? new Date(searchParams?.end_timeTo) : null,
     },
-    user: searchParams?.user ?? "",
-    useLocation: searchParams?.useLocation ?? "",
-    bookingCreator: searchParams?.bookingCreator ?? "",
-    type: searchParams?.type ?? "",
-    notes: searchParams?.notes ?? "",
+    // user: searchParams?.user ?? "",
+    use_location: searchParams?.use_location ?? null,
+    // bookingCreator: searchParams?.bookingCreator ?? "",
+    type: searchParams?.type ?? null,
+    // notes: searchParams?.notes ?? "",
   };
 
   // console.log(filter);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getBookingsByQuery(
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
+        thisUser,
       )
     : await getBookings(
         sort,
         pageIndex.toString(),
         pageSize.toString(),
         filter,
+        thisUser,
       );
 
-  const { data: calendarFirstLoadData, meta: calendarFirstMeta } =
-    await getBookingByDateWeek(new Date());
-
-  const calendarLoadEvents = calendarFirstLoadData.map(
-    (booking: BookingType) => {
-      return {
-        id: booking.id,
-        title: `${booking.user?.firstName} ${booking.user?.lastName}`,
-        start: new Date(booking?.startTime ?? ``),
-        end: new Date(booking?.endTime ?? ``),
-      };
-    },
+  const calendarFirstLoadData = await getBookingByDateWeek(
+    new Date(),
+    thisUser,
   );
+
+  const calendarLoadEvents = calendarFirstLoadData.map((booking: any) => {
+    return {
+      id: booking.id,
+      title: `${booking.user?.first_name} ${booking.user?.last_name}`,
+      start: new Date(booking?.start_time ?? ``),
+      end: new Date(booking?.end_time ?? ``),
+    };
+  });
 
   // const { value: authToken } = cookies().get("jwt");
 
@@ -107,10 +113,10 @@ export default async function BookingPage({
   }
   // Handle the case where the cookie is not found
 
-  // console.log(authToken);
+  // console.log(data);
 
   // if (isLoading) return <p>Loading...</p>;
-  if (!data) return <p>No Checkout Sessions data</p>;
+  if (!data) return <p>No Booking data</p>;
 
   // console.log("filter is ", filter);
 
@@ -133,7 +139,7 @@ export default async function BookingPage({
       </Breadcrumb>
       <BookingPageTabs
         data={data}
-        meta={meta}
+        totalEntries={count}
         filter={filter}
         authToken={jwtCookie?.value ?? ""}
         calendarFirstLoadData={calendarLoadEvents}

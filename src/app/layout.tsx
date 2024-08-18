@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-import { getGlobalPageData, getGlobalPageMetadata } from "@/data/loaders";
+// import { getGlobalPageData, getGlobalPageMetadata } from "@/data/loaders";
 import { Header } from "@/components/custom/Header";
 import { Footer } from "@/components/custom/Footer";
 import { describe } from "node:test";
@@ -11,6 +11,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 import { NavigationEvents } from "@/components/custom/navigation-events";
 import type { Viewport } from "next";
+import prisma from "@/lib/prisma";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -28,11 +29,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   // noStore();
-  const metadata = await getGlobalPageMetadata();
+  // const metadata = await getGlobalPageMetadata();
+  const metadata = {};
 
   return {
-    title: metadata?.title,
-    description: metadata?.description,
+    title: "Studio Rat",
+    description: "Your Studio Assistant",
   };
 }
 
@@ -41,7 +43,100 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const globalData = await getGlobalPageData();
+  // const globalData = await getGlobalPageData();
+
+  const globalData = {
+    id: 1,
+
+    title: "Studio Rat",
+
+    description: "Responsible for header and footer data",
+
+    createdAt: "2024-07-13T02:53:05.191Z",
+
+    updatedAt: "2024-08-12T06:39:08.905Z",
+
+    publishedAt: "2024-07-13T02:53:06.268Z",
+
+    header: {
+      id: 1,
+
+      ctaButton: {
+        id: 3,
+
+        url: "/signin",
+
+        text: "Sign In",
+
+        isExternal: false,
+      },
+
+      logoText: {
+        id: 2,
+
+        url: "/",
+
+        text: "Studio Rat",
+
+        isExternal: false,
+      },
+    },
+
+    footer: {
+      id: 1,
+
+      text: "Made with love",
+
+      socialLink: [
+        {
+          id: 5,
+
+          url: "www.youtube.com",
+
+          text: "YouTube",
+
+          isExternal: true,
+        },
+
+        {
+          id: 6,
+
+          url: "www.github.com",
+
+          text: "GitHub",
+
+          isExternal: true,
+        },
+
+        {
+          id: 7,
+
+          url: "www.twitter.com",
+
+          text: "Twitter",
+
+          isExternal: true,
+        },
+      ],
+
+      logoText: {
+        id: 4,
+
+        url: "/",
+
+        text: "Summarize AI",
+
+        isExternal: false,
+      },
+    },
+
+    meta: {},
+  };
+
+  // const data = await prisma.checkout_sessions.findMany({
+  //   include: { user: true, created_by: true, inventory_items: true },
+  // });
+  // console.log(data);
 
   return (
     <html lang="en">

@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button";
 import BookingAddItemPageTabs from "./BookingAddItemPageTabs";
 import BookingAddItemEmbededTable from "./BookingAddItemEmbededTable";
 import { ArrowLeftToLine } from "lucide-react";
+import { inventory_items } from "@prisma/client";
 
 const BookingAddItemForm = ({
   inventoryData,
-  inventoryMeta,
+  // inventoryMeta,
   filter,
 }: {
-  inventoryData: InventoryItem[];
-  inventoryMeta: { pagination: { pageCount: number; total: number } };
+  inventoryData: inventory_items[];
+  // inventoryMeta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }) => {
   const router = useRouter();
@@ -62,7 +63,7 @@ const BookingAddItemForm = ({
       />
       <BookingAddItemPageTabs
         data={inventoryData}
-        meta={inventoryMeta}
+        // meta={inventoryMeta}
         filter={filter}
         itemObjArr={itemObjArr}
         addToBooking={setItemObjArr}

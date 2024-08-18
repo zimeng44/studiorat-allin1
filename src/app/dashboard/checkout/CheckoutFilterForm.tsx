@@ -40,69 +40,72 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 //   z.string().length(0),
 // ]);
 interface FilterFormProps {
-  creationTime?: { from?: Date; to?: Date };
-  finishTime?: { from?: Date; to?: Date };
+  creation_time?: { from?: Date | null; to?: Date | null } | null;
+  finish_time?: { from?: Date | null; to?: Date | null } | null;
   // stuIDCheckout?: string;
   // stuIDCheckin?: string;
-  studio?: string;
+  studio?: string | null;
   // otherLocation?: string;
   // creationMonitor?: string;
   // finishMonitor?: string;
   // notes?: string;
-  finished?: string;
+  finished?: string | null;
   // userName?: string;
 }
 
 const formSchema = z.object({
-  creationTime: z
+  creation_time: z
     .object({
-      from: z.date().optional(),
-      to: z.date().optional(),
+      from: z.date().nullable(),
+      to: z.date().nullable(),
     })
-    .optional(),
-  finishTime: z
+    .nullable(),
+  finish_time: z
     .object({
-      from: z.date().optional(),
-      to: z.date().optional(),
+      from: z.date().nullable(),
+      to: z.date().nullable(),
     })
-    .optional(),
-  studio: z.string().optional(),
-  finished: z.string().optional(),
+    .nullable(),
+  studio: z.string().nullable(),
+  finished: z.string().nullable(),
   // inventory_items: z.string().optional(),
   // user: z.string().optional(),
   // username: z.string().min(2).max(50),
 });
 
 const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
+  // console.log(filter);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const createPageURL = (filterValues: FilterFormProps) => {
+  const createPageURL = (filterValues: FilterFormProps | null) => {
     const params = new URLSearchParams(searchParams);
     params.set("filterOpen", "false");
     params.set("filterOn", "true");
-    for (const [key, value] of Object.entries(filterValues)) {
-      if (value === "" || value === "All") {
-        params.delete(key);
+    for (const [key, value] of Object.entries(filterValues ?? {})) {
+      if (key === "creation_time" || key === "finish_time") {
+        // console.log(value);
+        if (value.from === null && value.to === null) {
+          params.delete(`${key}From`);
+          params.delete(`${key}To`);
+          continue;
+        }
+        if (value.from === null) {
+          params.delete(`${key}From`);
+          continue;
+        }
+        if (value.to === null) {
+          params.delete(`${key}To`);
+          continue;
+        }
+        params.set(`${key}From`, value.from.toISOString());
+        params.set(`${key}To`, value.to.toISOString());
+
         continue;
       }
-      if (key === "creationTime" || key === "finishTime") {
-        if (value.from === undefined && value.to === undefined) {
-          params.delete(`${key}From`);
-          params.delete(`${key}To`);
-          continue;
-        }
-        if (value.from === undefined) {
-          params.delete(`${key}From`);
-          continue;
-        }
-        if (value.to === undefined) {
-          params.delete(`${key}To`);
-          continue;
-        }
-        params.set(`${key}From`, value.from);
-        params.set(`${key}To`, value.to);
+      if (value === null || value === "All") {
+        params.delete(key);
         continue;
       }
       params.set(key, value);
@@ -119,7 +122,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
     params.set("filterOn", "false");
     for (const [key, value] of Object.entries(filterValues)) {
       // if (!params.has(key)) continue;
-      if (key === "creationTime" || key === "finishTime") {
+      if (key === "creation_time" || key === "finish_time") {
         params.delete(`${key}From`);
         params.delete(`${key}To`);
         continue;
@@ -138,19 +141,17 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      creationTime: {
-        from: filter.creationTime?.from
-          ? new Date(filter.creationTime.from)
-          : undefined,
-        to: filter.creationTime?.to
-          ? new Date(filter.creationTime.to)
-          : undefined,
+      creation_time: {
+        from: filter.creation_time?.from
+          ? new Date(filter.creation_time.from)
+          : null,
+        to: filter.creation_time?.to ? new Date(filter.creation_time.to) : null,
       },
-      finishTime: {
-        from: filter.finishTime?.from
-          ? new Date(filter.finishTime.from)
-          : undefined,
-        to: filter.finishTime?.to ? new Date(filter.finishTime.to) : undefined,
+      finish_time: {
+        from: filter.finish_time?.from
+          ? new Date(filter.finish_time.from)
+          : null,
+        to: filter.finish_time?.to ? new Date(filter.finish_time.to) : null,
       },
       ...filter,
     },
@@ -161,22 +162,22 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    // console.log(values.finished);
+    // console.log(values);
     router.push(createPageURL(values));
   }
 
   const handleReset = () => {
     const blankFilter = {
-      creationTime: { from: undefined, to: undefined },
+      creation_time: { from: null, to: null },
       // stuIDCheckout: "",
       // stuIDCheckin: "",
-      studio: "",
+      studio: null,
       // otherLocation: "",
       // creationMonitor: "",
       // finishMonitor: "",
-      finishTime: { from: undefined, to: undefined },
+      finish_time: { from: null, to: null },
       // notes: "",
-      finished: "",
+      finished: "All",
       // userName: "",
     };
     router.push(resetPageURL(blankFilter));
@@ -191,7 +192,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
         >
           <FormField
             control={form.control}
-            name="creationTime"
+            name="creation_time"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Creation Time</FormLabel>
@@ -231,8 +232,8 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
                       selected={
                         field.value
                           ? {
-                              from: field.value?.from,
-                              to: field.value?.to,
+                              from: field.value?.from ?? undefined,
+                              to: field.value?.to ?? undefined,
                             }
                           : undefined
                       }
@@ -251,7 +252,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
           />
           <FormField
             control={form.control}
-            name="finishTime"
+            name="finish_time"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Finish Time</FormLabel>
@@ -291,13 +292,10 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
                       selected={
                         field.value
                           ? {
-                              from: field.value?.from,
-                              to: field.value?.to,
+                              from: field.value?.from ?? undefined,
+                              to: field.value?.to ?? undefined,
                             }
-                          : {
-                              from: undefined,
-                              to: undefined,
-                            }
+                          : undefined
                       }
                       onSelect={field.onChange}
                       // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
@@ -321,7 +319,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
                 <FormLabel>Studio</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={field.value ?? undefined}
                 >
                   <FormControl>
                     <SelectTrigger className="">
@@ -352,7 +350,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
                   <FormLabel className="ml-1">Finished</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    defaultValue={field.value ?? undefined}
                   >
                     <FormControl>
                       <SelectTrigger className="ml-2">

@@ -12,9 +12,9 @@ import { ZodErrors } from "@/components/custom/ZodErrors";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 
 interface ProfileImageFormProps {
-  id: string;
-  url: string;
-  alternativeText: string;
+  id: string | null;
+  url?: string | null;
+  alternativeText?: string | null;
 }
 
 const initialState = {
@@ -33,7 +33,7 @@ export function ProfileImageForm({
 }) {
   const uploadProfileImageWithIdAction = uploadProfileImageAction.bind(
     null,
-    data?.id,
+    data?.id ?? "",
   );
 
   const [formState, formAction] = useFormState(
@@ -42,7 +42,7 @@ export function ProfileImageForm({
   );
 
   return (
-    <form className={cn("space-y-4 max-w-60", className)} action={formAction}>
+    <form className={cn("max-w-60 space-y-4", className)} action={formAction}>
       <div className="">
         <ImagePicker
           id="image"

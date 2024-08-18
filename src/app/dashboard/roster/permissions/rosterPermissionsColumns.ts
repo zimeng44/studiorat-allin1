@@ -11,23 +11,23 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  permissionCode: TableFieldStatus;
-  permissionTitle: TableFieldStatus;
+  permission_code: TableFieldStatus;
+  permission_title: TableFieldStatus;
   instructor: TableFieldStatus;
-  permissionDetails: TableFieldStatus;
-  permittedStudios: TableFieldStatus;
-  startDate: TableFieldStatus;
-  endDate: TableFieldStatus;
+  permission_details: TableFieldStatus;
+  permitted_studios: TableFieldStatus;
+  start_date: TableFieldStatus;
+  end_date: TableFieldStatus;
 }
 
 export type ColumnKey = keyof TableColumnStatus;
 
 export const rosterPermissionsColumnsDefault = {
-  permissionCode: {
+  permission_code: {
     header: "Permission Code",
     visible: true,
   },
-  permissionTitle: {
+  permission_title: {
     header: "Title",
     visible: true,
   },
@@ -35,19 +35,19 @@ export const rosterPermissionsColumnsDefault = {
     header: "Instructor",
     visible: true,
   },
-  permissionDetails: {
+  permission_details: {
     header: "Details",
     visible: true,
   },
-  permittedStudios: {
+  permitted_studios: {
     header: "Permitted Studios",
     visible: false,
   },
-  startDate: {
+  start_date: {
     header: "Start Date",
     visible: false,
   },
-  endDate: {
+  end_date: {
     header: "End Date",
     visible: false,
   },
@@ -55,12 +55,12 @@ export const rosterPermissionsColumnsDefault = {
 
 export const rosterPermissionsColumnsInEditRoster = [
   {
-    accessorKey: "permissionCode",
+    accessorKey: "permission_code",
     header: "Permission Code",
     visible: true,
   },
   {
-    accessorKey: "permissionTitle",
+    accessorKey: "permission_title",
     header: "Title",
     visible: true,
   },
@@ -70,22 +70,22 @@ export const rosterPermissionsColumnsInEditRoster = [
     visible: true,
   },
   {
-    accessorKey: "permissionDetails",
+    accessorKey: "permission_details",
     header: "Details",
     visible: true,
   },
   {
-    accessorKey: "permittedStudios",
+    accessorKey: "permitted_studios",
     header: "Permitted Studios",
     visible: true,
   },
   {
-    accessorKey: "startDate",
+    accessorKey: "start_date",
     header: "Start Date",
     visible: false,
   },
   {
-    accessorKey: "endDate",
+    accessorKey: "end_date",
     header: "End Date",
     visible: false,
   },
@@ -93,12 +93,12 @@ export const rosterPermissionsColumnsInEditRoster = [
 
 export const rosterPermissionsColumns = [
   {
-    accessorKey: "permissionCode",
+    accessorKey: "permission_code",
     header: "Permission Code",
     visible: true,
   },
   {
-    accessorKey: "permissionTitle",
+    accessorKey: "permission_title",
     header: "Title",
     visible: true,
   },
@@ -108,22 +108,22 @@ export const rosterPermissionsColumns = [
     visible: true,
   },
   {
-    accessorKey: "permissionDetails",
+    accessorKey: "permission_details",
     header: "Details",
     visible: false,
   },
   {
-    accessorKey: "permittedStudios",
+    accessorKey: "permitted_studios",
     header: "Permitted Studios",
     visible: false,
   },
   {
-    accessorKey: "startDate",
+    accessorKey: "start_date",
     header: "Start Date",
     visible: false,
   },
   {
-    accessorKey: "endDate",
+    accessorKey: "end_date",
     header: "End Date",
     visible: false,
   },

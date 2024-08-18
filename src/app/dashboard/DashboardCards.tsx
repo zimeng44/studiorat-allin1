@@ -24,7 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookingType, CheckoutSessionType } from "@/data/definitions";
+import {
+  BookingType,
+  BookingWithUserAndItems,
+  CheckoutSessionType,
+  CheckoutWithUserAndItems,
+} from "@/data/definitions";
 import { format } from "date-fns";
 
 const DashboardCards = ({
@@ -37,9 +42,9 @@ const DashboardCards = ({
   inventoryReportsInADay,
 }: {
   userRole: string;
-  upcomingBookings: BookingType[];
+  upcomingBookings: BookingWithUserAndItems[];
   upcomingBookingsNum: number;
-  checkoutUnfinished: CheckoutSessionType[];
+  checkoutUnfinished: CheckoutWithUserAndItems[];
   checkoutUnfinishedNum: number;
   inventorySizeTagged: number;
   inventoryReportsInADay: number;
@@ -172,10 +177,10 @@ const DashboardCards = ({
                           <TableRow key={booking.id}>
                             <TableCell key="userName">
                               <div className="font-medium">
-                                {`${booking.user?.firstName} ${booking.user?.lastName}`}
+                                {`${booking.user?.first_name} ${booking.user?.last_name}`}
                               </div>
                               <div className="hidden text-sm text-muted-foreground md:inline">
-                                {booking.user?.username}
+                                {booking.user?.net_id}
                               </div>
                             </TableCell>
                             <TableCell
@@ -196,11 +201,11 @@ const DashboardCards = ({
                               className="hidden md:table-cell lg:hidden xl:table-column"
                               key="location"
                             >
-                              {booking.useLocation}
+                              {booking.use_location}
                             </TableCell>
                             <TableCell className="text-right" key="startTime">
                               {format(
-                                new Date(booking.startTime as string),
+                                new Date(booking.start_time ?? ""),
                                 "MM/dd/yyyy hh:mm a",
                               )}
                             </TableCell>
@@ -266,10 +271,10 @@ const DashboardCards = ({
                             <TableRow key={checkout.id}>
                               <TableCell key="userName">
                                 <div className="font-medium">
-                                  {`${checkout.user?.firstName} ${checkout.user?.lastName}`}
+                                  {`${checkout.user?.first_name} ${checkout.user?.last_name}`}
                                 </div>
                                 <div className="hidden text-sm text-muted-foreground md:inline">
-                                  {checkout.user?.stuId}
+                                  {checkout.user?.stu_id}
                                 </div>
                               </TableCell>
                               <TableCell
@@ -297,7 +302,7 @@ const DashboardCards = ({
                                 key="creationTime"
                               >
                                 {format(
-                                  new Date(checkout.creationTime as string),
+                                  new Date(checkout.created_at ?? ""),
                                   "MM/dd/yyyy hh:mm a",
                                 )}
                               </TableCell>

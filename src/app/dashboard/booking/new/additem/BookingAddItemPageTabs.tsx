@@ -17,19 +17,19 @@ interface TableFieldStatus {
   visible: boolean;
 }
 interface TableColumnStatus {
-  mTechBarcode: TableFieldStatus;
+  m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
   category: TableFieldStatus;
   description: TableFieldStatus;
   accessories: TableFieldStatus;
-  storageLocation: TableFieldStatus;
+  storage_location: TableFieldStatus;
   comments: TableFieldStatus;
 }
 
 interface ViewTabsProps {
   data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  // meta: { pagination: { pageCount: number; total: number } };
   filter: {};
   itemObjArr: InventoryItem[];
   addToBooking: Function;
@@ -80,7 +80,7 @@ function LinkCard({
 
 const BookingAddItemPageTabs = ({
   data,
-  meta,
+  // meta,
   filter,
   itemObjArr,
   addToBooking,
@@ -164,12 +164,12 @@ const BookingAddItemPageTabs = ({
           </div>
         </TabsContent>
       </Tabs>
-      <div className="flex items-center justify-end space-x-2 py-2">
+      {/* <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
           pageCount={meta.pagination.pageCount}
           totalEntries={meta.pagination.total}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

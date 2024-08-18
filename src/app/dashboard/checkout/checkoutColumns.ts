@@ -1,12 +1,12 @@
 export type ColumnFields = {
-  creationTime: string;
-  stuIDCheckout: string;
-  stuIDCheckin: string;
+  creation_time: string;
+  user_name: string;
+  return_id: string;
   studio: string;
-  otherLocation: string;
-  creationMonitor: string;
-  finishMonitor: string;
-  finishTime: string;
+  other_location: string;
+  created_by: string;
+  finished_by: string;
+  finish_time: string;
   notes: string;
   finished: boolean;
   // inventory_items: {};
@@ -18,15 +18,15 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  creationTime: TableFieldStatus;
-  stuIDCheckout: TableFieldStatus;
-  stuIDCheckin: TableFieldStatus;
+  creation_time: TableFieldStatus;
+  checkout_id: TableFieldStatus;
+  return_id: TableFieldStatus;
   userName: TableFieldStatus;
   studio: TableFieldStatus;
-  otherLocation: TableFieldStatus;
-  creationMonitor: TableFieldStatus;
-  finishMonitor: TableFieldStatus;
-  finishTime: TableFieldStatus;
+  other_location: TableFieldStatus;
+  created_by: TableFieldStatus;
+  finished_by: TableFieldStatus;
+  finish_time: TableFieldStatus;
   notes: TableFieldStatus;
   finished: TableFieldStatus;
 }
@@ -34,18 +34,18 @@ export type ColumnKeys = keyof TableColumnStatus;
 
 export const checkoutColumns = [
   {
-    accessorKey: "creationTime",
+    accessorKey: "creation_time",
     header: "Creation Time",
     visible: true,
   },
   {
-    accessorKey: "stuIDCheckout",
+    accessorKey: "checkout_id",
     header: "Checkout ID",
     visible: false,
   },
   {
-    accessorKey: "stuIDCheckin",
-    header: "Checkin ID",
+    accessorKey: "return_id",
+    header: "Return ID",
     visible: false,
   },
   {
@@ -59,22 +59,22 @@ export const checkoutColumns = [
     visible: true,
   },
   {
-    accessorKey: "otherLocation",
+    accessorKey: "other_location",
     header: "Other Location",
     visible: false,
   },
   {
-    accessorKey: "creationMonitor",
-    header: "Creation Monitor",
+    accessorKey: "created_by",
+    header: "Created by",
     visible: false,
   },
   {
-    accessorKey: "finishMonitor",
-    header: "Finish Monitor",
+    accessorKey: "finished_by",
+    header: "Finished by",
     visible: false,
   },
   {
-    accessorKey: "finishTime",
+    accessorKey: "finish_time",
     header: "Finish Time",
     visible: false,
   },
@@ -102,16 +102,16 @@ export const checkoutColumns = [
 ];
 
 export const checkoutColumnsDefault = {
-  creationTime: {
+  creation_time: {
     header: "Creation Time",
     visible: true,
   },
-  stuIDCheckout: {
+  checkout_id: {
     header: "Checkout ID",
     visible: false,
   },
-  stuIDCheckin: {
-    header: "Checkin ID",
+  return_id: {
+    header: "Return ID",
     visible: false,
   },
   userName: {
@@ -122,19 +122,19 @@ export const checkoutColumnsDefault = {
     header: "Studio",
     visible: true,
   },
-  otherLocation: {
+  other_location: {
     header: "Other Location",
     visible: false,
   },
-  creationMonitor: {
-    header: "Creation Monitor",
+  created_by: {
+    header: "Created by",
     visible: false,
   },
-  finishMonitor: {
-    header: "Finish Monitor",
+  finished_by: {
+    header: "Finished by",
     visible: false,
   },
-  finishTime: {
+  finish_time: {
     header: "Finish Time",
     visible: false,
   },

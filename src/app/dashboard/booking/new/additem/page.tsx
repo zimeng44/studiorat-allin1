@@ -13,16 +13,16 @@ interface ParamsProps {
   searchParams: {
     bookingId: string;
     itemId: string;
-    page: string;
+    pageIndex: string;
     pageSize: string;
     sort: string;
-    mTechBarcode: string;
+    m_tech_barcode: string;
     make: string;
     model: string;
     category: string;
     description: string;
     accessories: string;
-    storageLocation: string;
+    storage_location: string;
     comments: string;
     out: string;
     broken: string;
@@ -31,25 +31,15 @@ interface ParamsProps {
 }
 
 const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "";
 
-  const filter = {
-    mTechBarcode: searchParams?.mTechBarcode ?? "",
-    make: searchParams?.make ?? "",
-    model: searchParams?.model ?? "",
-    category: searchParams?.category ?? "",
-    description: searchParams?.description ?? "",
-    accessories: searchParams?.accessories ?? "",
-    storageLocation: searchParams?.storageLocation ?? "All",
-    comments: searchParams?.comments ?? "",
-    out: searchParams?.out === "true" ? true : false,
-    broken: searchParams?.broken === "true" ? true : false,
-  };
+  const filter = {};
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getItemsByQuery(
+        sort,
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
@@ -95,7 +85,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
           // bookingId={searchParams.bookingId}
           // bookingData={bookingData}
           inventoryData={data}
-          inventoryMeta={meta}
+          // inventoryMeta={meta}
           filter={filter}
         />
       </div>

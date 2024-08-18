@@ -8,6 +8,7 @@ import {
   loginUserService,
 } from "@/data/services/auth-services";
 import { getUserMeLoader } from "../services/get-user-me-loader";
+import prisma from "@/lib/prisma";
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -18,7 +19,7 @@ const config = {
 };
 
 const schemaRegister = z.object({
-  username: z
+  net_id: z
     .string()
     .min(3, {
       message: "Username must be between 3 and 20 characters",
@@ -34,7 +35,7 @@ const schemaRegister = z.object({
     .max(100, {
       message: "Password must be between 6 and 100 characters",
     }),
-  firstName: z
+  first_name: z
     .string()
     .min(2, {
       message: "First Name must be between 2 and 20 characters",
@@ -42,7 +43,7 @@ const schemaRegister = z.object({
     .max(20, {
       message: "First Name must be between 2 and 20 characters",
     }),
-  lastName: z
+  last_name: z
     .string()
     .min(2, {
       message: "Last Name must be between 2 and 20 characters",
@@ -53,8 +54,8 @@ const schemaRegister = z.object({
   email: z.string().email({
     message: "Please enter a valid NYU email address",
   }),
-  role: z.string(),
-  stuId: z
+  user_role: z.string(),
+  stu_id: z
     .string()
     .min(15, {
       message: "ID barcode must be between 15 and 16 characters",
@@ -62,7 +63,7 @@ const schemaRegister = z.object({
     .max(16, {
       message: "ID barcode must be between 15 and 16 characters",
     }),
-  academicLevel: z
+  academic_level: z
     .string()
     .min(3, {
       message: "Academic Level must be between 3 and 10 characters",
@@ -74,28 +75,28 @@ const schemaRegister = z.object({
 
 export async function registerUserAction(prevState: any, formData: FormData) {
   const { data: currentUser } = await getUserMeLoader();
-  // console.log(currentUser.role);
+  // console.log(currentUser.user_role);
 
   const validatedFields =
-    currentUser.role.name === "Admin"
-      ? schemaRegister.omit({ stuId: true }).safeParse({
-          username: formData.get("username"),
+    currentUser?.user_role?.name === "Admin"
+      ? schemaRegister.omit({ stu_id: true }).safeParse({
+          net_id: formData.get("net_id"),
           password: formData.get("password"),
-          firstName: formData.get("firstName"),
-          lastName: formData.get("lastName"),
-          email: `${formData.get("username")}@nyu.edu`,
-          stuId: formData.get("stuId"),
-          role: formData.get("userRole"),
-          academicLevel: formData.get("academicLevel"),
+          first_name: formData.get("first_name"),
+          last_name: formData.get("last_name"),
+          email: `${formData.get("net_id")}@nyu.edu`,
+          stu_id: formData.get("stu_id"),
+          user_role: formData.get("user_role"),
+          academic_level: formData.get("academic_level"),
         })
-      : schemaRegister.omit({ role: true }).safeParse({
-          username: formData.get("username"),
+      : schemaRegister.omit({ user_role: true }).safeParse({
+          net_id: formData.get("net_id"),
           password: formData.get("password"),
-          firstName: formData.get("firstName"),
-          lastName: formData.get("lastName"),
-          email: `${formData.get("username")}@nyu.edu`,
-          stuId: formData.get("stuId"),
-          academicLevel: formData.get("academicLevel"),
+          first_name: formData.get("first_name"),
+          last_name: formData.get("last_name"),
+          email: `${formData.get("net_id")}@nyu.edu`,
+          stu_id: formData.get("stu_id"),
+          academic_level: formData.get("academic_level"),
         });
 
   if (!validatedFields.success) {
@@ -107,9 +108,26 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
   }
 
+  const correctedData =
+    currentUser?.user_role.name === "Monitor"
+      ? {
+          ...validatedFields.data,
+          user_role: {
+            connect: { id: 2 },
+          },
+        }
+      : {
+          ...validatedFields.data,
+          user_role: {
+            connect: { id: parseInt(formData.get("user_role") as string) },
+          },
+        };
+
+  const payload = { data: correctedData };
   // console.log(validatedFields.data);
 
-  const responseData = await registerUserService(validatedFields.data);
+  // const responseData = await registerUserService(validatedFields.data);
+  const responseData = await prisma.user.create(payload);
 
   if (!responseData) {
     return {
@@ -120,14 +138,14 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
   }
 
-  if (responseData.error) {
-    return {
-      ...prevState,
-      strapiErrors: responseData.error,
-      zodErrors: null,
-      message: "Failed to Register.",
-    };
-  }
+  // if (responseData.error) {
+  //   return {
+  //     ...prevState,
+  //     strapiErrors: responseData.error,
+  //     zodErrors: null,
+  //     message: "Failed to Register.",
+  //   };
+  // }
 
   // cookies().set("jwt", responseData.jwt, config);
   redirect("/dashboard/users");
@@ -168,10 +186,12 @@ export async function loginUserAction(prevState: any, formData: FormData) {
 
   const responseData = await loginUserService(validatedFields.data);
 
+  // console.log(responseData);
+
   if (!responseData) {
     return {
       ...prevState,
-      strapiErrors: responseData.error,
+      // strapiErrors: responseData.error,
       zodErrors: null,
       message: "Ops! Something went wrong. Please try again.",
     };
@@ -186,7 +206,7 @@ export async function loginUserAction(prevState: any, formData: FormData) {
     };
   }
 
-  cookies().set("jwt", responseData.jwt, config);
+  cookies().set("jwt", responseData.jwt ?? "", config);
 
   redirect("/dashboard");
 }

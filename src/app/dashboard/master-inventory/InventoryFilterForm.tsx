@@ -33,22 +33,20 @@ interface InventoryFilterFormProps {
   category?: string;
   description?: string;
   accessories?: string;
-  storageLocation?: string;
+  storage_location?: string;
   comments?: string;
   out?: boolean;
   broken?: boolean;
 }
 
-const mTechBarcode = z.union([
-  z.string().min(12).and(z.string().max(13)),
-  z.string().length(0),
-]);
+// const mTechBarcode = z.union([
+//   z.string().min(12).and(z.string().max(13)),
+//   z.string().length(0),
+// ]);
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-
-  storageLocation: z.string(),
-
+  storage_location: z.string(),
   out: z.boolean(),
   broken: z.boolean(),
 });
@@ -77,9 +75,7 @@ const InventoryFilterForm = ({
       }
       params.set(key, value);
     }
-    // console.log(params.toString());
-    // params.set("page", pageNumber.toString());
-    // params.set("pageSize", newPageSize.toString());
+
     return `${pathname}?${params.toString()}`;
   };
 
@@ -117,7 +113,7 @@ const InventoryFilterForm = ({
 
   const handleReset = () => {
     const blankFilter = {
-      storageLocation: "All",
+      storage_location: "All",
       out: false,
       broken: false,
     };
@@ -134,7 +130,7 @@ const InventoryFilterForm = ({
         >
           <FormField
             control={form.control}
-            name="storageLocation"
+            name="storage_location"
             render={({ field }) => (
               <FormItem className="size-fit">
                 <FormLabel>Storage Location</FormLabel>

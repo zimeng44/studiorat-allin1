@@ -1,8 +1,8 @@
 export type UserFields = {
-  username: string;
-  stuId: string;
-  fullName: string;
-  academicLevel: string;
+  net_id: string;
+  stu_id: string;
+  full_name: string;
+  academic_level: string;
   email: string;
   bio: string;
   blocked: boolean;
@@ -13,10 +13,10 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  username: TableFieldStatus;
-  stuId: TableFieldStatus;
-  fullName: TableFieldStatus;
-  academicLevel: TableFieldStatus;
+  net_id: TableFieldStatus;
+  stu_id: TableFieldStatus;
+  full_name: TableFieldStatus;
+  academic_level: TableFieldStatus;
   email: TableFieldStatus;
   bio: TableFieldStatus;
   blocked: TableFieldStatus;
@@ -26,22 +26,22 @@ export type ColumnKey = keyof TableColumnStatus;
 
 export const userColumns = [
   {
-    accessorKey: "username",
+    accessorKey: "net_id",
     header: "NetID",
     visible: true,
   },
   {
-    accessorKey: "stuId",
+    accessorKey: "stu_id",
     header: "ID Barcode",
     visible: true,
   },
   {
-    accessorKey: "fullName",
+    accessorKey: "full_name",
     header: "Name",
     visible: true,
   },
   {
-    accessorKey: "academicLevel",
+    accessorKey: "academic_level",
     header: "Academic Level",
     visible: false,
   },
@@ -63,19 +63,19 @@ export const userColumns = [
 ];
 
 export const userColumnsDefault = {
-  username: {
+  net_id: {
     header: "NetID",
     visible: true,
   },
-  stuId: {
+  stu_id: {
     header: "ID Barcode",
     visible: false,
   },
-  fullName: {
+  full_name: {
     header: "Name",
     visible: true,
   },
-  academicLevel: {
+  academic_level: {
     header: "Academic Level",
     visible: true,
   },

@@ -3,13 +3,12 @@ import React from "react";
 import { cn } from "@/lib/utils";
 // import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
 import {
-  BookingType,
   InventoryItem,
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
   RetrievedItems,
-  BookingTypePost,
+  // BookingTypePost,
   UserType,
 } from "@/data/definitions";
 import { z } from "zod";
@@ -55,19 +54,33 @@ import qs from "qs";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { bookings, inventory_items, Prisma, User } from "@prisma/client";
+
+type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
+  include: {
+    user: { include: { user_role: true } };
+    created_by: true;
+    inventory_items: true;
+    // user_role: true;
+  };
+}>;
+
+type UserWithRole = Prisma.UserGetPayload<{
+  include: { user_role: true };
+}>;
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  startDate: z.date(),
+  start_date: z.date(),
   startTime: z.string(),
-  endDate: z.date(),
+  end_date: z.date(),
   endTime: z.string(),
   // stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().min(2, {
     message: "Type in a NetID to retrieve the user name",
   }),
   // studio: z.enum(bookingLocationList),
-  useLocation: z.string(),
+  use_location: z.string(),
   type: z.string(),
   bookingCreatorName: z.string().min(1),
   notes: z.string().optional(),
@@ -90,43 +103,46 @@ const EditBookingForm = ({
   currentUser,
   authToken,
 }: {
-  booking: BookingType;
+  booking: BookingWithUserAndItems;
   bookingId: string;
-  currentUser: UserType;
+  currentUser?: UserWithRole | null;
   authToken: string;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   // const pathname = usePathname();
   const view = searchParams.get("view") ?? "calendar";
-  const isPast =
-    new Date().toISOString() >=
-    (booking?.startTime ?? new Date().toISOString());
+  const isPast = new Date() >= (booking?.start_time ?? new Date());
+  const [error, setError] = useState("");
   // console.log(isPast);
   // const params = new URLSearchParams(searchParams);
 
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
-  const inventoryItems = booking.inventory_items as RetrievedItems;
-  const [itemObjArr, setItemObjArr] = useState(inventoryItems?.data ?? Array());
+  // const inventoryItems = booking.inventory_items;
+  const [itemObjArr, setItemObjArr] = useState(
+    booking.inventory_items ?? Array(),
+  );
   const [bookingType, setBookingType] = useState(booking.type);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      startDate: booking.startTime ? new Date(booking.startTime) : new Date(),
-      startTime: booking.startTime
-        ? format(new Date(booking.startTime), "hh:mm a")
+      start_date: booking.start_time
+        ? new Date(booking.start_time)
+        : new Date(),
+      startTime: booking.start_time
+        ? format(new Date(booking.start_time), "hh:mm a")
         : "",
-      endDate: booking.endTime ? new Date(booking.endTime) : new Date(),
-      endTime: booking.endTime
-        ? format(new Date(booking.endTime), "hh:mm a")
+      end_date: booking.end_time ? new Date(booking.end_time) : new Date(),
+      endTime: booking.end_time
+        ? format(new Date(booking.end_time), "hh:mm a")
         : "",
-      userName: `${booking.user?.firstName} ${booking.user?.lastName}`,
-      useLocation: booking.useLocation ?? "",
+      userName: `${booking.user?.first_name} ${booking.user?.last_name}`,
+      use_location: booking.use_location ?? "",
       type: booking.type ?? "",
       bookingCreatorName:
-        `${booking.bookingCreator?.firstName} ${booking.bookingCreator?.lastName}` ??
+        `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
         "",
       notes: booking.notes ?? "",
       scan: "",
@@ -146,8 +162,8 @@ const EditBookingForm = ({
           ? JSON.parse(tempBookingStr)
           : undefined;
 
-        tempBooking.startDate = new Date(tempBooking.startDate);
-        tempBooking.endDate = new Date(tempBooking.endDate);
+        tempBooking.start_date = new Date(tempBooking.start_date);
+        tempBooking.end_date = new Date(tempBooking.end_date);
         setTempForm(tempBooking);
         localStorage.removeItem(`tempBooking${bookingId}`);
         // console.log(tempNewBooking);
@@ -168,25 +184,25 @@ const EditBookingForm = ({
   function handleTypeSelect(value: string) {
     // window.alert("yes");
 
-    if (value === "Exception" && currentUser.role?.name !== "Admin") {
+    if (value === "Exception" && currentUser?.user_role?.name !== "Admin") {
       window.alert(
         "Admin approval required, please contact admin to make exceptions.",
       );
       form.setValue("type", bookingType ?? "Same Day");
     }
     if (value === "Same Day") {
-      form.setValue("endDate", form.getValues("startDate"));
+      form.setValue("end_date", form.getValues("start_date"));
     }
     if (value === "Overnight") {
-      form.setValue("endDate", addDays(form.getValues("startDate"), 1));
+      form.setValue("end_date", addDays(form.getValues("start_date"), 1));
       form.setValue("endTime", "12:00 PM");
       // console.log("End Time is ", form.getValues("endTime"));
     }
     if (value === "Weekend") {
-      form.setValue("startDate", nextFriday(new Date()));
-      form.setValue("endDate", nextMonday(form.getValues("startDate")));
+      form.setValue("start_date", nextFriday(new Date()));
+      form.setValue("end_date", nextMonday(form.getValues("start_date")));
       form.setValue("endTime", "12:00 PM");
-      // form.setValue("endDate", form.getValues("startDate"));
+      // form.setValue("end_date", form.getValues("start_date"));
     }
     setBookingType(value);
     // console.log(form.getValues("type"));
@@ -195,37 +211,45 @@ const EditBookingForm = ({
   function handleStartDateSelect(value: Date) {
     // window.alert(value);
     if (form.getValues("type") === "Same Day") {
-      form.setValue("endDate", new Date(value));
+      form.setValue("end_date", new Date(value));
       form.setValue("endTime", form.getValues("startTime"));
     }
     if (form.getValues("type") === "Overnight") {
-      form.setValue("endDate", addDays(form.getValues("startDate"), 1));
+      form.setValue("end_date", addDays(form.getValues("start_date"), 1));
       form.setValue("endTime", "12:00 PM");
     }
     if (form.getValues("type") === "Weekend") {
       if (!isFriday(new Date(value))) {
         window.alert("Weekend booking has to start on Fridays");
-        form.setValue("startDate", nextFriday(new Date()));
-        form.setValue("endDate", nextMonday(form.getValues("startDate")));
+        form.setValue("start_date", nextFriday(new Date()));
+        form.setValue("end_date", nextMonday(form.getValues("start_date")));
         form.setValue("endTime", "12:00 PM");
       } else {
-        form.setValue("endDate", nextMonday(form.getValues("startDate")));
+        form.setValue("end_date", nextMonday(form.getValues("start_date")));
         form.setValue("endTime", "12:00 PM");
       }
     }
   }
 
   function handleAddItem() {
-    const tempBooking: BookingType = form.getValues();
-    tempBooking.inventory_items = itemObjArr;
-    // tempBooking.startTime = `${form.getValues("startDate")}, ${form.getValues("startTime")}`;
-    // tempBooking.endTime = `${form.getValues("endDate")}, ${form.getValues("endTime")}`;
-    tempBooking.user = booking.user;
-    tempBooking.bookingCreator = booking.bookingCreator;
-    // delete tempBooking.startDate;
-    // delete tempBooking.endDate;
+    const tempBooking = {
+      ...form.getValues(),
+      inventory_items: itemObjArr,
+      user: booking.user,
+      created_by: booking.created_by,
+    };
+
+    // tempBooking.start_time = `${form.getValues("start_date")}, ${form.getValues("startTime")}`;
+    // tempBooking.end_time = `${form.getValues("end_date")}, ${form.getValues("endTime")}`;
+    // delete tempBooking.start_date;
+    // delete tempBooking.end_date;
     // console.log(tempBooking);
     // setCookie(`tempBooking${bookingId}`, JSON.stringify(tempBooking), config);
+
+    // tempBooking.inventory_items = itemObjArr;
+    // tempBooking.user = booking.user;
+    // tempBooking.created_by = booking.created_by;
+
     localStorage.setItem(
       `tempBooking${bookingId}`,
       JSON.stringify(tempBooking),
@@ -259,175 +283,199 @@ const EditBookingForm = ({
     return `${convertedHour}:${minute}:00`;
   }
 
-  const baseUrl = getStrapiURL();
+  // const baseUrl = getStrapiURL();
 
-  async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
+  // async function fetchData(url: string) {
+  //   // const authToken = getAuthToken();
+  //   // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
 
-    const headers = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-    };
+  //   const headers = {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${authToken}`,
+  //     },
+  //   };
 
-    try {
-      const response = await fetch(url, authToken ? headers : {});
-      const data = await response.json();
-      // console.log(data);
-      return flattenAttributes(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error; // or return null;
-    }
-  }
+  //   try {
+  //     const response = await fetch(url, authToken ? headers : {});
+  //     const data = await response.json();
+  //     // console.log(data);
+  //     return flattenAttributes(data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     throw error; // or return null;
+  //   }
+  // }
 
-  async function itemConflictCheck(booking: BookingTypePost) {
-    const inventoryItems = booking?.inventory_items as InventoryItem[];
-    const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
+  // async function itemConflictCheck(booking: BookingTypePost) {
+  //   const inventoryItems = booking?.inventory_items as InventoryItem[];
+  //   const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
 
-    // console.log(itemList);
-    const query = qs.stringify({
-      // sort: ["createdAt:desc"],
-      populate: "*",
-      filters: {
-        $and: [
-          {
-            id: { $ne: bookingId },
-          },
-          {
-            $or: [
-              {
-                startTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                endTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                $and: [
-                  { startTime: { $lte: booking.startTime } },
-                  { endTime: { $gte: booking.endTime } },
-                ],
-              },
-            ],
-          },
-          {
-            inventory_items: {
-              id: {
-                $in: [...itemList],
-              },
-            },
-          },
-        ],
-      },
-    });
-    const url = new URL("/api/bookings", baseUrl);
-    url.search = query;
-    // console.log("query data", query)
-    return fetchData(url.href);
-  }
+  //   // console.log(itemList);
+  //   const query = qs.stringify({
+  //     // sort: ["createdAt:desc"],
+  //     populate: "*",
+  //     filters: {
+  //       $and: [
+  //         {
+  //           id: { $ne: bookingId },
+  //         },
+  //         {
+  //           $or: [
+  //             {
+  //               startTime: {
+  //                 $between: [booking.start_time, booking.end_time],
+  //               },
+  //             },
+  //             {
+  //               endTime: {
+  //                 $between: [booking.start_time, booking.end_time],
+  //               },
+  //             },
+  //             {
+  //               $and: [
+  //                 { startTime: { $lte: booking.start_time } },
+  //                 { endTime: { $gte: booking.end_time } },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           inventory_items: {
+  //             id: {
+  //               $in: [...itemList],
+  //             },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   });
+  //   const url = new URL("/api/bookings", baseUrl);
+  //   url.search = query;
+  //   // console.log("query data", query)
+  //   return fetchData(url.href);
+  // }
 
-  async function locationConflictCheck(booking: BookingTypePost) {
-    const query = qs.stringify({
-      // sort: ["createdAt:desc"],
-      // populate: "*",
-      filters: {
-        $and: [
-          {
-            id: { $ne: bookingId },
-          },
-          {
-            $or: [
-              {
-                startTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                endTime: {
-                  $between: [booking.startTime, booking.endTime],
-                },
-              },
-              {
-                $and: [
-                  { startTime: { $lte: booking.startTime } },
-                  { endTime: { $gte: booking.endTime } },
-                ],
-              },
-            ],
-          },
-          {
-            useLocation: { $eq: booking.useLocation },
-          },
-        ],
-      },
-    });
-    const url = new URL("/api/bookings", baseUrl);
-    url.search = query;
-    // console.log("query data", query)
-    return fetchData(url.href);
-  }
+  // async function locationConflictCheck(booking: BookingTypePost) {
+  //   const query = qs.stringify({
+  //     // sort: ["createdAt:desc"],
+  //     // populate: "*",
+  //     filters: {
+  //       $and: [
+  //         {
+  //           id: { $ne: bookingId },
+  //         },
+  //         {
+  //           $or: [
+  //             {
+  //               startTime: {
+  //                 $between: [booking.start_time, booking.end_time],
+  //               },
+  //             },
+  //             {
+  //               endTime: {
+  //                 $between: [booking.start_time, booking.end_time],
+  //               },
+  //             },
+  //             {
+  //               $and: [
+  //                 { startTime: { $lte: booking.start_time } },
+  //                 { endTime: { $gte: booking.end_time } },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           use_location: { $eq: booking.use_location },
+  //         },
+  //       ],
+  //     },
+  //   });
+  //   const url = new URL("/api/bookings", baseUrl);
+  //   url.search = query;
+  //   // console.log("query data", query)
+  //   return fetchData(url.href);
+  // }
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     // setItemIdArray(itemObjArr.map((item) => item.id));
-    const formValue: BookingTypePost = {
+    const updateValues = {
+      // ...values,
       type: form.getValues("type"),
-      startTime: new Date(
-        `${format(new Date(form.getValues("startDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
-      ).toISOString(),
-      endTime: new Date(
-        `${format(new Date(form.getValues("endDate")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
-      ).toISOString(),
-      user: booking?.user?.id ?? 0,
-      useLocation: form.getValues("useLocation"),
-      bookingCreator: booking?.bookingCreator?.id ?? 0,
+      start_time: new Date(
+        `${format(new Date(form.getValues("start_date")), "yyyy-MM-dd")}T${time12To24(form.getValues("startTime").toString())}`,
+      ),
+      end_time: new Date(
+        `${format(new Date(form.getValues("end_date")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
+      ),
+      // user: booking?.user?.id ?? 0,
+      use_location: form.getValues("use_location"),
+      // created_by: booking?.created_by?.id ?? 0,
       notes: form.getValues("notes") ?? "",
-      inventory_items: itemObjArr.map((item: InventoryItem) => item.id),
+      inventory_items:
+        itemObjArr.length > 0
+          ? {
+              set: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
+            }
+          : undefined,
     };
 
-    if (formValue.startTime >= formValue.endTime) {
+    if (updateValues.start_time >= updateValues.end_time) {
       window.alert("End Date and Time can't be less than Start Date and Time.");
       return;
     }
 
-    itemConflictCheck(formValue).then(({ data, meta }) => {
-      // console.log(data);
-      if (data.length !== 0) {
-        window.alert("Item Conflict Found.");
-        return;
-      }
-      if (formValue.useLocation === "Outside") {
-        updateBookingAction(formValue, bookingId).then(() => {
-          toast.success("Booking Saved Successfully.");
-          router.push(`/dashboard/booking?view=${view}`);
-        });
-      } else {
-        locationConflictCheck(formValue).then(({ data, meta }) => {
-          // console.log(data);
-          if (data.length !== 0) {
-            window.alert("Location Conflict Found.");
-            return;
-          }
-          updateBookingAction(formValue, bookingId).then(() => {
-            toast.success("Booking Saved Successfully.");
-            router.push(`/dashboard/booking?view=${view}`);
-          });
-        });
-      }
-    });
+    // if (itemObjArr.length > 0)
+    //   updateValues.inventory_items = {
+    //     set: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
+    //   };
+
+    const res = await updateBookingAction(updateValues, parseInt(bookingId));
+
+    // console.log(res);
+
+    if (res.error) setError(res.error);
+    else {
+      toast.success("New Booking Updated Successfully");
+      setError("");
+      router.push("/dashboard/booking");
+      router.refresh();
+    }
+
+    // itemConflictCheck(formValue).then(({ data, meta }) => {
+    //   // console.log(data);
+    //   if (data.length !== 0) {
+    //     window.alert("Item Conflict Found.");
+    //     return;
+    //   }
+    //   if (formValue.use_location === "Outside") {
+    //     updateBookingAction(formValue, bookingId).then(() => {
+    //       toast.success("Booking Saved Successfully.");
+    //       router.push(`/dashboard/booking?view=${view}`);
+    //     });
+    //   } else {
+    //     locationConflictCheck(formValue).then(({ data, meta }) => {
+    //       // console.log(data);
+    //       if (data.length !== 0) {
+    //         window.alert("Location Conflict Found.");
+    //         return;
+    //       }
+    //       updateBookingAction(formValue, bookingId).then(() => {
+    //         toast.success("Booking Saved Successfully.");
+    //         router.push(`/dashboard/booking?view=${view}`);
+    //       });
+    //     });
+    //   }
+    // });
   }
 
   return (
     <div>
+      {error ? <p>{error}</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -497,7 +545,7 @@ const EditBookingForm = ({
           <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
-              name="startDate"
+              name="start_date"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>Start Date</FormLabel>
@@ -583,7 +631,7 @@ const EditBookingForm = ({
           <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
             <FormField
               control={form.control}
-              name="endDate"
+              name="end_date"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full min-w-[120px]">
                   <FormLabel>End Date</FormLabel>
@@ -620,7 +668,7 @@ const EditBookingForm = ({
                         onSelect={field.onChange}
                         // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
                         disabled={(date) =>
-                          date < new Date(form.getValues("startDate"))
+                          date < new Date(form.getValues("start_date"))
                         }
                         initialFocus
                       />
@@ -673,7 +721,7 @@ const EditBookingForm = ({
           <div className="col-span-2 flex size-auto flex-1 flex-row justify-start md:col-span-4">
             <FormField
               control={form.control}
-              name="useLocation"
+              name="use_location"
               render={({ field }) => (
                 <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                   <FormLabel>Use Location</FormLabel>
@@ -776,15 +824,15 @@ const EditBookingForm = ({
             />
 
             <Button
-              className={`flex-1 hover:bg-red-300 active:bg-red-400 ${isPast && currentUser.role?.name !== "Admin" ? "invisible" : ""}`}
+              className={`flex-1 hover:bg-red-300 active:bg-red-400 ${isPast && currentUser?.user_role?.name !== "Admin" ? "invisible" : ""}`}
               type="button"
-              onClick={(e) => {
+              onClick={async (e) => {
                 const confirm = window.confirm(
                   "Are you sure you want to delete this booking?",
                 );
                 if (!confirm) return;
-                const res = deleteBookingAction(bookingId);
-                if (!res) {
+                const { res, error } = await deleteBookingAction(bookingId);
+                if (res) {
                   toast.success("Booking Deleted");
                   router.push(`/dashboard/booking?view=${view}`);
                 }

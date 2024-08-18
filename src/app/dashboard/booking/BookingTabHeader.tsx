@@ -37,36 +37,36 @@ import {
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 // import { bookingColumnsDefault } from "@/data/bookingColumns";
-import { bookingColumnsDefault } from "@/data/bookingColumns";
-import BookingFilterForm from "./BookingFilterForm";
+import { bookingColumnsDefault } from "./bookingColumns";
+import BookingFilterForm, { BookingFilterFormProps } from "./BookingFilterForm";
 
 interface TableFieldStatus {
   header: string;
   visible: boolean;
 }
 interface TableColumnStatus {
-  startTime: TableFieldStatus;
-  endTime: TableFieldStatus;
+  start_time: TableFieldStatus;
+  end_time: TableFieldStatus;
   user: TableFieldStatus;
   type: TableFieldStatus;
-  useLocation: TableFieldStatus;
-  bookingCreator: TableFieldStatus;
+  use_location: TableFieldStatus;
+  created_by: TableFieldStatus;
   notes: TableFieldStatus;
 }
 
 // type ColumnKeys =
-//   | "startTime"
-//   | "endTime"
+//   | "start_time"
+//   | "end_time"
 //   | "user"
 //   | "type"
-//   | "useLocation"
-//   | "bookingCreator"
+//   | "use_location"
+//   | "created_by"
 //   | "notes";
 type ColumnKeys = keyof TableColumnStatus;
 
 interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
-  filter: {};
+  filter: BookingFilterFormProps;
   setColumnsStatus: Function;
   defaultTab: string;
 }

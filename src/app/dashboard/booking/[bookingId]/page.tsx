@@ -12,6 +12,7 @@ import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
 // import { getCookie } from "cookies-next";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import prisma from "@/lib/prisma";
 
 interface ParamsProps {
   params: {
@@ -22,8 +23,8 @@ interface ParamsProps {
 export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
-  const data = await getBookingById(params.bookingId);
   const { data: currentUser } = await getUserMeLoader();
+  const data = await getBookingById(params.bookingId, currentUser);
   // console.log(data);
 
   const jwtCookie = cookies().get("jwt");
@@ -36,9 +37,13 @@ export default async function BookingDetails({
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");
   }
+
+  if (!data) {
+    return <p>No Booking Found</p>;
+  }
   // const temp = cookies().get(`tempBookingItems${params.bookingId}`) ?? "";
   // const tempItems = temp?.value ? JSON.parse(temp.value) : undefined;
-  // console.log(data);
+  // console.log("data is", data);
 
   return (
     <div className="flex-col p-0 md:p-5">

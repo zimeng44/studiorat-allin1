@@ -43,6 +43,8 @@ import { useRouter } from "next/navigation";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
+import { checkout_sessions, User } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -58,8 +60,8 @@ const formSchema = z.object({
   creationTime: z.date().or(z.string()),
   stuIDCheckout: z.string().min(15).max(16),
   userName: z.string().optional(),
-  studio: z.string(),
-  otherLocation: z.string().optional(),
+  studio: z.string().min(1),
+  other_location: z.string().optional(),
   creationMonitor: z.string().min(1),
   notes: z.string().optional(),
   noTagItems: z.string().array().optional(),
@@ -70,7 +72,7 @@ const NewCheckoutForm = ({
   thisMonitor,
   authToken,
 }: {
-  thisMonitor: UserType;
+  thisMonitor: User;
   authToken: string;
 }) => {
   const router = useRouter();
@@ -78,10 +80,10 @@ const NewCheckoutForm = ({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
     studio: "",
-    otherLocation: "",
-    creationMonitor: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
+    other_location: undefined,
+    creationMonitor: `${thisMonitor.first_name} ${thisMonitor.last_name}`,
     notes: "",
-    noTagItems: [""],
+    noTagItems: undefined,
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
@@ -96,7 +98,7 @@ const NewCheckoutForm = ({
       stuIDCheckout: data.stuIDCheckout,
       userName: "",
       studio: data.studio ?? "",
-      otherLocation: data.otherLocation ? data.otherLocation : "",
+      other_location: data.other_location ? data.other_location : "",
       creationMonitor: data.creationMonitor,
       notes: data.notes ? data.notes : "",
       noTagItems: [""],
@@ -141,34 +143,32 @@ const NewCheckoutForm = ({
 
   async function getStudioUserByStuId(stuId: string) {
     const query = qs.stringify({
-      sort: ["createdAt:desc"],
-      filters: {
-        $or: [{ stuId: { $eqi: stuId } }],
-      },
+      // sort: ["createdAt:desc"],
+      // where: {
+      stu_id: stuId,
+      // },
     });
     const url = new URL("/api/users", baseUrl);
     url.search = query;
-    // console.log("query data", query)
+    // console.log("query data", query);
     return fetchData(url.href);
+    // return await prisma.user.findUnique({ where: { stu_id: stuId } });
   }
 
-  const handleStuIdInput = useDebouncedCallback((term: string) => {
+  const handleStuIdInput = useDebouncedCallback(async (term: string) => {
     if (term.length > 15) {
-      getStudioUserByStuId(term).then((data) => {
-        // console.log(data);
-        if (data[0]) {
-          setUserId(data[0].id ?? "");
-          // setUserName(`${data[0].firstName} ${data[0].lastName}`);
-          form.setValue("userName", `${data[0].firstName} ${data[0].lastName}`);
-        } else {
-          // window.alert("User not found.");
-          form.setValue("userName", "");
-          form.setValue("stuIDCheckout", "");
-          form.setFocus("stuIDCheckout");
-          const confirm = window.confirm("User not found, create a new one?");
-          if (confirm) router.push(`/signup?stuId=${term}`);
-        }
-      });
+      const { data: user } = await getStudioUserByStuId(term);
+      // console.log(user);
+      if (!user[0]) {
+        form.setValue("userName", undefined);
+        form.setValue("stuIDCheckout", "");
+        form.setFocus("stuIDCheckout");
+        const confirm = window.confirm("User not found, create a new one?");
+        if (confirm) router.push(`/signup?stuId=${term}`);
+      } else {
+        setUserId(user[0].id ?? "");
+        form.setValue("userName", `${user[0].first_name} ${user[0].last_name}`);
+      }
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
       form.setValue("userName", "");
@@ -180,50 +180,46 @@ const NewCheckoutForm = ({
 
   async function getItemByBarcode(barcode: string) {
     const query = qs.stringify({
-      sort: ["createdAt:desc"],
-      filters: {
-        $or: [{ mTechBarcode: { $eq: barcode } }],
-      },
+      m_tech_barcode: barcode,
     });
-    const url = new URL("/api/inventory-items", baseUrl);
+    const url = new URL("/api/inventory", baseUrl);
     url.search = query;
-    // console.log("query data", query)
     return fetchData(url.href);
   }
 
-  const handleScan = useDebouncedCallback((term: string) => {
+  const handleScan = useDebouncedCallback(async (term: string) => {
     if (term.length > 9) {
-      getItemByBarcode(term).then(({ data, meta }) => {
-        if (data[0]) {
-          let newArr = [...itemIdArray];
-          if (newArr.includes(data[0].id)) {
-            let newItemObjArr = structuredClone(itemObjArr);
-            newItemObjArr.map((item) => {
-              if (item.id === data[0].id) item.out = !item.out;
-            });
-            setItemObjArr(newItemObjArr);
+      const { data: item } = await getItemByBarcode(term);
+      if (item[0]) {
+        let newArr = [...itemIdArray];
+        if (newArr.includes(item[0].id)) {
+          let newItemObjArr = structuredClone(itemObjArr);
+          newItemObjArr.map((item) => {
+            if (item.id === item[0].id) item.out = !item.out;
+          });
+          setItemObjArr(newItemObjArr);
+        } else {
+          // if the scanned item is already out
+          if (item[0].out) {
+            window.alert("Item is marked as being used in a other session");
+            // return;
           } else {
-            // if the scanned item is already out
-            if (data[0].out) {
-              window.alert("Item is being used by others");
-              return;
-            }
-            let newItem: InventoryItem = data[0];
+            let newItem: InventoryItem = item[0];
             newItem.out = true;
-            newArr = [...itemIdArray, data[0].id];
+            newArr = [...itemIdArray, item[0].id];
             setItemIdArray(newArr);
             setItemObjArr([...itemObjArr, newItem]);
           }
-        } else {
-          window.alert("Item not found.");
-          form.setValue("scan", "");
-          form.setFocus("scan");
         }
-      });
+      } else {
+        window.alert("Item not found.");
+        // form.setValue("scan", "");
+        // form.setFocus("scan");
+      }
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
-      form.setValue("scan", "");
-      form.setFocus("scan");
+      // form.setValue("scan", "");
+      // form.setFocus("scan");
     }
     form.setValue("scan", "");
     form.setFocus("scan");
@@ -235,21 +231,7 @@ const NewCheckoutForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    let formValue: CheckoutSessionTypePost = {
-      creationTime: new Date(values.creationTime).toISOString(),
-      stuIDCheckout: values.stuIDCheckout,
-      stuIDCheckin: "",
-      studio: values.studio,
-      otherLocation: values.otherLocation,
-      creationMonitor: values.creationMonitor,
-      // finishTime: ,
-      finishMonitor: "",
-      finished: false,
-      notes: values.notes ?? "",
-      inventory_items: itemIdArray ?? [0],
-      noTagItems: noTagItems,
-      user: parseInt(userId),
-    };
+    // let formValue: checkout_sessions = ;
 
     try {
       //update the out status of the items in the master inventory
@@ -257,11 +239,28 @@ const NewCheckoutForm = ({
         updateItemAction({ out: itemObj.out }, itemObj.id),
       );
       //create the session in the checkout
-      const res = await createCheckoutSessionAction(formValue);
-      setError(res?.strapiErrors);
+      const { res, error } = await createCheckoutSessionAction({
+        creation_time: new Date(values.creationTime),
+        studio: values.studio,
+        other_location: values.other_location ?? null,
+        finished: false,
+        notes: values.notes ?? null,
+        inventory_items: {
+          connect: itemIdArray.map((id) => ({ id })),
+        },
+        no_tag_items: noTagItems,
+        user: {
+          connect: { id: userId },
+        },
+        created_by: {
+          connect: { id: thisMonitor.id },
+        },
+      });
+      // setError(res?.strapiErrors);
       // console.log(res);
-      if (!res?.strapiErrors?.status) {
+      if (res) {
         router.push("/dashboard/checkout");
+        router.refresh();
         toast.success("New Checkout Session Added");
       }
     } catch (error) {
@@ -381,7 +380,7 @@ const NewCheckoutForm = ({
           {form.getValues("studio") === "Other" ? (
             <FormField
               control={form.control}
-              name="otherLocation"
+              name="other_location"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Other Location</FormLabel>

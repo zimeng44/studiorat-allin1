@@ -20,13 +20,19 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
-    thisUser.role.name !== "Admin" &&
-    thisUser.role.name !== "InventoryManager"
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "InventoryManager"
   ) {
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const data = await getInventoryItemById(params.itemId);
+  const { data, error } = await getInventoryItemById(params.itemId);
+
+  if (error) {
+    return <p>Error Fetching Data</p>;
+  }
+
+  if (!data) return <p>No data</p>;
 
   return (
     <div className="flex-col p-0 md:p-5">

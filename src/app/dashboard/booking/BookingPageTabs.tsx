@@ -2,11 +2,11 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-import { BookingType } from "@/data/definitions";
+import { BookingType, BookingWithUserAndItems } from "@/data/definitions";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { bookingColumnsDefault } from "@/data/bookingColumns";
+import { bookingColumnsDefault } from "./bookingColumns";
 import BookingTabHeader from "./BookingTabHeader";
 import BookingsTable from "./BookingsTable";
 import moment from "moment";
@@ -15,45 +15,47 @@ import BookingCalendar from "./BookingCalendar";
 import { CalendarDays, Grid, List, Square } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
+import { BookingFilterFormProps } from "./BookingFilterForm";
 
 interface TableFieldStatus {
   header: string;
   visible: boolean;
 }
 interface TableColumnStatus {
-  startTime: TableFieldStatus;
-  endTime: TableFieldStatus;
+  start_time: TableFieldStatus;
+  end_time: TableFieldStatus;
   user: TableFieldStatus;
   type: TableFieldStatus;
-  useLocation: TableFieldStatus;
-  bookingCreator: TableFieldStatus;
+  use_location: TableFieldStatus;
+  created_by: TableFieldStatus;
   notes: TableFieldStatus;
 }
 
 interface ViewTabsProps {
   data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
-  filter: {};
+  // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
+  filter: BookingFilterFormProps;
   authToken: string;
   calendarFirstLoadData: any[];
 }
 
-function LinkCard(booking: Readonly<BookingType>) {
+function LinkCard(booking: Readonly<BookingWithUserAndItems>) {
   return (
     <Link href={`/dashboard/booking/${booking.id}?view=grid`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-7 text-pink-500">
-            {`${booking.user?.firstName} ${booking.user?.lastName}` ||
+            {`${booking.user?.first_name} ${booking.user?.last_name}` ||
               "User Name Unknown"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-2 w-full leading-5">
-            {booking.useLocation || "Studio Unknow"}
+            {booking.use_location || "Studio Unknow"}
           </p>
           <p className="mb-4 w-full leading-5">
-            {`${booking.startTime ? format(new Date(booking.startTime), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
+            {`${booking.start_time ? format(new Date(booking.start_time), "MM/dd/yyyy hh:mm a") : "Time Unknown"}`}
           </p>
         </CardContent>
       </Card>
@@ -63,7 +65,8 @@ function LinkCard(booking: Readonly<BookingType>) {
 
 const BookingPageTabs = ({
   data,
-  meta,
+  // meta,
+  totalEntries,
   filter,
   authToken,
   calendarFirstLoadData,
@@ -145,8 +148,8 @@ const BookingPageTabs = ({
           <BookingsTable data={data} columnsStatus={columnsStatus} />
           <div className="flex items-center justify-end space-x-2 py-2">
             <PaginationControls
-              pageCount={meta.pagination.pageCount}
-              totalEntries={meta.pagination.total}
+              // pageCount={meta.pagination.pageCount}
+              totalEntries={totalEntries}
             />
           </div>
         </TabsContent>
@@ -158,14 +161,14 @@ const BookingPageTabs = ({
             defaultTab={defaultTab}
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data.map((booking: BookingType) => (
+            {data.map((booking: BookingWithUserAndItems) => (
               <LinkCard key={booking.id} {...booking} />
             ))}
           </div>
           <div className="flex items-center justify-end space-x-2 py-2">
             <PaginationControls
-              pageCount={meta.pagination.pageCount}
-              totalEntries={meta.pagination.total}
+              // pageCount={meta.pagination.pageCount}
+              totalEntries={totalEntries}
             />
           </div>
         </TabsContent>

@@ -26,14 +26,14 @@ import RosterPermissionsPageTabs from "./RosterPermissionsPageTabs";
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    permissionCode?: string;
-    permissionTitle?: string;
+    permission_code?: string;
+    permission_title?: string;
     instructor?: string;
-    permittedStudios?: string;
+    permitted_studios?: string;
   };
 }
 
@@ -42,25 +42,29 @@ export default async function RosterPermissionPage({
 }: Readonly<SearchParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser!.user_role.name !== "Admin" &&
+    thisUser!.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "";
+  const sort = searchParams?.sort ?? "created_at:desc";
 
   const filter = {
-    permissionCode: searchParams?.permissionCode ?? "",
-    permissionTitle: searchParams?.permissionTitle ?? "",
-    instructor: searchParams?.instructor ?? "",
-    permittedStudios: searchParams?.permittedStudios ?? "",
+    permission_code: searchParams?.permission_code ?? null,
+    permission_title: searchParams?.permission_title ?? null,
+    instructor: searchParams?.instructor ?? null,
+    permitted_studios: searchParams?.permitted_studios ?? null,
   };
 
   // console.log(filter.broken);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getRosterPermissionsByQuery(
+        sort,
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
@@ -101,9 +105,10 @@ export default async function RosterPermissionPage({
       <Suspense fallback={<h1>Loading . . .</h1>}>
         <RosterPermissionsPageTabs
           data={data}
-          meta={meta}
+          // meta={meta}
+          totalEntries={count}
           filter={filter}
-          userRole={thisUser.role.name}
+          userRole={thisUser?.user_role.name}
         />
       </Suspense>
     </div>

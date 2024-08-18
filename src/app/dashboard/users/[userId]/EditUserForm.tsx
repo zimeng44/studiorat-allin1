@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { UserRole, UserType } from "@/data/definitions";
+import { UserRole, UserType, UserWithRole } from "@/data/definitions";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -44,16 +44,16 @@ const mTechBarcode = z.union([
 ]);
 
 const formSchema = z.object({
-  username: z
+  net_id: z
     .string()
     .min(3, {
-      message: "Username must be between 3 and 20 characters",
+      message: "NetID must be between 3 and 20 characters",
     })
     .max(20, {
-      message: "Username must be between 3 and 20 characters",
+      message: "NetID must be between 3 and 20 characters",
     }),
-  // username: z.string().min(12).and(z.string().max(13)),
-  stuId: z
+  // net_id: z.string().min(12).and(z.string().max(13)),
+  stu_id: z
     .string()
     .min(15, {
       message: "ID Barcode must be between 15 and 16 characters",
@@ -61,7 +61,7 @@ const formSchema = z.object({
     .max(16, {
       message: "ID Barcode must be between 15 and 16 characters",
     }),
-  firstName: z
+  first_name: z
     .string()
     .min(2, {
       message: "First Name must be between 2 and 20 characters",
@@ -69,7 +69,7 @@ const formSchema = z.object({
     .max(20, {
       message: "First Name must be between 2 and 20 characters",
     }),
-  lastName: z
+  last_name: z
     .string()
     .min(2, {
       message: "Last Name must be between 2 and 20 characters",
@@ -77,7 +77,7 @@ const formSchema = z.object({
     .max(20, {
       message: "Last Name must be between 2 and 20 characters",
     }),
-  academicLevel: z
+  academic_level: z
     .string()
     .min(3, {
       message: "Academic Level must be between 3 and 10 characters",
@@ -85,7 +85,7 @@ const formSchema = z.object({
     .max(10, {
       message: "Academic Level must be between 3 and 10 characters",
     }),
-  role: z.number(),
+  user_role: z.number(),
   email: z.string().email({
     message: "Please enter a valid NYU email address",
   }),
@@ -99,7 +99,7 @@ const EditUserForm = ({
   currentUserRole,
 }: {
   userId: string;
-  user: UserType;
+  user: UserWithRole;
   currentUserRole: UserRole;
 }) => {
   // console.log(currentUserRole.id);
@@ -129,30 +129,30 @@ const EditUserForm = ({
   const form =
     currentUserRole.name === "Admin"
       ? useForm<z.infer<typeof formSchema>>({
-          resolver: zodResolver(formSchema.omit({ stuId: true })),
+          resolver: zodResolver(formSchema.omit({ stu_id: true })),
           defaultValues: {
-            username: user.username,
-            stuId: user.stuId,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            academicLevel: user.academicLevel,
-            role: user?.role?.id ?? undefined,
-            email: user.email,
-            bio: user.bio || "",
+            net_id: user.net_id ?? undefined,
+            stu_id: user.stu_id ?? undefined,
+            first_name: user.first_name ?? undefined,
+            last_name: user.last_name ?? undefined,
+            academic_level: user.academic_level ?? undefined,
+            user_role: user?.user_role?.id ?? undefined,
+            email: user.email ?? undefined,
+            bio: user.bio || undefined,
             blocked: user.blocked ?? false,
           },
         })
       : useForm<z.infer<typeof formSchema>>({
           resolver: zodResolver(formSchema),
           defaultValues: {
-            username: user.username,
-            stuId: user.stuId,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            academicLevel: user.academicLevel,
-            role: user?.role?.id,
-            email: user.email,
-            bio: user.bio || "",
+            net_id: user.net_id ?? undefined,
+            stu_id: user.stu_id ?? undefined,
+            first_name: user.first_name ?? undefined,
+            last_name: user.last_name ?? undefined,
+            academic_level: user.academic_level ?? undefined,
+            user_role: user?.user_role?.id,
+            email: user.email ?? undefined,
+            bio: user.bio ?? undefined,
             blocked: user.blocked ?? false,
           },
         });
@@ -164,12 +164,16 @@ const EditUserForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
+    const submitValue = {
+      ...values,
+      user_role: { connect: { id: values.user_role } },
+    };
     // console.log(values);
-    const res = await updateUserAction(values, userId);
-    // console.log(res.strapiErrors);
-    setStrapiErrors(res.strapiErrors);
+    const { res, error } = await updateUserAction(submitValue, userId);
+    console.log(error);
+    // setStrapiErrors(res.strapiErrors);
 
-    if (!res.strapiErrors?.status) {
+    if (!error) {
       router.push("/dashboard/users");
       toast.success("User Saved.");
     }
@@ -182,13 +186,14 @@ const EditUserForm = ({
 
     if (!confirm) return;
 
-    const res = await deleteUserAction(userId);
+    const { res, error } = await deleteUserAction(userId);
 
-    if (!res?.strapiErrors?.status) {
+    if (res) {
       router.push("/dashboard/users");
       toast.success("User Deleted.");
+      router.refresh();
     } else {
-      setStrapiErrors(res?.strapiErrors);
+      // setStrapiErrors(res?.strapiErrors);
     }
 
     // if (!res) toast.success("Item Deleted");
@@ -212,7 +217,7 @@ const EditUserForm = ({
         >
           <FormField
             control={form.control}
-            name="username"
+            name="net_id"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>NetID</FormLabel>
@@ -225,7 +230,7 @@ const EditUserForm = ({
           />
           <FormField
             control={form.control}
-            name="stuId"
+            name="stu_id"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>ID Barcode</FormLabel>
@@ -238,7 +243,7 @@ const EditUserForm = ({
           />
           <FormField
             control={form.control}
-            name="firstName"
+            name="first_name"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>First Name</FormLabel>
@@ -251,7 +256,7 @@ const EditUserForm = ({
           />
           <FormField
             control={form.control}
-            name="lastName"
+            name="last_name"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>Last Name</FormLabel>
@@ -265,7 +270,7 @@ const EditUserForm = ({
           {currentUserRole.name === "Admin" ? (
             <FormField
               control={form.control}
-              name="role"
+              name="user_role"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Type</FormLabel>
@@ -282,9 +287,9 @@ const EditUserForm = ({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="3">Monitor</SelectItem>
-                      <SelectItem value="5">Inventory Manager</SelectItem>
-                      <SelectItem value="1">User</SelectItem>
-                      <SelectItem value="4">Admin</SelectItem>
+                      <SelectItem value="4">Inventory Manager</SelectItem>
+                      <SelectItem value="2">User</SelectItem>
+                      <SelectItem value="1">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -296,7 +301,7 @@ const EditUserForm = ({
           )}
           <FormField
             control={form.control}
-            name="academicLevel"
+            name="academic_level"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>Academic Level</FormLabel>

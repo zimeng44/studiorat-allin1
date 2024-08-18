@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 
-import { UserType } from "@/data/definitions";
+import { UserType, UserWithRole } from "@/data/definitions";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,24 +15,25 @@ import { Grid, List } from "lucide-react";
 import UserTable from "./UserTable";
 
 interface ViewTabsProps {
-  data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  data: UserWithRole[];
+  // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
   filter: {};
   currentUserRole: string;
 }
 
-function LinkCard(user: Readonly<UserType>) {
+function LinkCard(user: Readonly<UserWithRole>) {
   return (
     <Link href={`/dashboard/users/${user.id}`}>
       <Card className="relative">
         <CardHeader>
           <CardTitle className="leading-8 text-pink-500">
-            {user.firstName + " " + user.lastName || "User Name Missing"}
+            {user.first_name + " " + user.last_name || "User Name Missing"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 w-full leading-7">{user.academicLevel}</p>
+          <p className="mb-4 w-full leading-7">{user.academic_level}</p>
         </CardContent>
       </Card>
     </Link>
@@ -41,7 +42,7 @@ function LinkCard(user: Readonly<UserType>) {
 
 const UsersPageTabs = ({
   data,
-  meta,
+  totalEntries,
   filter,
   currentUserRole,
 }: ViewTabsProps) => {
@@ -78,7 +79,7 @@ const UsersPageTabs = ({
         </TabsContent>
         <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data.map((user: UserType) => (
+            {data.map((user: UserWithRole) => (
               <LinkCard key={user.id} {...user} />
             ))}
           </div>
@@ -87,8 +88,8 @@ const UsersPageTabs = ({
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
+          // pageCount={meta.pagination.pageCount}
+          totalEntries={totalEntries}
         />
       </div>
     </div>

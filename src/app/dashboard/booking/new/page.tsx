@@ -9,9 +9,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { BookingType } from "@/data/definitions";
+import { BookingType, BookingWithUserAndItems } from "@/data/definitions";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import { add, addDays, addHours, startOfDay } from "date-fns";
+import { bookings, Prisma } from "@prisma/client";
 
 // const INITIAL_STATE = {
 //   startTime: "",
@@ -23,7 +24,7 @@ import { add, addDays, addHours, startOfDay } from "date-fns";
 // };
 interface SearchParamsProps {
   searchParams?: {
-    startTime?: string;
+    start_time?: string;
     // query?: string;
     // page?: number;
     // pageSize?: number;
@@ -46,14 +47,13 @@ interface SearchParamsProps {
 }
 
 const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
-  // console.log(await getUserMeLoader());
+  // console.log(searchParams);
   const { data: currentUser } = await getUserMeLoader();
 
-  const data: BookingType = {
-    user: currentUser.role.name === "Authenticated" ? currentUser : undefined,
-    bookingCreator: currentUser,
-    startTime: searchParams?.startTime
-      ? new Date(searchParams?.startTime)
+  const data = {
+    user: currentUser?.user_role.name === "Authenticated" ? currentUser : null,
+    start_time: searchParams?.start_time
+      ? new Date(searchParams?.start_time)
       : addHours(startOfDay(addDays(new Date(), 1)), 12),
   };
 

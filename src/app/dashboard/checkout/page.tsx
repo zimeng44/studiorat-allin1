@@ -13,19 +13,23 @@ import {
 } from "@/data/loaders";
 import CheckoutPageTabs from "./CheckoutPageTabs";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import { InventoryItem, studioList } from "@/data/definitions";
+import {
+  CheckoutWithUserAndItems,
+  InventoryItem,
+  studioList,
+} from "@/data/definitions";
 
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    creationTimeFrom?: string;
-    creationTimeTo?: string;
-    finishTimeFrom?: string;
-    finishTimeTo?: string;
+    creation_timeFrom?: string;
+    creation_timeTo?: string;
+    finish_timeFrom?: string;
+    finish_timeTo?: string;
     stuIDCheckout?: string;
     stuIDCheckin?: string;
     studio?: string;
@@ -42,37 +46,40 @@ export default async function CheckoutSessions({
   searchParams,
 }: Readonly<SearchParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
-  // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  // console.log(thisUser?.user_role);
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "creationTime:desc";
+  const sort = searchParams?.sort ?? "creation_time:desc";
 
   // console.log(sort);
 
   const filter = {
-    creationTime: {
-      from: searchParams?.creationTimeFrom
-        ? new Date(searchParams?.creationTimeFrom).toISOString()
-        : undefined,
-      to: searchParams?.creationTimeTo
-        ? new Date(searchParams?.creationTimeTo).toISOString()
-        : undefined,
+    creation_time: {
+      from: searchParams?.creation_timeFrom
+        ? new Date(searchParams?.creation_timeFrom).toISOString()
+        : null,
+      to: searchParams?.creation_timeTo
+        ? new Date(searchParams?.creation_timeTo).toISOString()
+        : null,
     },
-    finishTime: {
-      from: searchParams?.finishTimeFrom
-        ? new Date(searchParams?.finishTimeFrom).toISOString()
-        : undefined,
-      to: searchParams?.finishTimeTo
-        ? new Date(searchParams?.finishTimeTo).toISOString()
-        : undefined,
+    finish_time: {
+      from: searchParams?.finish_timeFrom
+        ? new Date(searchParams?.finish_timeFrom).toISOString()
+        : null,
+      to: searchParams?.finish_timeTo
+        ? new Date(searchParams?.finish_timeTo).toISOString()
+        : null,
     },
     // stuIDCheckout: searchParams?.stuIDCheckout ?? "",
     // stuIDCheckin: searchParams?.stuIDCheckin ?? "",
-    studio: searchParams?.studio ?? "",
+    studio: searchParams?.studio ?? null,
     // otherLocation: searchParams?.otherLocation ?? "",
     // creationMonitor: searchParams?.creationMonitor ?? "",
     // finishMonitor: searchParams?.finishMonitor ?? "",
@@ -83,7 +90,7 @@ export default async function CheckoutSessions({
 
   // console.log(filter);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getCheckoutSessionsByQuery(
         searchParams?.query,
         pageIndex.toString(),
@@ -96,24 +103,26 @@ export default async function CheckoutSessions({
         filter,
       );
 
-  // console.log(data[0]);
+  // console.log(data);
 
   // if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No Checkout Sessions data</p>;
 
   // console.log("filter is ", filter);
-  const studioData: InventoryItem[] = await Promise.all(
-    studioList.map(async (item: string): Promise<InventoryItem> => {
-      const { data, meta } = await getCheckoutSessions(
-        "creationTime:desc",
-        "1",
-        "10",
-        {
-          studio: item,
-        },
-      );
-      return data[0];
-    }),
+  const studioData: CheckoutWithUserAndItems[] = await Promise.all(
+    studioList.map(
+      async (studio: string): Promise<CheckoutWithUserAndItems> => {
+        const { data, count } = await getCheckoutSessions(
+          "creation_time:desc",
+          "1",
+          "10",
+          {
+            studio: studio,
+          },
+        );
+        return data[0];
+      },
+    ),
   );
 
   return (
@@ -135,7 +144,8 @@ export default async function CheckoutSessions({
       </Breadcrumb>
       <CheckoutPageTabs
         data={data}
-        meta={meta}
+        // meta={meta}
+        totalEntries={count}
         filter={filter}
         studioData={studioData}
       />

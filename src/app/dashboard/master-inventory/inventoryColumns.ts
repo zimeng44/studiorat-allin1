@@ -1,12 +1,12 @@
 export type InventoryColumnFields = {
-  mTechBarcode: string;
+  m_tech_barcode: string;
   make: string;
   model: string;
   description: string;
   category: string;
   accessories: string;
   comments: string;
-  storageLocation: string;
+  storage_location: string;
   out: boolean;
   broken: boolean;
 };
@@ -16,14 +16,14 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  mTechBarcode: TableFieldStatus;
+  m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
   description: TableFieldStatus;
   category: TableFieldStatus;
   accessories: TableFieldStatus;
   comments: TableFieldStatus;
-  storageLocation: TableFieldStatus;
+  storage_location: TableFieldStatus;
   out: TableFieldStatus;
   broken: TableFieldStatus;
 }
@@ -32,7 +32,7 @@ export type ColumnKey = keyof TableColumnStatus;
 
 export const inventoryColumns = [
   {
-    accessorKey: "mTechBarcode",
+    accessorKey: "m_tech_barcode",
     header: "MTech Barcode",
     visible: true,
   },
@@ -62,7 +62,7 @@ export const inventoryColumns = [
     visible: false,
   },
   {
-    accessorKey: "storageLocation",
+    accessorKey: "storage_location",
     header: "Storage Location",
     visible: false,
   },
@@ -84,7 +84,7 @@ export const inventoryColumns = [
 ];
 
 export const inventoryColumnsDefault = {
-  mTechBarcode: {
+  m_tech_barcode: {
     header: "MTech Barcode",
     visible: true,
   },
@@ -108,7 +108,7 @@ export const inventoryColumnsDefault = {
     header: "Accessories",
     visible: false,
   },
-  storageLocation: {
+  storage_location: {
     header: "Storage Location",
     visible: false,
   },

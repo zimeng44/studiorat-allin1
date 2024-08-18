@@ -20,15 +20,15 @@ import RosterPageTabs from "./RosterPageTabs";
 interface SearchParamsProps {
   searchParams?: {
     query?: string;
-    page?: number;
+    pageIndex?: number;
     pageSize?: number;
     sort?: string;
     filterOpen?: boolean;
-    stuN?: string;
-    netId?: string;
-    stuName?: string;
-    academicLevel?: string;
-    academicProgram?: string;
+    stu_n?: string;
+    net_id?: string;
+    stu_name?: string;
+    academic_level?: string;
+    academic_program?: string;
     agreement?: string;
   };
 }
@@ -38,26 +38,30 @@ export default async function RosterPage({
 }: Readonly<SearchParamsProps>) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
-  if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  if (
+    thisUser?.user_role.name !== "Admin" &&
+    thisUser?.user_role.name !== "Monitor"
+  ) {
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "";
+  const sort = searchParams?.sort ?? "created_at:desc";
 
   const filter = {
-    stuN: searchParams?.stuN ?? "",
-    netId: searchParams?.netId ?? "",
-    stuName: searchParams?.stuName ?? "",
-    academicLevel: searchParams?.academicLevel ?? "",
-    academicProgram: searchParams?.academicProgram ?? "",
+    stu_n: searchParams?.stu_n ?? null,
+    net_id: searchParams?.net_id ?? null,
+    stu_name: searchParams?.stu_name ?? null,
+    academic_level: searchParams?.academic_level ?? null,
+    academic_program: searchParams?.academic_program ?? null,
   };
 
   // console.log(filter.broken);
 
-  const { data, meta } = searchParams?.query
+  const { data, count } = searchParams?.query
     ? await getRostersByQuery(
+        sort,
         searchParams?.query,
         pageIndex.toString(),
         pageSize.toString(),
@@ -89,9 +93,9 @@ export default async function RosterPage({
       <Suspense fallback={<h1>Loading . . .</h1>}>
         <RosterPageTabs
           data={data}
-          meta={meta}
+          totalEntries={count}
           filter={filter}
-          userRole={thisUser.role.name}
+          userRole={thisUser.user_role.name}
         />
       </Suspense>
     </div>

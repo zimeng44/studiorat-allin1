@@ -124,7 +124,7 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
         }
       }),
     );
-
+    // router.refresh();
     // rowsSelected.map((row, index) => {
     //   if (row) {
     //     deleteRosterAction(data[index].id);
@@ -190,14 +190,14 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
-                  {key === "stuN" ||
-                  key === "netId" ||
-                  key === "stuName" ||
-                  key === "excusedAbs" ||
-                  key === "excusedLate" ||
-                  key === "unexcusedAbs" ||
-                  key === "unexcusedLate" ||
-                  key === "lateReturn" ? (
+                  {key === "stu_n" ||
+                  key === "net_id" ||
+                  key === "stu_name" ||
+                  key === "excused_abs" ||
+                  key === "excused_late" ||
+                  key === "unexcused_abs" ||
+                  key === "unexcused_late" ||
+                  key === "late_return" ? (
                     <Button
                       className="p-1 text-left"
                       variant="ghost"
@@ -253,11 +253,11 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
                     );
                   }
                   if (
-                    key === "excusedAbs" ||
-                    key === "excusedLate" ||
-                    key === "unexcusedAbs" ||
-                    key === "unexcusedLate" ||
-                    key === "lateReturn"
+                    key === "excused_abs" ||
+                    key === "excused_late" ||
+                    key === "unexcused_abs" ||
+                    key === "unexcused_late" ||
+                    key === "late_return"
                   ) {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>

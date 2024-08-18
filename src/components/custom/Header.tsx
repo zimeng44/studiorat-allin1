@@ -27,17 +27,17 @@ interface HeaderProps {
 }
 
 interface AuthUserProps {
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
+  net_id?: string | null;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  user_role?: UserRole | null;
 }
 
 export function LoggedInUser({
   userData,
 }: {
-  readonly userData: AuthUserProps;
+  readonly userData: AuthUserProps | null;
 }) {
   // console.log(userData);
   return (
@@ -48,10 +48,10 @@ export function LoggedInUser({
       >
         <User className="h-6 w-6" />
         {/* {userData.username} */}
-        {`${userData.firstName} ${userData.lastName}`}
+        {`${userData?.first_name} ${userData?.last_name}`}
       </Link>
 
-      <HeaderMenu currentRole={userData.role?.name ?? ""} />
+      <HeaderMenu currentRole={userData?.user_role?.name ?? ""} />
       {/* <LogoutButton /> */}
     </div>
   );

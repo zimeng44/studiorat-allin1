@@ -2,12 +2,7 @@ import qs from "qs";
 import { getAuthToken } from "./services/get-token";
 // import { unstable_noStore as noStore } from "next/cache";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
-import { boolean } from "zod";
-import {
-  CheckoutSessionType,
-  InventoryItem,
-  UserType,
-} from "@/data/definitions";
+
 import {
   addDays,
   endOfMonth,
@@ -18,289 +13,338 @@ import {
   subDays,
   subMonths,
 } from "date-fns";
+import prisma from "@/lib/prisma";
+import { Prisma, User } from "@prisma/client";
+import { UserWithRole } from "./definitions";
 
 interface InventoryFilterProps {
-  mTechBarcode?: string;
+  m_tech_barcode?: string;
   make?: string;
   model?: string;
   category?: string;
   description?: string;
   accessories?: string;
-  storageLocation?: string;
+  storage_location?: string;
   comments?: string;
   out?: boolean;
   broken?: boolean;
 }
 
 interface CheckoutSessionsFilterProps {
-  id?: number;
-  creationTime?: { from?: string; to?: string };
-  finishTime?: { from?: string; to?: string };
-  stuIDCheckout?: string;
-  stuIDCheckin?: string;
-  studio?: string;
-  otherLocation?: string;
-  creationMonitor?: string;
-  finishMonitor?: string;
-  finished?: string;
-  notes?: string;
-  // inventory_items?: InventoryItem[];
-  // studioUser?: UserType[];
+  id?: number | null;
+  creation_time?: { from?: string | null; to?: string | null } | null;
+  finish_time?: { from?: string | null; to?: string | null } | null;
+  checkout_id?: string | null;
+  return_id?: string | null;
+  studio?: string | null;
+  other_location?: string | null;
+  finished_by?: string | null;
+  finished?: string | null;
+  notes?: string | null;
 }
 
 interface BookingsFilterProps {
-  id?: number;
-  startTime?: { from?: string; to?: string };
-  // startTimeTo?: string;
-  endTime?: { from?: string; to?: string };
-  // endTimeTo?: string;
-  user?: string;
-  useLocation?: string;
-  type?: string;
-  bookingCreator?: string;
-  notes?: string;
+  id?: number | null;
+  start_time: { from: Date | null; to: Date | null };
+  // startTimeTo: string|null;
+  end_time: { from: Date | null; to: Date | null };
+  // endTimeTo: string|null;
+  user?: string | null;
+  use_location: string | null;
+  type: string | null;
+  created_by?: string | null;
+  notes?: string | null;
   // inventory_items?: string;
   // inventory_items?: InventoryItem[];
   // studioUser?: UserType[];
 }
 interface UsersFilterProps {
-  username?: string;
-  stuId?: string;
-  fullName?: string;
-  academicLevel?: string;
-  email?: string;
-  bio?: string;
+  net_id?: string | null;
+  stu_id?: string | null;
+  fullName?: string | null;
+  academic_level?: string | null;
+  email?: string | null;
+  bio?: string | null;
   blocked?: boolean;
 }
 
 interface InventoryReportsFilterProps {
-  createdAt?: { from?: string; to?: string };
-  creator?: string;
-  itemChecked?: string;
-  isFinished?: string;
+  created_at?: { from?: string; to?: string };
+  created_by?: string;
+  is_finished?: string;
   notes?: string;
   // inventory_items?: InventoryItem[];
   // studioUser?: UserType[];
 }
 
 interface RosterPermissionsFilterProps {
-  permissionCode?: string;
-  permissionTitle?: string;
-  instructor?: string;
-  permissionDetails?: string;
-  permittedStudios?: string;
-  startDate?: { from?: string; to?: string };
-  endDate?: { from?: string; to?: string };
+  permission_code?: string | null;
+  permission_title?: string | null;
+  instructor?: string | null;
+  permission_details?: string | null;
+  permitted_studios?: string | null;
+  start_date?: { from?: string | null; to?: string | null } | null;
+  end_date?: { from?: string | null; to?: string | null } | null;
   // inventory_items?: InventoryItem[];
   // studioUser?: UserType[];
 }
 
 interface RosterRecordsFilterProps {
-  stuN?: string;
-  netId?: string;
-  stuName?: string;
-  academicLevel?: string;
-  academicProgram?: string;
+  stu_n?: string | null;
+  net_id?: string | null;
+  stu_name?: string | null;
+  academic_level?: string | null;
+  academic_program?: string | null;
 }
 
-const baseUrl = getStrapiURL();
-// console.log(baseUrl);
+// const baseUrl = getStrapiURL();
 
-async function fetchData(url: string) {
-  const authToken = await getAuthToken();
-  // we will implement this later getAuthToken() later
-  const headers = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
-  };
+// async function fetchData(url: string) {
+//   // console.log(url);
+//   const authToken = await getAuthToken();
+//   // we will implement this later getAuthToken() later
+//   const headers = {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${authToken}`,
+//     },
+//   };
 
-  try {
-    const response = await fetch(url, authToken ? headers : {});
-    const data = await response.json();
-    // console.log(data);
-    return flattenAttributes(data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error; // or return null;
-  }
-}
+//   try {
+//     const response = await fetch(url, authToken ? headers : {});
+//     const data = await response.json();
+//     // console.log(data);
+//     return flattenAttributes(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     throw error; // or return null;
+//   }
+// }
 
-export async function getHomePageData() {
-  // noStore();
+// export async function getHomePageData() {
+//   // noStore();
 
-  // throw new Error("Test error");
+//   // throw new Error("Test error");
 
-  const url = new URL("/api/home-page", baseUrl);
+//   const url = new URL("/api/home-page", baseUrl);
 
-  url.search = qs.stringify({
-    populate: {
-      blocks: {
-        populate: {
-          image: {
-            fields: ["url", "alternativeText"],
-          },
-          link: {
-            populate: true,
-          },
-          feature: {
-            populate: true,
-          },
-        },
-      },
-    },
-  });
+//   url.search = qs.stringify({
+//     populate: {
+//       blocks: {
+//         populate: {
+//           image: {
+//             fields: ["url", "alternativeText"],
+//           },
+//           link: {
+//             populate: true,
+//           },
+//           feature: {
+//             populate: true,
+//           },
+//         },
+//       },
+//     },
+//   });
 
-  return await fetchData(url.href);
-}
+//   return await fetchData(url.href);
+// }
 
-export async function getGlobalPageData() {
-  // noStore();
-  const url = new URL("/api/global", baseUrl);
+// export async function getGlobalPageData() {
+//   // noStore();
+//   const url = new URL("/api/global", baseUrl);
 
-  url.search = qs.stringify({
-    populate: [
-      "header.logoText",
-      "header.ctaButton",
-      "footer.logoText",
-      "footer.socialLink",
-    ],
-  });
+//   url.search = qs.stringify({
+//     populate: [
+//       "header.logoText",
+//       "header.ctaButton",
+//       "footer.logoText",
+//       "footer.socialLink",
+//     ],
+//   });
 
-  return await fetchData(url.href);
-}
+//   return await fetchData(url.href);
+// }
 
-export async function getGlobalPageMetadata() {
-  // noStore();
-  const url = new URL("/api/global", baseUrl);
-  url.search = qs.stringify({
-    fields: ["title", "description"],
-  });
-  return await fetchData(url.href);
-}
-
-// ########################### Summaries ########################
-
-export async function getSummaries(queryString: string) {
-  const query = qs.stringify({
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { title: { $containsi: queryString } },
-        { summary: { $containsi: queryString } },
-      ],
-    },
-  });
-  const url = new URL("/api/summaries", baseUrl);
-  url.search = query;
-  return fetchData(url.href);
-}
-
-export async function getSummaryById(summaryId: string) {
-  return fetchData(`${baseUrl}/api/summaries/${summaryId}`);
-}
+// export async function getGlobalPageMetadata() {
+//   // noStore();
+//   const url = new URL("/api/global", baseUrl);
+//   url.search = qs.stringify({
+//     fields: ["title", "description"],
+//   });
+//   return await fetchData(url.href);
+// }
 
 // ########################### Inventory ########################
 
 export async function getInventoryItems(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: InventoryFilterProps,
 ) {
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     if (value === "" || value === false || value === "false") continue;
-    if (key === "storageLocation" && value === "All") continue;
+    if (key === "storage_location" && value === "All") continue;
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({
+        [key]: { contains: value, mode: Prisma.QueryMode.insensitive },
+      });
     }
   }
 
   // console.log(filterArr);
 
-  const query = qs.stringify({
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    where: {
+      AND: [...filterArr],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/inventory-items", baseUrl);
-  url.search = query;
-  // console.log(url.href);
-  return fetchData(url.href);
+  };
+  const countQuery = {
+    where: query.where,
+  };
+  const data = await prisma.inventory_items.findMany(query);
+  const count = await prisma.inventory_items.count(countQuery);
+  return { data: data, count: count };
 }
 
 export async function getInventoryItemById(itemId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/inventory-items/${itemId}`);
+  // return fetchData(`${baseUrl}/api/inventory-items/${itemId}`);
+  try {
+    const data = await prisma.inventory_items.findUnique({
+      where: { id: parseInt(itemId) },
+    });
+    return { data: data, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error fetching item by ID" };
+  }
+}
+
+export async function getInventoryItemByBarcode(barcode: string) {
+  // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
+  // return fetchData(`${baseUrl}/api/inventory-items/${itemId}`);
+  try {
+    const data = await prisma.inventory_items.findFirst({
+      where: { m_tech_barcode: { equals: barcode } },
+    });
+    return { data: data, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error fetching item by barcode" };
+  }
 }
 
 export async function getItemsByQuery(
+  sort: string,
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
 ) {
-  const query = qs.stringify({
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { mTechBarcode: { $containsi: queryString } },
-        { make: { $containsi: queryString } },
-        { model: { $containsi: queryString } },
-        { category: { $containsi: queryString } },
-        { description: { $containsi: queryString } },
-        { accessories: { $containsi: queryString } },
-        { storageLocation: { $containsi: queryString } },
-        { comments: { $containsi: queryString } },
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    where: {
+      OR: [
+        {
+          m_tech_barcode: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        { make: { contains: queryString, mode: Prisma.QueryMode.insensitive } },
+        {
+          model: { contains: queryString, mode: Prisma.QueryMode.insensitive },
+        },
+        {
+          category: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          description: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          accessories: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          storage_location: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          comments: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/inventory-items", baseUrl);
-  url.search = query;
-  return fetchData(url.href);
+  };
+  const countQuery = {
+    where: query.where,
+  };
+
+  const data = await prisma.inventory_items.findMany(query);
+  const count = await prisma.inventory_items.count(countQuery);
+  return { data: data, count: count };
 }
 
 // ########################### Checkout ########################
 
 export async function getCheckoutSessions(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: CheckoutSessionsFilterProps,
 ) {
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
-    if (value === "All" || value === "") continue;
+    if (value === "All" || value === null) continue;
 
-    if (key === "creationTime" || key === "finishTime") {
+    if (key === "creation_time" || key === "finish_time") {
       if (!value.from && !value.to) {
         continue;
       } else if (!value.to) {
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: value.from },
         });
         continue;
       } else if (!value.from) {
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: value.to,
           },
         });
         continue;
@@ -308,11 +352,11 @@ export async function getCheckoutSessions(
         // console.log(new Date(value.to).toISOString());
         // console.log("Value to is ", value.to);
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: value.from },
         });
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: value.to,
           },
         });
         continue;
@@ -320,124 +364,511 @@ export async function getCheckoutSessions(
     }
 
     if (value === "finished") {
-      filterArr.push({ [key]: { $eq: true } });
+      filterArr.push({ [key]: { equals: true } });
       continue;
     } else if (value === "unfinished") {
-      filterArr.push({ [key]: { $eq: false } });
+      filterArr.push({ [key]: { equals: false } });
       continue;
     }
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({
+        [key]: { contains: value, mode: Prisma.QueryMode.insensitive },
+      });
     }
   }
 
-  const query = qs.stringify({
-    populate: "*",
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    orderBy: order_by,
+    where: {
+      AND: [...filterArr],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
+    include: {
+      inventory_items: true,
+      user: { include: { user_role: true } },
+      created_by: true,
     },
-  });
-  const url = new URL("/api/checkout-sessions", baseUrl);
-  url.search = query;
-  // console.log(url.href);
+  };
 
-  return fetchData(url.href);
+  const countQuery = {
+    where: {
+      AND: [...filterArr],
+    },
+  };
+
+  const data = await prisma.checkout_sessions.findMany(query);
+  const count = await prisma.checkout_sessions.count(countQuery);
+  return { data, count };
 }
 
 export async function getCheckoutSessionById(itemId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/checkout-sessions/${itemId}?populate=*`);
+  // return fetchData(`${baseUrl}/api/checkout-sessions/${itemId}?populate=*`);
+  return prisma.checkout_sessions.findUnique({
+    where: { id: parseInt(itemId) },
+    include: {
+      user: { include: { user_role: true } },
+      inventory_items: true,
+      created_by: true,
+    },
+  });
 }
 
 export async function getCheckoutSessionsByQuery(
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
 ) {
-  const query = qs.stringify({
-    populate: "*",
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { stuIDCheckout: { $containsi: queryString } },
-        { stuIDCheckin: { $containsi: queryString } },
-        { studio: { $containsi: queryString } },
-        { otherLocation: { $containsi: queryString } },
-        { creationMonitor: { $containsi: queryString } },
-        { finishMonitor: { $containsi: queryString } },
-        { notes: { $containsi: queryString } },
+  const queryList = queryString.split(" ");
+
+  const query = {
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    orderBy: { created_at: "desc" as Prisma.SortOrder },
+    include: { user: true, inventory_items: true, created_by: true },
+    where: {
+      OR: [
         {
-          user: {
-            $or: [
-              { username: { $containsi: queryString } },
-              { firstName: { $containsi: queryString } },
-              { lastName: { $containsi: queryString } },
-              { stuId: { $containsi: queryString } },
-              { email: { $containsi: queryString } },
-            ],
+          studio: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
           },
         },
         {
-          inventory_items: {
-            $or: [
-              { mTechBarcode: { $containsi: queryString } },
-              { make: { $containsi: queryString } },
-              { model: { $containsi: queryString } },
-              { category: { $containsi: queryString } },
-              { description: { $containsi: queryString } },
-              { accessories: { $containsi: queryString } },
-              { storageLocation: { $containsi: queryString } },
-              { comments: { $containsi: queryString } },
+          other_location: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        // { creation: { in:queryList,mode:Prisma.QueryMode.insensitive } },
+        {
+          finished_by: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          notes: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          user: {
+            OR: queryString.includes(" ")
+              ? [
+                  {
+                    net_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    AND: [
+                      {
+                        first_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    net_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    first_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+          },
+        },
+
+        {
+          created_by: {
+            OR: [
+              {
+                net_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                AND: [
+                  {
+                    first_name: {
+                      in: queryList,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      in: queryList,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
+              {
+                stu_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                email: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
             ],
+          },
+        },
+
+        {
+          inventory_items: {
+            some: {
+              OR: [
+                {
+                  m_tech_barcode: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  make: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  model: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  category: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  description: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  accessories: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  storage_location: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  comments: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
           },
         },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
+  };
+  const countQuery = {
+    where: {
+      OR: [
+        {
+          studio: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          other_location: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        // { creation: { in:queryList,mode:Prisma.QueryMode.insensitive } },
+        {
+          finished_by: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          notes: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          user: {
+            OR: queryString.includes(" ")
+              ? [
+                  {
+                    net_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    AND: [
+                      {
+                        first_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    net_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    first_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+          },
+        },
+
+        {
+          created_by: {
+            OR: [
+              {
+                net_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                AND: [
+                  {
+                    first_name: {
+                      in: queryList,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      in: queryList,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
+              {
+                stu_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                email: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+            ],
+          },
+        },
+
+        {
+          inventory_items: {
+            some: {
+              OR: [
+                {
+                  m_tech_barcode: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  make: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  model: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  category: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  description: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  accessories: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  storage_location: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  comments: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
     },
-  });
-  const url = new URL("/api/checkout-sessions", baseUrl);
-  url.search = query;
+  };
+
   // console.log("query data", query)
-  return fetchData(url.href);
+  const data = await prisma.checkout_sessions.findMany(query);
+  const count = await prisma.checkout_sessions.count(countQuery);
+  return { data, count };
 }
 
 // ########################### Booking ########################
 
 export async function getBookings(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: BookingsFilterProps,
+  user: UserWithRole | null,
 ) {
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+  // console.log("skip is ", pageIndex);
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
-    if (value === "All" || value === "") continue;
+    if (value === "All" || value === null || value === "") continue;
 
-    if (key === "startTime" || key === "endTime") {
+    if (key === "start_time" || key === "end_time") {
       if (!value.from && !value.to) {
         continue;
       } else if (!value.to) {
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: `${new Date(value.from).toISOString()}` },
         });
         continue;
       } else if (!value.from) {
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: `${new Date(value.to).toISOString()}`,
           },
         });
         continue;
@@ -445,272 +876,905 @@ export async function getBookings(
         // console.log(new Date(value.to).toISOString());
         // console.log("Value to is ", value.to);
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: `${new Date(value.from).toISOString()}` },
         });
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: `${new Date(value.to).toISOString()}`,
           },
         });
         continue;
       }
     }
 
-    // if (value === "finished") {
-    //   filterArr.push({ [key]: { $eq: true } });
-    //   continue;
-    // } else if (value === "unfinished") {
-    //   filterArr.push({ [key]: { $eq: false } });
-    //   continue;
-    // }
-
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
       continue;
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({
+        [key]: { contains: value, mode: Prisma.QueryMode.insensitive },
+      });
       continue;
     }
   }
 
-  const query = qs.stringify({
-    populate: "*",
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    orderBy: order_by,
+    include: {
+      inventory_items: true,
+      user: { include: { user_role: true } },
+      created_by: true,
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
+    where: {
+      AND:
+        user?.user_role.name === "Admin" || user?.user_role.name === "Monitor"
+          ? [...filterArr]
+          : [...filterArr, { user: { id: user?.id } }],
     },
-  });
-  const url = new URL("/api/bookings", baseUrl);
-  url.search = query;
-  // console.log(filterArr);
-  // console.log(url.href);
-  return fetchData(url.href);
+  };
+
+  const countQuery = {
+    where: query.where,
+  };
+
+  const data = await prisma.bookings.findMany(query);
+  const count = await prisma.bookings.count(countQuery);
+  return { data, count };
 }
 
-export async function getBookingById(bookingId: string) {
-  // console.log(
-  //   `${baseUrl}/api/bookings/${bookingId}?populate=[user][populate]=role`,
-  // );
-  const query = qs.stringify({
-    populate: {
-      user: { populate: "role" },
-      bookingCreator: { populate: "*" },
-      inventory_items: { populate: "*" },
+export async function getBookingById(
+  bookingId: string,
+  user: UserWithRole | null,
+) {
+  const query = {
+    where:
+      user?.user_role.name === "Admin" || user?.user_role.name === "Monitor"
+        ? { id: parseInt(bookingId) }
+        : {
+            AND: [{ id: parseInt(bookingId) }, { user: { id: user?.id } }],
+          },
+    include: {
+      user: { include: { user_role: true } },
+      created_by: { include: { user_role: true } },
+      inventory_items: true,
     },
-  });
-  const url = new URL(`/api/bookings/${bookingId}`, baseUrl);
-  url.search = query;
-
+  };
+  return await prisma.bookings.findFirst(query);
   // console.log(url.href);
 
-  return fetchData(url.href);
+  // return fetchData(url.href);
 }
 
 export async function getBookingsByQuery(
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
+  user: UserWithRole | null,
 ) {
-  const query = qs.stringify({
-    populate: "*",
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { type: { $containsi: queryString } },
-        { useLocation: { $containsi: queryString } },
-        { notes: { $containsi: queryString } },
-        { useLocation: { $containsi: queryString } },
+  // const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+  const isAuthorized =
+    user?.user_role.name === "Admin" || user?.user_role.name === "Monitor";
+
+  const queryList = queryString.split(" ");
+  const query = {
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    orderBy: { created_at: "desc" as Prisma.SortOrder },
+    where: {
+      OR: [
         {
-          user: {
-            $or: [
-              { username: { $containsi: queryString } },
-              { firstName: { $containsi: queryString } },
-              { lastName: { $containsi: queryString } },
-              { stuId: { $containsi: queryString } },
-              { email: { $containsi: queryString } },
-            ],
+          type: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
           },
+        },
+        {
+          use_location: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          notes: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          user: isAuthorized
+            ? {
+                OR: queryString.includes(" ")
+                  ? [
+                      {
+                        net_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        AND: [
+                          {
+                            first_name: {
+                              in: queryList,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            last_name: {
+                              in: queryList,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        stu_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        email: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ]
+                  : [
+                      {
+                        net_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+
+                      {
+                        first_name: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+
+                      {
+                        stu_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        email: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+              }
+            : {
+                AND: [
+                  {
+                    OR: queryString.includes(" ")
+                      ? [
+                          {
+                            net_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            AND: [
+                              {
+                                first_name: {
+                                  in: queryList,
+                                  mode: Prisma.QueryMode.insensitive,
+                                },
+                              },
+                              {
+                                last_name: {
+                                  in: queryList,
+                                  mode: Prisma.QueryMode.insensitive,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            stu_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            email: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            net_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            first_name: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            last_name: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            stu_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            email: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ],
+                  },
+                  { id: user?.id },
+                ],
+              },
         },
 
         {
-          bookingCreator: {
-            $or: [
-              { firstName: { $containsi: queryString } },
-              { lastName: { $containsi: queryString } },
-              { stuId: { $containsi: queryString } },
-              { email: { $containsi: queryString } },
-            ],
+          created_by: {
+            OR: queryString.includes(" ")
+              ? [
+                  {
+                    AND: [
+                      {
+                        first_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    first_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
           },
         },
         {
           inventory_items: {
-            $or: [
-              { mTechBarcode: { $containsi: queryString } },
-              { make: { $containsi: queryString } },
-              { model: { $containsi: queryString } },
-              { category: { $containsi: queryString } },
-              { description: { $containsi: queryString } },
-              { accessories: { $containsi: queryString } },
-              { storageLocation: { $containsi: queryString } },
-              { comments: { $containsi: queryString } },
-            ],
+            some: {
+              OR: [
+                {
+                  m_tech_barcode: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  make: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  model: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  category: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  description: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  accessories: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  storage_location: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  comments: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
           },
         },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
+    include: { inventory_items: true, user: true, created_by: true },
+  };
+  const countQuery = {
+    where: {
+      OR: [
+        {
+          type: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          use_location: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          notes: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          user: isAuthorized
+            ? {
+                OR: queryString.includes(" ")
+                  ? [
+                      {
+                        net_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        AND: [
+                          {
+                            first_name: {
+                              in: queryList,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            last_name: {
+                              in: queryList,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        stu_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        email: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ]
+                  : [
+                      {
+                        net_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+
+                      {
+                        first_name: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+
+                      {
+                        stu_id: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        email: {
+                          contains: queryString,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+              }
+            : {
+                AND: [
+                  {
+                    OR: queryString.includes(" ")
+                      ? [
+                          {
+                            net_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            AND: [
+                              {
+                                first_name: {
+                                  in: queryList,
+                                  mode: Prisma.QueryMode.insensitive,
+                                },
+                              },
+                              {
+                                last_name: {
+                                  in: queryList,
+                                  mode: Prisma.QueryMode.insensitive,
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            stu_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            email: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            net_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            first_name: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            last_name: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            stu_id: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                          {
+                            email: {
+                              contains: queryString,
+                              mode: Prisma.QueryMode.insensitive,
+                            },
+                          },
+                        ],
+                  },
+                  { id: user?.id },
+                ],
+              },
+        },
+
+        {
+          created_by: {
+            OR: queryString.includes(" ")
+              ? [
+                  {
+                    AND: [
+                      {
+                        first_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                      {
+                        last_name: {
+                          in: queryList,
+                          mode: Prisma.QueryMode.insensitive,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    first_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    last_name: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+
+                  {
+                    stu_id: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    email: {
+                      contains: queryString,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+          },
+        },
+        {
+          inventory_items: {
+            some: {
+              OR: [
+                {
+                  m_tech_barcode: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  make: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  model: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  category: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  description: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  accessories: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  storage_location: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  comments: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
     },
-  });
-  const url = new URL("/api/bookings", baseUrl);
-  url.search = query;
-  // console.log("query data", query)
-  return fetchData(url.href);
+  };
+
+  const data = await prisma.bookings.findMany(query);
+  const count = await prisma.bookings.count(countQuery);
+  return { data, count };
 }
 
-export async function getBookingByDateWeek(newDate: Date) {
+export async function getBookingByDateWeek(
+  newDate: Date,
+  user: UserWithRole | null,
+) {
   // const start = startOfDay(subDays(startOfWeek(newDate), 7)).toISOString();
   // const end = startOfDay(addDays(endOfWeek(newDate), 1)).toISOString();
   const start = startOfDay(subMonths(startOfMonth(newDate), 1)).toISOString();
   const end = startOfDay(addDays(endOfMonth(newDate), 1)).toISOString();
 
-  const query = qs.stringify({
-    populate: ["user"],
-    sort: ["createdAt:desc"],
-    filters: {
-      $and: [{ startTime: { $gte: start } }, { startTime: { $lt: end } }],
+  const query = {
+    orderBy: { created_at: "desc" as Prisma.SortOrder },
+    where: {
+      AND:
+        user?.user_role.name === "Admin" || user?.user_role.name === "Monitor"
+          ? [{ start_time: { gte: start } }, { start_time: { lte: end } }]
+          : [
+              { start_time: { gte: start } },
+              { start_time: { lte: end } },
+              { user: { id: user?.id } },
+            ],
     },
-  });
-  const url = new URL("/api/bookings", baseUrl);
-  url.search = query;
-  return fetchData(url.href);
-}
+    include: { inventory_items: true, user: true, created_by: true },
+  };
 
-// export async function getStudioUserByStuId(stuId: string) {
-//   const query = qs.stringify({
-//     sort: ["createdAt:desc"],
-//     filters: {
-//       $or: [{ stuIDCheckout: { $containsi: stuId } }],
-//     },
-//   });
-//   const url = new URL("/api/checkout-sessions", baseUrl);
-//   url.search = query;
-//   // console.log("query data", query)
-//   return fetchData(url.href);
-// }
+  return await prisma.bookings.findMany(query);
+}
 
 // ########################### Users ########################
 
 export async function getUsers(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: UsersFilterProps,
+  currentUser: UserWithRole,
 ) {
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
-    if (value === "" || value === false || value === "false") continue;
+    if (value === null || value === false || value === "false") continue;
 
-    if (key === "role") {
-      filterArr.push({ [key]: { name: { $eq: value } } });
+    if (key === "user_role") {
+      filterArr.push({ user_role: { name: value } });
       continue;
     }
 
-    if (key === "academicLevel") {
-      filterArr.push({ [key]: { $eq: value } });
+    if (key === "academic_level") {
+      filterArr.push({ [key]: { equals: value } });
       continue;
     }
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({ [key]: { contains: value, model: "insenstive" } });
     }
   }
 
   // console.log(filterArr);
 
-  const query = qs.stringify({
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    orderBy: order_by,
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    where: {
+      AND:
+        currentUser.user_role.name === "Admin"
+          ? [...filterArr]
+          : [...filterArr, { user_role: { id: 2 } }],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/users", baseUrl);
-  url.search = query;
-  // console.log(url.href);
-  return fetchData(url.href);
+    include: { user_role: true },
+  };
+
+  const countQuery = {
+    where: query.where,
+  };
+
+  const data = await prisma.user.findMany(query);
+  const count = await prisma.user.count(countQuery);
+  return { data, count };
 }
 
 export async function getUserById(userId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${itemId}`);
-  return fetchData(`${baseUrl}/api/users/${userId}?populate=role`);
+  // return fetchData(`${baseUrl}/api/users/${userId}?populate=role`);
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: { user_role: true },
+  });
 }
 
 export async function getUsersByQuery(
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
+  currentUser: UserWithRole,
 ) {
-  const query = qs.stringify({
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { username: { $containsi: queryString } },
-        { stuId: { $containsi: queryString } },
-        { firstName: { $containsi: queryString } },
-        { lastName: { $containsi: queryString } },
-        { email: { $containsi: queryString } },
-        { academicLevel: { $containsi: queryString } },
-        { bio: { $containsi: queryString } },
-      ],
+  // const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+
+  const orClause = [
+    {
+      user_role:
+        currentUser.user_role.name === "Admin"
+          ? {
+              name: {
+                contains: queryString,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            }
+          : undefined,
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
+
+    {
+      net_id: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
     },
-  });
-  const url = new URL("/api/users", baseUrl);
-  url.search = query;
-  return fetchData(url.href);
+    {
+      stu_id: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+    {
+      first_name: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+    {
+      last_name: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+    {
+      email: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+    {
+      academic_level: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+    {
+      bio: {
+        contains: queryString,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    },
+  ];
+
+  const query = {
+    orderBy: { created_at: "desc" as Prisma.SortOrder },
+    skip: skipValue,
+    take: pageSizeNumber,
+    where:
+      currentUser.user_role.name === "Admin"
+        ? { OR: orClause }
+        : {
+            AND: [{ OR: orClause }, { user_role: { id: 2 } }],
+          },
+    include: { user_role: true },
+  };
+
+  const countQuery = {
+    where:
+      currentUser.user_role.name === "Admin"
+        ? { OR: orClause }
+        : {
+            AND: [{ OR: orClause }, { user_role: { id: 2 } }],
+          },
+  };
+  const data = await prisma.user.findMany(query);
+  const count = await prisma.user.count(countQuery);
+  return { data, count };
 }
 
 // ########################### Inventory Reports ########################
 
 export async function getInventoryReports(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: InventoryReportsFilterProps,
 ) {
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
-    if (value === "All" || value === "") continue;
+    if (value === "All" || value === "" || !value) continue;
 
-    if (key === "createdAt") {
+    if (key === "created_at") {
       if (!value.from && !value.to) {
         continue;
       } else if (!value.to) {
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: `${new Date(value.from).toISOString()}` },
         });
         continue;
       } else if (!value.from) {
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: `${new Date(value.to).toISOString()}`,
           },
         });
         continue;
@@ -718,11 +1782,11 @@ export async function getInventoryReports(
         // console.log(new Date(value.to).toISOString());
         // console.log("Value to is ", value.to);
         filterArr.push({
-          [key]: { $gte: `${new Date(value.from).toISOString()}` },
+          [key]: { gte: `${new Date(value.from).toISOString()}` },
         });
         filterArr.push({
           [key]: {
-            $lte: `${new Date(value.to).toISOString()}`,
+            lte: `${new Date(value.to).toISOString()}`,
           },
         });
         continue;
@@ -730,322 +1794,451 @@ export async function getInventoryReports(
     }
 
     if (value === "finished") {
-      filterArr.push({ [key]: { $eq: true } });
+      filterArr.push({ [key]: { equals: true } });
       continue;
     } else if (value === "unfinished") {
-      filterArr.push({ [key]: { $eq: false } });
+      filterArr.push({ [key]: { equals: false } });
       continue;
     }
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({
+        [key]: { contains: value },
+        mode: Prisma.QueryMode.insensitive,
+      });
     }
   }
 
-  // console.log(filterArr);
-
-  const query = qs.stringify({
-    populate: "*",
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    include: { created_by: true, inventory_items: true },
+    where: {
+      AND: [...filterArr],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/inventory-reports", baseUrl);
-  url.search = query;
-  // console.log(url.href);
+  };
+  const countQuery = {
+    where: query.where,
+  };
 
-  return fetchData(url.href);
+  const data = await prisma.inventory_reports.findMany(query);
+  const count = await prisma.inventory_reports.count(countQuery);
+  return { data: data, count: count };
 }
 
 export async function getInventoryReportById(reportId: string) {
-  // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
-  return fetchData(`${baseUrl}/api/inventory-reports/${reportId}?populate=*`);
+  try {
+    const data = await prisma.inventory_reports.findUnique({
+      include: { created_by: true, inventory_items: true },
+      where: { id: parseInt(reportId) },
+    });
+    return { data: data, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error fetching data by ID" };
+  }
 }
 
 export async function getInventoryReportsByQuery(
+  sort: string,
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
 ) {
-  const query = qs.stringify({
-    populate: "*",
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { notes: { $containsi: queryString } },
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    include: { created_by: true, inventory_items: true },
+    where: {
+      OR: [
         {
-          creator: {
-            $or: [
-              { username: { $containsi: queryString } },
-              { firstName: { $containsi: queryString } },
-              { lastName: { $containsi: queryString } },
-              { stuId: { $containsi: queryString } },
-              { email: { $containsi: queryString } },
+          notes: { contains: queryString, mode: Prisma.QueryMode.insensitive },
+        },
+        {
+          created_by: {
+            OR: [
+              {
+                net_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                first_name: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                last_name: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                stu_id: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              {
+                email: {
+                  contains: queryString,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
             ],
           },
         },
         {
-          itemsChecked: {
-            $or: [
-              { mTechBarcode: { $containsi: queryString } },
-              { make: { $containsi: queryString } },
-              { model: { $containsi: queryString } },
-              { category: { $containsi: queryString } },
-              { description: { $containsi: queryString } },
-              { accessories: { $containsi: queryString } },
-              { storageLocation: { $containsi: queryString } },
-              { comments: { $containsi: queryString } },
-            ],
+          inventory_items: {
+            some: {
+              OR: [
+                {
+                  m_tech_barcode: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  make: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  model: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  category: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  description: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  accessories: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  storage_location: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  comments: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+              ],
+            },
           },
         },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/inventory-reports", baseUrl);
-  url.search = query;
-  // console.log("query data", query)
-  return fetchData(url.href);
+  };
+  const countQuery = {
+    where: query.where,
+  };
+
+  const data = await prisma.inventory_reports.findMany(query);
+  const count = await prisma.inventory_reports.count(countQuery);
+  return { data: data, count: count };
 }
 
 // ########################### Roster Permissions ########################
 
 export async function getRosterPermissions(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: RosterPermissionsFilterProps,
 ) {
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
-    // if (value === "" || value === false || value === "false") continue;
-    // if (value === "All" || value === "") continue;
-
-    // if (key === "createdAt") {
-    //   if (!value.from && !value.to) {
-    //     continue;
-    //   } else if (!value.to) {
-    //     filterArr.push({
-    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
-    //     });
-    //     continue;
-    //   } else if (!value.from) {
-    //     filterArr.push({
-    //       [key]: {
-    //         $lte: `${new Date(value.to).toISOString()}`,
-    //       },
-    //     });
-    //     continue;
-    //   } else {
-    //     filterArr.push({
-    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
-    //     });
-    //     filterArr.push({
-    //       [key]: {
-    //         $lte: `${new Date(value.to).toISOString()}`,
-    //       },
-    //     });
-    //     continue;
-    //   }
-    // }
-
-    // if (value === "finished") {
-    //   filterArr.push({ [key]: { $eq: true } });
-    //   continue;
-    // } else if (value === "unfinished") {
-    //   filterArr.push({ [key]: { $eq: false } });
-    //   continue;
-    // }
+    if (value === null || value === false || value === "false") continue;
+    if (value === "All" || value === "") continue;
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({ [key]: { contains: value, mode: "insensitive" } });
     }
   }
 
-  // console.log(filterArr);
-
-  const query = qs.stringify({
-    populate: "*",
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    orderBy: order_by,
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    where: {
+      AND: [...filterArr],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/roster-permissions", baseUrl);
-  url.search = query;
-  // console.log(url.href);
+  };
+  const countQuery = {
+    where: query.where,
+  };
 
-  return fetchData(url.href);
+  try {
+    const data = await prisma.roster_permissions.findMany(query);
+    const count = await prisma.roster_permissions.count(countQuery);
+    return { data: data, count: count };
+  } catch (error) {
+    console.log(error);
+    return { data: null, count: null };
+  }
 }
 
-export async function getRosterPermissionById(reportId: string) {
+export async function getRosterPermissionById(permissionId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
-  return fetchData(`${baseUrl}/api/roster-permissions/${reportId}?populate=*`);
+  try {
+    const data = await prisma.roster_permissions.findUnique({
+      where: { id: parseInt(permissionId) },
+    });
+    return { data: data, error: null };
+  } catch (error) {
+    return { data: null, error: JSON.stringify(error) };
+  }
 }
 
 export async function getRosterPermissionsByQuery(
+  sort: string,
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
 ) {
-  const query = qs.stringify({
-    populate: "*",
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { permissionCode: { $containsi: queryString } },
-        { permissionTitle: { $containsi: queryString } },
-        { instructor: { $containsi: queryString } },
-        { permissionDetails: { $containsi: queryString } },
-        { permittedStudios: { $containsi: queryString } },
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    where: {
+      OR: [
+        {
+          permission_code: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          permission_title: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          instructor: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          permission_details: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          permitted_studios: {
+            has: queryString,
+          },
+        },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/roster-permissions", baseUrl);
-  url.search = query;
-  // console.log("query data", query)
-  return fetchData(url.href);
+  };
+
+  const countQuery = {
+    where: query.where,
+  };
+
+  try {
+    const data = await prisma.roster_permissions.findMany(query);
+    const count = await prisma.roster_permissions.count(countQuery);
+    return { data: data, count: count };
+  } catch (error) {
+    console.log(error);
+    return { data: null, count: null };
+  }
 }
 
 // ########################### Roster Recordss ########################
 
 export async function getRosters(
   sort: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
   filter: RosterRecordsFilterProps,
 ) {
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
-    // if (value === "" || value === false || value === "false") continue;
-    // if (value === "All" || value === "") continue;
-
-    // if (key === "createdAt") {
-    //   if (!value.from && !value.to) {
-    //     continue;
-    //   } else if (!value.to) {
-    //     filterArr.push({
-    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
-    //     });
-    //     continue;
-    //   } else if (!value.from) {
-    //     filterArr.push({
-    //       [key]: {
-    //         $lte: `${new Date(value.to).toISOString()}`,
-    //       },
-    //     });
-    //     continue;
-    //   } else {
-    //     filterArr.push({
-    //       [key]: { $gte: `${new Date(value.from).toISOString()}` },
-    //     });
-    //     filterArr.push({
-    //       [key]: {
-    //         $lte: `${new Date(value.to).toISOString()}`,
-    //       },
-    //     });
-    //     continue;
-    //   }
-    // }
-
-    // if (value === "finished") {
-    //   filterArr.push({ [key]: { $eq: true } });
-    //   continue;
-    // } else if (value === "unfinished") {
-    //   filterArr.push({ [key]: { $eq: false } });
-    //   continue;
-    // }
+    if (value === null || value === false || value === "false") continue;
+    if (value === "All" || value === "") continue;
 
     if (value === true || value === "true") {
-      filterArr.push({ [key]: { $eq: value } });
+      filterArr.push({ [key]: { equals: value } });
     } else {
-      filterArr.push({ [key]: { $containsi: value } });
+      filterArr.push({ [key]: { contains: value, mode: "insensitive" } });
     }
   }
 
-  // console.log(filterArr);
-
-  const query = qs.stringify({
-    populate: "*",
-    sort: [sort],
-    filters: {
-      $and: filterArr,
+  const query = {
+    orderBy: order_by,
+    skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
+    take: parseInt(pageSize),
+    include: { permissions: true },
+    where: {
+      AND: filterArr,
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/rosters", baseUrl);
-  url.search = query;
-  // console.log(url.href);
-
-  return fetchData(url.href);
+  };
+  // console.log(query);
+  const countQuery = {
+    where: query.where,
+  };
+  try {
+    const data = await prisma.rosters.findMany(query);
+    const count = await prisma.rosters.count(countQuery);
+    return { data: data, count: count };
+  } catch (error) {
+    console.log(error);
+    return { data: null, count: null };
+  }
 }
 
-export async function getRosterById(reportId: string) {
+export async function getRosterById(rosterId: string) {
   // console.log(`${baseUrl}/api/inventory-items/${reportId}`);
-  return fetchData(`${baseUrl}/api/rosters/${reportId}?populate=*`);
+  try {
+    const data = await prisma.rosters.findUnique({
+      where: { id: parseInt(rosterId) },
+      include: { permissions: true },
+    });
+    return { data: data, error: null };
+  } catch (error) {
+    return { data: null, error: JSON.stringify(error) };
+  }
+  // return fetchData(`${baseUrl}/api/rosters/${reportId}?populate=*`);
 }
 
 export async function getRostersByQuery(
+  sort: string,
   queryString: string,
-  page: string,
+  pageIndex: string,
   pageSize: string,
 ) {
-  const query = qs.stringify({
-    populate: "*",
-    sort: ["createdAt:desc"],
-    filters: {
-      $or: [
-        { stuN: { $containsi: queryString } },
-        { netId: { $containsi: queryString } },
-        { stuName: { $containsi: queryString } },
-        { academicLevel: { $containsi: queryString } },
-        { academicProgram: { $containsi: queryString } },
+  const pageSizeNumber = parseInt(pageSize);
+  const pageIndexNumber = parseInt(pageIndex);
+  const skipValue = pageSizeNumber * (pageIndexNumber - 1);
+  const order_by = { [sort.split(":")[0]]: sort.split(":")[1] };
+
+  const query = {
+    orderBy: order_by,
+    skip: skipValue,
+    take: pageSizeNumber,
+    include: { permissions: true },
+    where: {
+      OR: [
         {
-          roster_permissions: {
-            $or: [
-              { permissionCode: { $containsi: queryString } },
-              { permissionTitle: { $containsi: queryString } },
-              { instructor: { $containsi: queryString } },
-              { permissionDetails: { $containsi: queryString } },
-              { permittedStudios: { $containsi: queryString } },
-            ],
+          stu_n: { contains: queryString, mode: Prisma.QueryMode.insensitive },
+        },
+        {
+          net_id: { contains: queryString, mode: Prisma.QueryMode.insensitive },
+        },
+        {
+          stu_name: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
           },
         },
-        // { permittedStudios: { $containsi: queryString } },
+        {
+          academic_level: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          academic_program: {
+            contains: queryString,
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+        {
+          permissions: {
+            some: {
+              OR: [
+                {
+                  permission_code: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  permission_title: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  instructor: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  permission_details: {
+                    contains: queryString,
+                    mode: Prisma.QueryMode.insensitive,
+                  },
+                },
+                {
+                  permitted_studios: {
+                    has: queryString,
+                  },
+                },
+              ],
+            },
+          },
+        },
       ],
     },
-    pagination: {
-      pageSize: pageSize,
-      page: page,
-    },
-  });
-  const url = new URL("/api/rosters", baseUrl);
-  url.search = query;
-  // console.log("query data", query)
-  return fetchData(url.href);
+  };
+
+  const countQuery = {
+    where: query.where,
+  };
+
+  try {
+    const data = await prisma.rosters.findMany(query);
+    const count = await prisma.rosters.count(countQuery);
+    return { data: data, count: count };
+  } catch (error) {
+    console.log(error);
+    return { data: null, count: null };
+  }
 }

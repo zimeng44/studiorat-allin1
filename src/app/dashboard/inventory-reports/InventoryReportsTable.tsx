@@ -18,10 +18,11 @@ import {
   TableColumnStatus,
 } from "./inventoryReportsColumns";
 import { format } from "date-fns";
+import { InventoryReportWithCreatorAndItems } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 8;
 interface InventoryReportsTableProps {
-  data: any[];
+  data: InventoryReportWithCreatorAndItems[];
   columnsStatus: TableColumnStatus;
 }
 
@@ -59,27 +60,27 @@ const InventoryReportsTable = ({
                 // data-state={row.getIsSelected() && "selected"}
               >
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "creatorName") {
+                  if (key === "created_by") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row.creator?.firstName ?? ""} ${row.creator?.lastName ?? ""}`}
+                        {`${row.created_by?.first_name ?? ""} ${row.created_by?.last_name ?? ""}`}
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-                  if (key === "numItemsChecked") {
+                  if (key === "num_items_checked") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         <Badge variant="secondary">
-                          {row.itemsChecked?.data?.length ?? ""}
+                          {row.inventory_items?.length ?? ""}
                         </Badge>
                       </TableCell>
                     ) : (
                       ``
                     );
                   }
-                  if (key === "inventorySize") {
+                  if (key === "inventory_size") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         <Badge variant="secondary">{row[key]}</Badge>
@@ -88,10 +89,10 @@ const InventoryReportsTable = ({
                       ``
                     );
                   }
-                  if (key === "isFinished") {
+                  if (key === "is_finished") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {row.isFinished ? (
+                        {row.is_finished ? (
                           <Badge variant="secondary">Finished</Badge>
                         ) : (
                           <Badge variant="default">In Progress</Badge>
@@ -101,21 +102,29 @@ const InventoryReportsTable = ({
                       ``
                     );
                   }
-
-                  return value.visible ? (
-                    <TableCell className="whitespace-nowrap" key={key}>
-                      {key === "createdAt"
-                        ? row[key] === null || row[key] === undefined
+                  if (key === "created_at") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        {!row[key]
                           ? ``
                           : format(
                               new Date(row[key] ?? ""),
                               "MM/dd/yyyy hh:mm a",
-                            )
-                        : row[key]}
-                    </TableCell>
-                  ) : (
-                    ``
-                  );
+                            )}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+                  if (key === "notes") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        {row[key]}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
                 })}
                 <TableCell className="text-center" key="edit">
                   {/* <Link href={`/dashboard/inventory-reports/${row.id}`}>

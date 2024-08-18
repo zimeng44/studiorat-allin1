@@ -16,8 +16,13 @@ export default async function SignUpRoute({
   if (!ok)
     return <p>Only Admin and Monitor Allowed to sign up for new user.</p>;
 
-  if (currentUser.role.name !== "Admin" && currentUser.role.name !== "Monitor")
+  if (
+    currentUser?.user_role.name !== "Admin" &&
+    currentUser?.user_role.name !== "Monitor"
+  )
     return <p>Only Admin and Monitor Allowed to sign up for new user.</p>;
 
-  return <SignupForm userRole={`${currentUser.role.name}`} stuId={stuId} />;
+  return (
+    <SignupForm userRole={`${currentUser?.user_role.name}`} stuId={stuId} />
+  );
 }

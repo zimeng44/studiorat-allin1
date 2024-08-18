@@ -21,7 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { bookingColumnsDefault } from "@/data/bookingColumns";
+import { bookingColumnsDefault } from "./bookingColumns";
 import { format } from "date-fns";
 import { deleteBookingAction } from "@/data/actions/booking-actions";
 import { toast } from "sonner";
@@ -33,12 +33,12 @@ interface TableFieldStatus {
   visible: boolean;
 }
 interface TableColumnStatus {
-  startTime: TableFieldStatus;
-  endTime: TableFieldStatus;
+  start_time: TableFieldStatus;
+  end_time: TableFieldStatus;
   user: TableFieldStatus;
   type: TableFieldStatus;
-  useLocation: TableFieldStatus;
-  bookingCreator: TableFieldStatus;
+  use_location: TableFieldStatus;
+  created_by: TableFieldStatus;
   notes: TableFieldStatus;
 }
 
@@ -56,7 +56,7 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
 
   const sort = searchParams.get("sort") ?? "";
   // let filterOpen = searchParams.get("filterOpen") === "true";
-  const pageIndex = searchParams.get("page") ?? "1";
+  const pageIndex = searchParams.get("pageIndex") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
   const isAllSelected = searchParams.get("isAllSelected") === "true";
   const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
@@ -82,6 +82,8 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
     if (newNumRowsSelected > 0) params.set("isBatchOpOpen", "true");
     else params.set("isBatchOpOpen", "false");
     params.set("numRowsSelected", newNumRowsSelected.toString());
+    // params.set("pageIndex", currentPage);
+    // params.set("pageSize", currentPageSize);
     router.replace(`${pathname}?${params.toString()}`);
   }, [rowsSelected]);
 
@@ -225,10 +227,10 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "user" || key === "bookingCreator") {
+                  if (key === "user" || key === "created_by") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row[key].firstName} ${row[key].lastName}`}
+                        {`${row[key].first_name} ${row[key].last_name}`}
                       </TableCell>
                     ) : (
                       ``
@@ -246,8 +248,8 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {key === "startTime" || key === "endTime"
-                        ? format(new Date(row[key]), "MM/dd/yyyy hh:mm a")
+                      {key === "start_time" || key === "end_time"
+                        ? format(row[key], "MM/dd/yyyy hh:mm a")
                         : row[key]}
                     </TableCell>
                   ) : (

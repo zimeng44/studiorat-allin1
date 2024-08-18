@@ -3,7 +3,6 @@ import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-// import { toast } from "react-toastify";
 import {
   Form,
   FormControl,
@@ -14,24 +13,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Link from "next/link";
-import { InventoryReportTypePost, UserType } from "@/data/definitions";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
-
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
-
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { createInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { Badge } from "@/components/ui/badge";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Prisma, User } from "@prisma/client";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -44,44 +39,44 @@ const INITIAL_STATE = {
 };
 
 const formSchema = z.object({
-  creatorName: z.string().min(2).max(20),
-  inventorySize: z.number(), // finishMonitor: z.string().optional(),
+  created_by: z.string().min(2).max(20),
+  inventory_size: z.number(), // finishMonitor: z.string().optional(),
   notes: z.string().optional(),
-  isFinished: z.boolean(),
+  is_finished: z.boolean(),
   scan: z.string().optional(),
 });
 
 const NewInventoryReportForm = ({
   thisMonitor,
   authToken,
-  inventorySize,
+  inventory_size,
 }: {
-  thisMonitor: UserType;
+  thisMonitor: User;
   authToken: string;
-  inventorySize: string;
+  inventory_size: number;
 }) => {
   const router = useRouter();
   const [data, setData] = useState({
-    creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-    inventorySize: parseInt(inventorySize),
+    created_by: `${thisMonitor.first_name} ${thisMonitor.last_name}`,
+    inventory_size: inventory_size,
     notes: "",
-    isFinished: false,
+    is_finished: false,
     scan: "",
   });
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
   const [itemIdArray, setItemIdArray] = useState(Array());
   const [itemObjArr, setItemObjArr] = useState(Array());
 
-  // console.log(inventorySize);
+  // console.log(inventory_size);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      creatorName: `${thisMonitor.firstName} ${thisMonitor.lastName}`,
-      inventorySize: parseInt(inventorySize),
-      notes: "",
-      isFinished: false,
+      created_by: `${thisMonitor.first_name} ${thisMonitor.last_name}`,
+      inventory_size: inventory_size,
+      notes: undefined,
+      is_finished: false,
       scan: "",
     },
     mode: "onChange",
@@ -96,17 +91,9 @@ const NewInventoryReportForm = ({
     form.setFocus("scan");
   }, []);
 
-  // if (isLoading) return <p>Loading...</p>;
-  // if (!data) return <p>No profile data</p>;
-
-  // 2. Define a submit handler.
-
   const baseUrl = getStrapiURL();
 
   async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
     const headers = {
       method: "GET",
       headers: {
@@ -128,61 +115,68 @@ const NewInventoryReportForm = ({
 
   async function getItemByBarcode(barcode: string) {
     const query = qs.stringify({
-      sort: ["createdAt:desc"],
-      filters: {
-        $or: [{ mTechBarcode: { $eq: barcode } }],
-      },
+      m_tech_barcode: barcode,
     });
-    const url = new URL("/api/inventory-items", baseUrl);
+    const url = new URL("/api/inventory", baseUrl);
     url.search = query;
-    // console.log("query data", query)
     return fetchData(url.href);
   }
 
-  const handleScan = useDebouncedCallback((term: string) => {
+  const handleScan = useDebouncedCallback(async (term: string) => {
     if (term.length > 9) {
-      getItemByBarcode(term).then(({ data, meta }) => {
-        if (data[0]) {
-          let newArr = [...itemIdArray];
-          if (newArr.includes(data[0].id)) {
-            window.alert("Item scanned already.");
-            form.setValue("scan", "");
-            form.setFocus("scan");
-          } else {
-            setItemIdArray([data[0].id, ...itemIdArray]);
-            setItemObjArr([data[0], ...itemObjArr]);
-            if (itemObjArr.length > 4) {
-              // onSubmit(form.watch());
-              let formValue: InventoryReportTypePost = {
-                creator: thisMonitor.id,
-                inventorySize: form.getValues("inventorySize"),
-                notes: form.getValues("notes"),
-                isFinished: form.getValues("isFinished"),
-                itemsChecked: [data[0].id, ...(itemIdArray ?? [])],
-              };
-
-              try {
-                createInventoryReportAction(formValue);
-              } catch (error) {
-                toast.error("Error Creating New Inventory Report");
-                setError({
-                  ...INITIAL_STATE,
-                  message: "Error Creating New Inventory Report",
-                  name: "New Inventory Report Error",
-                });
-                // setLoading(false);
-                return;
-              }
-              toast.success("Report Autosaved.");
-              // setAutoSaved(true)
-            }
-          }
-        } else {
-          window.alert("Item not in the inventory.");
+      const { data, error } = await getItemByBarcode(term);
+      if (data[0]) {
+        let newArr = [...itemIdArray];
+        if (newArr.includes(data[0].id)) {
+          window.alert("Item scanned already.");
           form.setValue("scan", "");
           form.setFocus("scan");
+        } else {
+          const newIdArray = [data[0].id, ...itemIdArray];
+          setItemIdArray(newIdArray);
+          setItemObjArr([data[0], ...itemObjArr]);
+
+          // Auto Save
+          if (itemObjArr.length > 4) {
+            // onSubmit(form.watch());
+            let createValues: Prisma.inventory_reportsCreateInput = {
+              created_by: { connect: { id: thisMonitor.id } },
+              inventory_size: form.getValues("inventory_size"),
+              notes: form.getValues("notes"),
+              is_finished: form.getValues("is_finished"),
+              inventory_items: {
+                connect: itemIdArray.map((id) => ({ id: id })),
+              },
+            };
+
+            try {
+              const { res, error } =
+                await createInventoryReportAction(createValues);
+
+              if (res) {
+                toast.success("Report Autosaved.");
+                // redirect();
+                router.push("/dashboard/inventory-reports/" + (await res).id);
+              }
+            } catch (error) {
+              toast.error("Error Auto Saving New Inventory Report");
+              setError({
+                ...INITIAL_STATE,
+                message: "Error Creating New Inventory Report",
+                name: "New Inventory Report Error",
+              });
+              // setLoading(false);
+              return;
+            }
+
+            // setAutoSaved(true)
+          }
         }
-      });
+      } else {
+        window.alert("Item not in the inventory.");
+        form.setValue("scan", "");
+        form.setFocus("scan");
+      }
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
       form.setValue("scan", "");
@@ -196,16 +190,23 @@ const NewInventoryReportForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    let formValue: InventoryReportTypePost = {
-      creator: thisMonitor.id,
-      inventorySize: values.inventorySize,
+    let createValues: Prisma.inventory_reportsCreateInput = {
+      created_by: { connect: { id: thisMonitor.id } },
+      inventory_size: values.inventory_size,
       notes: values.notes,
-      isFinished: values.isFinished,
-      itemsChecked: itemIdArray ?? [0],
+      is_finished: values.is_finished,
+      inventory_items: {
+        connect: itemIdArray.map((id) => ({ id: id })),
+      },
     };
 
     try {
-      await createInventoryReportAction(formValue);
+      const { res, error } = await createInventoryReportAction(createValues);
+      if (res) {
+        toast.success("New Report Saved.");
+        router.push("/dashboard/inventory-reports");
+        router.refresh();
+      }
     } catch (error) {
       toast.error("Error Creating New Inventory Report");
       setError({
@@ -216,15 +217,14 @@ const NewInventoryReportForm = ({
       // setLoading(false);
       return;
     }
-    toast.success("New Report Saved.");
-    router.push("/dashboard/inventory-reports");
+
     // redirect("/dashboard/inventory-reports");
 
     // console.log("data submited is ", values);
   }
 
   function handleFinish() {
-    if (form.getValues("creatorName") === "") {
+    if (form.getValues("created_by") === "" || !form.getValues("created_by")) {
       window.alert("Creator Name Missing by Accident.");
       return;
     }
@@ -236,7 +236,7 @@ const NewInventoryReportForm = ({
       return;
     }
 
-    form.setValue("isFinished", true);
+    form.setValue("is_finished", true);
     onSubmit(form.getValues());
   }
 
@@ -278,7 +278,7 @@ const NewInventoryReportForm = ({
           </div>
           <FormField
             control={form.control}
-            name="creatorName"
+            name="created_by"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>Creator</FormLabel>
@@ -312,7 +312,7 @@ const NewInventoryReportForm = ({
 
           <FormField
             control={form.control}
-            name="inventorySize"
+            name="inventory_size"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormLabel>Scaned Amount of Total</FormLabel>

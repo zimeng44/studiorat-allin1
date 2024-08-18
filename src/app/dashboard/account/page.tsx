@@ -15,6 +15,8 @@ export default async function AccountRoute() {
   const userData = user.data;
   const userImage = userData?.image;
 
+  if (!userData || !user || !userImage) return <p>No user found</p>;
+
   return (
     <>
       <Breadcrumb className="p-5">
@@ -34,10 +36,10 @@ export default async function AccountRoute() {
       </Breadcrumb>
       <div className="grid grid-cols-1 content-center gap-4 px-5 py-2 md:grid-cols-5 lg:grid-cols-5">
         <ProfileForm data={userData} className="col-span-1 md:col-span-3" />
-        <ProfileImageForm
+        {/* <ProfileImageForm
           data={userImage}
           className="col-span-1 md:col-span-2"
-        />
+        /> */}
       </div>
     </>
   );

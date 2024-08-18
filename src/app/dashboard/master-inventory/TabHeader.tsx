@@ -82,28 +82,6 @@ const TabHeader = ({
           <InventoryFilterForm filter={filter} />
         </PopoverContent>
       </Popover>
-      {/* <Sheet
-        open={filterOpen}
-        onOpenChange={(open) => {
-          filterOpen = open;
-          const params = new URLSearchParams(searchParams);
-          params.set("filterOpen", filterOpen ? "true" : "false");
-          router.push(`${pathname}?${params.toString()}`);
-        }}
-      >
-        <SheetTrigger asChild>
-          <Button variant="outline">
-            <Filter className="h-4 w-4" />
-            
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Filter</SheetTitle>
-          </SheetHeader>
-          <InventoryFilterForm filter={filter} />
-        </SheetContent>
-      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

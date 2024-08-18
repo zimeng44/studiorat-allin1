@@ -4,6 +4,7 @@ import qs from "qs";
 import {
   CheckoutSessionType,
   CheckoutSessionTypePost,
+  CheckoutWithUserAndItems,
   InventoryItem,
   RetrievedItems,
   studioList,
@@ -34,7 +35,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import {
+  inventoryColumns,
+  inventoryColumnsFinished,
+} from "@/app/dashboard/checkout/embeddedInventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
@@ -43,6 +47,12 @@ import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { TagsInput } from "react-tag-input-component";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
+import {
+  checkout_sessions,
+  inventory_items,
+  Prisma,
+  User,
+} from "@prisma/client";
 
 // import { useRouter } from "next/navigation";
 
@@ -58,8 +68,8 @@ const INITIAL_STATE = {
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
-  creationTime: z.date().or(z.string()),
-  finishTime: z.date().or(z.string()).optional(),
+  creation_time: z.date().or(z.string()),
+  finish_time: z.date().or(z.string()).optional(),
   stuIDCheckout: z
     .string()
     .min(15, {
@@ -71,8 +81,8 @@ const formSchema = z.object({
   userName: z.string().min(2, {
     message: "Scan a ID barcode to retrieve the user name",
   }),
-  stuIDCheckin: z.string(),
-  studio: z.string(),
+  return_id: z.string().optional(),
+  studio: z.string().min(1),
   otherLocation: z.string().optional(),
   creationMonitor: z.string().min(1),
   finishMonitor: z.string().optional(),
@@ -80,7 +90,7 @@ const formSchema = z.object({
   finished: z.boolean(),
   scan: z.string().optional(),
   inventory_items: z.string().optional(),
-  noTagItems: z.string().array().optional(),
+  noTagItems: z.any().optional(),
   user: z.string().optional(),
 });
 
@@ -90,62 +100,62 @@ const EditCheckoutSessionForm = ({
   thisMonitor,
   authToken,
 }: {
-  session: CheckoutSessionType;
+  session: CheckoutWithUserAndItems;
   sessionId: string;
-  thisMonitor: UserType;
+  thisMonitor: User;
   authToken: string;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
-  const inventoryItems = session.inventory_items as RetrievedItems;
-  const [noTagItems, setNoTagItems] = useState(session.noTagItems ?? [""]);
+  // const inventoryItems = session;
+  const [noTagItems, setNoTagItems] = useState(
+    session.no_tag_items ?? ["unreturned", "example: xlr cable 2"],
+  );
   // const [itemObjArr, setItemObjArr] = useState(
   //   inventoryItems.data ?? Array(),
   // );
 
   const [itemIdArray, setItemIdArray] = useState(
-    inventoryItems?.data?.map((item: InventoryItem) => item.id),
+    session.inventory_items?.map((item: any) => item.id),
   );
-  const [itemObjArr, setItemObjArr] = useState<InventoryItem[]>(
-    inventoryItems?.data ?? Array(),
+  const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
+    session.inventory_items ?? Array(),
   );
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      creationTime: session.creationTime
-        ? new Date(session.creationTime).toLocaleString()
-        : "",
-      finishTime: session.finishTime
-        ? new Date(session.finishTime).toLocaleString()
-        : "",
-      stuIDCheckout: session.stuIDCheckout,
-      userName: `${session.user?.firstName} ${session.user?.lastName}`,
-      stuIDCheckin: session.stuIDCheckin ?? "",
-      studio: session.studio ?? "",
-      otherLocation: session.otherLocation ?? "",
-      creationMonitor: session.creationMonitor,
-      finishMonitor: session.finishMonitor ?? "",
+      creation_time: session.creation_time
+        ? new Date(session?.creation_time)
+        : undefined,
+      finish_time: session.finish_time
+        ? new Date(session?.finish_time)
+        : undefined,
+      stuIDCheckout: session.user?.stu_id ?? undefined,
+      userName: `${session.user?.first_name} ${session.user?.last_name}`,
+      return_id: session.return_id ?? undefined,
+      studio: session.studio ?? undefined,
+      otherLocation: session.other_location ?? "",
+      creationMonitor: `${session.created_by?.first_name} ${session.created_by?.last_name}`,
+      finishMonitor: session.finished_by ?? "",
       notes: session.notes ?? "",
       finished: session.finished ?? false,
-      noTagItems: session.noTagItems ?? [""],
+      noTagItems: session.no_tag_items ?? [""],
       scan: "",
     },
     mode: "onChange",
   });
 
+  // console.log(form.getValues("finish_time"));
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
   const baseUrl = getStrapiURL();
 
   async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
     const headers = {
       method: "GET",
       headers: {
@@ -167,14 +177,10 @@ const EditCheckoutSessionForm = ({
 
   async function getItemByBarcode(barcode: string) {
     const query = qs.stringify({
-      sort: ["createdAt:desc"],
-      filters: {
-        $or: [{ mTechBarcode: { $eq: barcode } }],
-      },
+      m_tech_barcode: barcode,
     });
-    const url = new URL("/api/inventory-items", baseUrl);
+    const url = new URL("/api/inventory", baseUrl);
     url.search = query;
-    // console.log("query data", query)
     return fetchData(url.href);
   }
 
@@ -186,12 +192,12 @@ const EditCheckoutSessionForm = ({
           let newArr = [...itemIdArray];
           if (newArr.includes(data[0].id)) {
             let newItemObjArr = structuredClone(itemObjArr);
-            newItemObjArr.map((item) => {
+            newItemObjArr.map((item: any) => {
               if (item.id === data[0].id) item.out = !item.out;
             });
             setItemObjArr(newItemObjArr);
           } else {
-            let newItem: InventoryItem = data[0];
+            let newItem: inventory_items = data[0];
             newItem.out = true;
             newArr = [...itemIdArray, data[0].id];
             setItemIdArray(newArr);
@@ -216,31 +222,37 @@ const EditCheckoutSessionForm = ({
 
     // console.log(form.formState.isSubmitting);
 
-    let formValue: CheckoutSessionTypePost = {
-      creationTime: new Date(values.creationTime).toISOString(),
-      stuIDCheckout: values.stuIDCheckout,
-      stuIDCheckin: values.stuIDCheckin,
+    let formValue: Prisma.checkout_sessionsUpdateInput = {
+      // creat: new Date(values.creation_time).toISOString(),
+      // stuIDCheckout: values.stuIDCheckout,
+      // return_id: values.return_id,
       studio: values.studio,
-      otherLocation: values.otherLocation,
-      creationMonitor: values.creationMonitor,
-      // finishTime:
-      //   values.finishTime === "" ? undefined : new Date().toISOString(),
-      finishMonitor: values.finishMonitor,
+      other_location: values.otherLocation ?? null,
+      // creationMonitor: values.creationMonitor,
+      return_id: values.return_id ?? null,
+      finish_time: values.finish_time ? values.finish_time : null,
+      //   values.finish_time === "" ? undefined : new Date().toISOString(),
+      finished_by: values.finishMonitor ?? null,
       finished: values.finished,
       notes: values.notes ?? "",
-      inventory_items: itemIdArray ?? [0],
-      noTagItems: noTagItems,
-      user: session.user?.id ?? 0,
+      // inventory_items: itemIdArray ?? [0],
+      no_tag_items: noTagItems ?? [""],
+      // user: session.user?.id ?? 0,
     };
 
+    if (itemObjArr.length > 0)
+      formValue.inventory_items = {
+        set: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
+      };
+
     try {
-      const res = await updateCheckoutSessionActionWithItems(
+      const { res, error } = await updateCheckoutSessionActionWithItems(
         formValue,
         sessionId,
         itemObjArr,
       );
-      setError(res.strapiErrors);
-      if (!res?.strapiErrors?.status) {
+      // setError(res.strapiErrors);
+      if (!error) {
         router.push("/dashboard/checkout");
         toast.success("Checkout Session Saved");
       }
@@ -262,8 +274,8 @@ const EditCheckoutSessionForm = ({
   }
 
   function handleFinish() {
-    if (form.getValues("stuIDCheckin") === "") {
-      window.alert("Checkin ID needed.");
+    if (!form.getValues("return_id")) {
+      window.alert("Return ID needed.");
       return;
     }
     // console.log(itemObjArr.filter((item) => item.out === false));
@@ -271,7 +283,7 @@ const EditCheckoutSessionForm = ({
       window.alert("Unreturned item(s)");
       return;
     }
-    if (noTagItems.includes("unreturned")) {
+    if ((noTagItems as string[]).includes("unreturned")) {
       window.alert("Unreturned untagged item(s)");
       return;
     }
@@ -282,10 +294,10 @@ const EditCheckoutSessionForm = ({
       return;
     }
     // window.alert("finished");
-    form.setValue("finishTime", new Date().toISOString());
+    form.setValue("finish_time", new Date().toISOString());
     form.setValue(
       "finishMonitor",
-      `${thisMonitor.firstName} ${thisMonitor.lastName}`,
+      `${thisMonitor.first_name} ${thisMonitor.last_name}`,
     );
     form.setValue("finished", true);
     onSubmit(form.getValues());
@@ -300,7 +312,7 @@ const EditCheckoutSessionForm = ({
         >
           <FormField
             control={form.control}
-            name="creationTime"
+            name="creation_time"
             render={({ field }) => (
               <FormItem className="col-span-1 size-full">
                 <FormLabel>Creation Time</FormLabel>
@@ -323,7 +335,7 @@ const EditCheckoutSessionForm = ({
           {session.finished ? (
             <FormField
               control={form.control}
-              name="finishTime"
+              name="finish_time"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Finish Time</FormLabel>
@@ -377,12 +389,15 @@ const EditCheckoutSessionForm = ({
           />
           <FormField
             control={form.control}
-            name="stuIDCheckin"
+            name="return_id"
             render={({ field }) => (
               <FormItem className="col-span-1 size-full">
-                <FormLabel>Checkin ID</FormLabel>
+                <FormLabel>Return ID</FormLabel>
                 <FormControl>
-                  <Input {...field} disabled={session.finished}></Input>
+                  <Input
+                    {...field}
+                    disabled={session.finished ?? false}
+                  ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -400,7 +415,7 @@ const EditCheckoutSessionForm = ({
                     if (value !== "Other") form.setValue("otherLocation", "");
                   }}
                   value={field.value}
-                  disabled={session.finished}
+                  disabled={session.finished ?? false}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -431,7 +446,8 @@ const EditCheckoutSessionForm = ({
                     <Input
                       {...field}
                       disabled={
-                        form.getValues("studio") !== "Other" || session.finished
+                        form.getValues("studio") !== "Other" ||
+                        (session.finished ?? false)
                       }
                     ></Input>
                   </FormControl>
@@ -500,7 +516,7 @@ const EditCheckoutSessionForm = ({
                     onChange={setNoTagItems}
                     name="item"
                     placeHolder="Enter a item"
-                    disabled={session.finished}
+                    disabled={session.finished ?? false}
                   />
                 </FormControl>
                 <FormMessage className="text-slate-400">
@@ -530,7 +546,7 @@ const EditCheckoutSessionForm = ({
                       className="bg-indigo-100"
                       placeholder={"Scan a barcode"}
                       {...field}
-                      disabled={session.finished}
+                      disabled={session.finished ?? false}
                     ></Input>
                   </FormControl>
                   <FormMessage />
@@ -543,7 +559,11 @@ const EditCheckoutSessionForm = ({
             <EmbededTable
               data={itemObjArr}
               setItemObjArr={setItemObjArr}
-              columns={inventoryColumns}
+              columns={
+                session.finished ?? false
+                  ? inventoryColumnsFinished
+                  : inventoryColumns
+              }
               disabled={session.finished ?? false}
             />
           </div>

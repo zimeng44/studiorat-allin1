@@ -173,7 +173,7 @@ const BookingAddItemEmbededTable = ({
                     <TableCell
                       className="whitespace-nowrap p-1 md:p-4"
                       key={header[0]}
-                    >{`${row.mTechBarcode}`}</TableCell>
+                    >{`${row.m_btechBarcode}`}</TableCell>
                   ) : (
                     ``
                   )}

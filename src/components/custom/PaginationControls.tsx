@@ -19,20 +19,21 @@ import {
 } from "@/components/ui/select";
 
 interface PaginationControlsProps {
-  pageCount: number;
+  // pageCount: number;
   totalEntries: number;
 }
 
 const PaginationControls: FC<PaginationControlsProps> = ({
-  pageCount,
+  // pageCount,
   totalEntries,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const pageIndex = searchParams.get("page") ?? "1";
+  const pageIndex = searchParams.get("pageIndex") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
+  const pageCount = Math.ceil(totalEntries / parseInt(pageSize));
   const numRowsSelected = searchParams.get("numRowsSelected") ?? "0";
 
   const pageSizeInt = parseInt(pageSize);
@@ -45,11 +46,11 @@ const PaginationControls: FC<PaginationControlsProps> = ({
         : parseInt(pageSize);
 
   const createPageURL = (
-    pageNumber: number | string,
+    pageIndex: number | string,
     newPageSize: number | string,
   ) => {
     const params = new URLSearchParams(searchParams);
-    params.set("page", pageNumber.toString());
+    params.set("pageIndex", pageIndex.toString());
     params.set("pageSize", newPageSize.toString());
     return `${pathname}?${params.toString()}`;
   };
@@ -62,7 +63,7 @@ const PaginationControls: FC<PaginationControlsProps> = ({
         {numRowsSelected} of {displayNumRows} row(s) selected.
       </div>
       <div className="mr-3 hidden flex-1 text-sm text-muted-foreground lg:flex">
-         Total: {totalEntries}
+        Total: {totalEntries}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">

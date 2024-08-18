@@ -36,7 +36,7 @@ interface FilterFormProps {
   // creationMonitor?: string;
   // finishMonitor?: string;
   // notes?: string;
-  isFinished?: string;
+  is_finished?: string;
   // userName?: string;
 }
 
@@ -60,7 +60,7 @@ const formSchema = z.object({
   // creationMonitor: z.string().optional(),
   // finishMonitor: z.string().optional(),
   // notes: z.string().optional(),
-  isFinished: z.string().optional(),
+  is_finished: z.string().optional(),
   // inventory_items: z.string().optional(),
   // user: z.string().optional(),
   // username: z.string().min(2).max(50),
@@ -76,7 +76,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
     params.set("filterOpen", "false");
     params.set("filterOn", "true");
     for (const [key, value] of Object.entries(filterValues)) {
-      if (value === "" || value === "All") {
+      if (value === "" || value === "All" || !value) {
         params.delete(key);
         continue;
       }
@@ -107,16 +107,12 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
-    // console.log(values.finished);
     router.push(createPageURL(values));
   }
 
   const handleReset = () => {
     const blankFilter = {
-      isFinished: "",
+      is_finished: "",
     };
     router.push(resetPageURL(blankFilter));
   };
@@ -131,7 +127,7 @@ const FilterForm = ({ filter }: { filter: FilterFormProps }) => {
           <div className="col-span-1 mt-3 flex gap-10 bg-slate-200">
             <FormField
               control={form.control}
-              name="isFinished"
+              name="is_finished"
               render={({ field }) => (
                 <FormItem className="m-2">
                   <FormLabel className="ml-1">Finished</FormLabel>

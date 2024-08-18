@@ -11,170 +11,86 @@ import {
   InventoryItem,
 } from "@/data/definitions";
 import { updateItemAction } from "./inventory-actions";
+import prisma from "@/lib/prisma";
+import { checkout_sessions, inventory_items, Prisma } from "@prisma/client";
 
 export async function createCheckoutSessionAction(
-  newSession: CheckoutSessionTypePost,
+  newSession: Prisma.checkout_sessionsCreateInput,
 ) {
   const authToken = await getAuthToken();
   if (!authToken) throw new Error("No auth token found");
 
-  // console.log(newSession);
-
-  // console.log(newSession.finishTime);
-  // if (newSession.creationTime === undefined){
-  //   // delete newSession.creationTime;
-  //   // newSession.creationTime="";
-  // }else
-  //   newSession.creationTime = new Date(newSession.creationTime).toISOString();
-
-  // if (newSession.finishTime === undefined) delete newSession.finishTime;
-  // else newSession.finishTime = new Date(newSession.finishTime).toISOString();
-
   const payload = {
     data: newSession,
+    include: { inventory_items: true, user: true, created_by: true },
   };
-
-  const data = await mutateData("POST", "/api/checkout-sessions", payload);
-  const flattenedData = flattenAttributes(data);
-
-  if (data.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: data.error,
-      message: "Failed to create checkout session.",
-    };
+  // console.log(payload);
+  try {
+    const res = await prisma.checkout_sessions.create(payload);
+    return { res: res, error: null };
+  } catch (error) {
+    console.log(error);
+    return { res: null, error: "Error creating new session" };
   }
-
-  // redirect("/dashboard/checkout/" + flattenedData.id);
-  redirect("/dashboard/checkout/");
 }
 
-export const updateCheckoutSessionAction = async (
-  updatedSession: CheckoutSessionTypePost,
-  id: string,
-) => {
-  const payload = {
-    data: updatedSession,
-  };
-
-  const responseData = await mutateData(
-    "PUT",
-    `/api/checkout-sessions/${id}`,
-    payload,
-  );
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
-  }
-
-  if (responseData.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update checkout session.",
-    };
-  }
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/checkout");
-
-  // console.log(flattenedData);
-
-  return {
-    // ...prevState,
-    message: "checkout session updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
-};
-
 export const updateCheckoutSessionActionWithItems = async (
-  updatedSession: CheckoutSessionTypePost,
+  updatedSession: Prisma.checkout_sessionsUpdateInput,
   id: string,
-  items: InventoryItem[],
+  items: inventory_items[],
 ) => {
   const payload = {
+    where: { id: parseInt(id) },
     data: updatedSession,
+    include: { inventory_items: true, user: true, created_by: true },
   };
 
-  const responseData = await mutateData(
-    "PUT",
-    `/api/checkout-sessions/${id}`,
-    payload,
-  );
-
-  if (!responseData) {
+  try {
+    const responseData = await prisma.checkout_sessions.update(payload);
+  } catch (error) {
     return {
       // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
+      // strapiErrors: null,
+      res: null,
+      error: "Oops! Something went wrong. Please try again.",
     };
   }
-
-  if (responseData.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update checkout session.",
-    };
-  }
-
-  const flattenedData = flattenAttributes(responseData);
 
   let itemsResponses = Array(items.length);
 
   try {
-    items.map((item, index) => {
-      // console.log(item);
-      const id = item.id as number;
-      itemsResponses[index] = updateItemAction(
-        { out: item.out, broken: item.broken },
-        id.toString(),
-      );
-    });
+    await Promise.all(
+      items.map(async (item, index) => {
+        // console.log(item);
+        const id = item.id as number;
+        itemsResponses[index] = await updateItemAction(
+          { out: item.out, broken: item.broken },
+          id.toString(),
+        );
+      }),
+    );
   } catch (error) {
     console.log(itemsResponses);
-    return { itemsError: itemsResponses };
+    return { res: null, error: "Error updating inventory item(s)" };
   }
 
-  revalidatePath("/dashboard/checkout");
-
-  // console.log(flattenedData);
-
-  return {
-    // ...prevState,
-    message: "Checkout session updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
+  return { res: "done", error: null };
 };
 
 export async function deleteCheckoutSessionAction(id: string) {
-  const responseData = await mutateData(
-    "DELETE",
-    `/api/checkout-sessions/${id}`,
-  );
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
 
-  if (!responseData) {
-    return {
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+    const res = await prisma.checkout_sessions.delete({
+      where: { id: parseInt(id) },
+    });
+
+    // console.log(res);
+    // revalidatePath("/dashboard/booking");
+    return { res: res, error: null };
+  } catch (error: any) {
+    // console.log(error);
+    return { res: null, error: error.toString() };
   }
-
-  if (responseData.error) {
-    return {
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/checkout");
 }

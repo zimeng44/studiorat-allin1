@@ -18,9 +18,10 @@ import RosterPermissionsTable from "./RosterPermissionsTable";
 
 interface ViewTabsProps {
   data: any[];
-  meta: { pagination: { pageCount: number; total: number } };
+  // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
   filter: {};
-  userRole: string;
+  userRole?: string;
 }
 
 function LinkCard(item: Readonly<RosterPermissionType>) {
@@ -29,7 +30,7 @@ function LinkCard(item: Readonly<RosterPermissionType>) {
       <Card className="relative">
         <CardHeader>
           <CardTitle className="break-all leading-8 text-pink-500">
-            {item.permissionTitle || "Title Missing"}
+            {item.permission_title || "Title Missing"}
             {/* {item.model || "Model"} */}
           </CardTitle>
         </CardHeader>
@@ -45,7 +46,8 @@ function LinkCard(item: Readonly<RosterPermissionType>) {
 
 const RosterPermissionsPageTabs = ({
   data,
-  meta,
+  // meta,
+  totalEntries,
   filter,
   userRole,
 }: ViewTabsProps) => {
@@ -91,19 +93,19 @@ const RosterPermissionsPageTabs = ({
         columnsStatus={columnsStatus}
         filter={filter}
         setColumnsStatus={setColumnsStatus}
-        userRole={userRole}
+        userRole={userRole ?? ""}
       />
 
       <RosterPermissionsTable
         data={data}
         columnsStatus={columnsStatus}
-        userRole={userRole}
+        userRole={userRole ?? ""}
       />
 
       <div className="flex items-center justify-end space-x-2 py-2">
         <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
+          // pageCount={meta.pagination.pageCount}
+          totalEntries={totalEntries}
         />
       </div>
     </div>

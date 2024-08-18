@@ -1,9 +1,9 @@
 export type InventoryReportsFields = {
-  createdAt: string;
-  creatorName: string;
-  inventorySize: string;
+  created_at: string;
+  created_by: string;
+  inventory_size: string;
   notes: string;
-  isFinished: string;
+  is_finished: string;
 };
 
 export interface TableFieldStatus {
@@ -11,29 +11,29 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  createdAt: TableFieldStatus;
-  creatorName: TableFieldStatus;
-  numItemsChecked: TableFieldStatus;
-  inventorySize: TableFieldStatus;
+  created_at: TableFieldStatus;
+  created_by: TableFieldStatus;
+  num_items_checked: TableFieldStatus;
+  inventory_size: TableFieldStatus;
   notes: TableFieldStatus;
-  isFinished: TableFieldStatus;
+  is_finished: TableFieldStatus;
 }
 
 export type ColumnKeys = keyof TableColumnStatus;
 
 export const inventoryReportsColumns = [
   {
-    accessorKey: "createdAt",
+    accessorKey: "created_at",
     header: "Created At",
     visible: true,
   },
   {
-    accessorKey: "creatorName",
+    accessorKey: "created_by",
     header: "Creator",
     visible: true,
   },
   {
-    accessorKey: "inventorySize",
+    accessorKey: "inventory_size",
     header: "Inventory Size",
     visible: true,
   },
@@ -43,26 +43,26 @@ export const inventoryReportsColumns = [
     visible: false,
   },
   {
-    accessorKey: "isFinished",
-    header: "isFinished",
+    accessorKey: "is_finished",
+    header: "Finished",
     visible: true,
   },
 ];
 
 export const inventoryReportsColumnsDefault = {
-  createdAt: {
+  created_at: {
     header: "CreatedAt",
     visible: true,
   },
-  creatorName: {
+  created_by: {
     header: "Creator",
     visible: true,
   },
-  numItemsChecked: {
+  num_items_checked: {
     header: "Checked Items",
     visible: true,
   },
-  inventorySize: {
+  inventory_size: {
     header: "Inventory Size",
     visible: false,
   },
@@ -70,8 +70,8 @@ export const inventoryReportsColumnsDefault = {
     header: "Notes",
     visible: false,
   },
-  isFinished: {
-    header: "isFinished",
+  is_finished: {
+    header: "Finished",
     visible: true,
   },
 };

@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { roster_permissions } from "@prisma/client";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -50,22 +51,24 @@ const INITIAL_STATE = {
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
   // mTechBarcode: z.string().min(12).and(z.string().max(13)),
-  permissionCode: z.string().min(2),
-  permissionTitle: z.string().optional(),
+  permission_code: z.string().min(2),
+  permission_title: z.string().optional(),
   instructor: z.string().optional(),
-  permissionDetails: z.string().optional(),
-  permittedStudios: z.string().array().optional(),
-  startDate: z.string().nullable(),
-  endDate: z.string().nullable(),
+  permission_details: z.string().optional(),
+  permitted_studios: z.string().array().optional(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable(),
 });
 
-const AddRosterPermissionForm = ({
-  permissionId,
-  permission,
-}: {
-  permissionId: string;
-  permission: RosterPermissionType;
-}) => {
+const AddRosterPermissionForm = (
+  {
+    // permissionId,
+    // permission,
+  }: {
+    // permissionId: string;
+    // permission: roster_permissions;
+  },
+) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
   // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
@@ -74,8 +77,8 @@ const AddRosterPermissionForm = ({
   // const [itemObjArr, setItemObjArr] = useState(
   //   rosterPermissions?.data ?? Array(),
   // );
-  // const [permittedStudios, setPermittedStudios] = useState(
-  //   permission.permittedStudios ?? ["example"],
+  // const [permitted_studios, setPermittedStudios] = useState(
+  //   permission.permitted_studios ?? ["example"],
   // );
 
   // console.log(permission.permmitedStudios);
@@ -102,13 +105,13 @@ const AddRosterPermissionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      permissionCode: permission.permissionCode ?? "",
-      permissionTitle: permission.permissionTitle ?? "",
-      instructor: permission.instructor ?? "",
-      permissionDetails: permission.permissionDetails ?? "",
-      permittedStudios: permission.permittedStudios ?? ["example"],
-      startDate: permission.startDate ?? "",
-      endDate: permission.endDate ?? "",
+      permission_code: "",
+      permission_title: "",
+      instructor: "",
+      permission_details: "",
+      permitted_studios: ["example"],
+      start_date: undefined,
+      end_date: undefined,
     },
   });
   // if (isLoading) return <p>Loading...</p>;
@@ -120,15 +123,17 @@ const AddRosterPermissionForm = ({
     // ✅ This will be type-safe and validated.
 
     // console.log(values);
-    // values.permittedStudios = permittedStudios;
-
-    if (values.startDate === "") values.startDate = null;
-    if (values.endDate === "") values.endDate = null;
+    // values.permitted_studios = permitted_studios;
+    const createValues = {
+      ...values,
+      start_date: values.start_date === "" ? null : values.start_date,
+      end_date: values.end_date === "" ? null : values.end_date,
+    };
 
     try {
-      const res = await createRosterPermissionAction(values);
-      setError(res?.strapiErrors ?? null);
-      if (!res?.strapiErrors?.status) {
+      const res = await createRosterPermissionAction(createValues);
+      // setError(res?.strapiErrors ?? null);
+      if (res) {
         router.push("/dashboard/roster/permissions");
         toast.success("Roster Saved.");
       }
@@ -169,7 +174,7 @@ const AddRosterPermissionForm = ({
           <div className="gap-2 space-y-1 px-2 md:grid md:max-w-[600px] md:grid-cols-2">
             <FormField
               control={form.control}
-              name="permissionCode"
+              name="permission_code"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-fit md:col-span-2">
                   <FormLabel>Permission Code</FormLabel>
@@ -182,7 +187,7 @@ const AddRosterPermissionForm = ({
             />
             <FormField
               control={form.control}
-              name="permissionTitle"
+              name="permission_title"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Title</FormLabel>
@@ -209,7 +214,7 @@ const AddRosterPermissionForm = ({
 
             <FormField
               control={form.control}
-              name="startDate"
+              name="start_date"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Start Date</FormLabel>
@@ -258,7 +263,7 @@ const AddRosterPermissionForm = ({
 
             <FormField
               control={form.control}
-              name="endDate"
+              name="end_date"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>End Date</FormLabel>
@@ -307,7 +312,7 @@ const AddRosterPermissionForm = ({
 
             <FormField
               control={form.control}
-              name="permittedStudios"
+              name="permitted_studios"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Permitted Studios</FormLabel>
@@ -315,7 +320,7 @@ const AddRosterPermissionForm = ({
                     <TagsInput
                       value={field.value}
                       onChange={(value) => form.setValue(field.name, value)}
-                      name="permittedStudios"
+                      name="permitted_studios"
                       placeHolder="Enter a studio"
                     />
                   </FormControl>
@@ -328,7 +333,7 @@ const AddRosterPermissionForm = ({
 
             <FormField
               control={form.control}
-              name="permissionDetails"
+              name="permission_details"
               render={({ field }) => (
                 <FormItem className="col-span-1">
                   <FormLabel>Details</FormLabel>

@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model bookings {
+  id              Int               @id @default(autoincrement())
+  start_time      DateTime?         @db.Timestamp(6)
+  end_time        DateTime?         @db.Timestamp(6)
+  use_location    String?           @db.VarChar(255)
+  notes           String?
+  type            String?           @db.VarChar(255)
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
+  created_by      User?             @relation(name: "created_by", fields: [created_by_id], references: [id])
+  created_by_id   String?
+  updated_by      User?             @relation(name: "updated_by", fields: [updated_by_id], references: [id])
+  updated_by_id   String?
+  user            User?             @relation(name: "user", fields: [userId], references: [id])
+  userId          String?
+  inventory_items inventory_items[]
+
+  @@index([created_by_id], map: "bookings_created_by_id_fk")
+  @@index([updated_by_id], map: "bookings_updated_by_id_fk")
+}
+
+model checkout_sessions {
+  id              Int               @id @default(autoincrement())
+  creation_time   DateTime?         @default(now()) @map("creationTime") @db.Timestamp(6)
+  studio          String?           @db.VarChar(255)
+  other_location  String?           @map("otherLocation") @db.VarChar(255)
+  finish_time     DateTime?         @map("finishTime") @db.Timestamp(6)
+  finished_by     String?           @map("finishMonitor") @db.VarChar(255)
+  notes           String?
+  finished        Boolean?          @default(false)
+  return_id       String?           @db.VarChar(255)
+  created_at      DateTime?         @default(now()) @map("createdAt") @db.Timestamp(6)
+  updated_at      DateTime?         @default(now()) @map("updatedAt") @db.Timestamp(6)
+  updated_by_id   Int?
+  user            User?             @relation(name: "user", fields: [userId], references: [id])
+  userId          String?
+  created_by      User?             @relation(name: "created_by", fields: [creatorId], references: [id])
+  creatorId       String?
+  no_tag_items    String[]          @map("noTagItems")
+  inventory_items inventory_items[]
+
+  @@index([id])
+}
+
+model files {
+  id                Int       @id @default(autoincrement())
+  name              String?   @db.VarChar(255)
+  alternative_text  String?   @db.VarChar(255)
+  caption           String?   @db.VarChar(255)
+  width             Int?
+  height            Int?
+  formats           Json?
+  hash              String?   @db.VarChar(255)
+  ext               String?   @db.VarChar(255)
+  mime              String?   @db.VarChar(255)
+  size              Decimal?  @db.Decimal(10, 2)
+  url               String?   @db.VarChar(255)
+  preview_url       String?   @db.VarChar(255)
+  provider          String?   @db.VarChar(255)
+  provider_metadata Json?
+  folder_path       String?   @db.VarChar(255)
+  created_at        DateTime? @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  created_by_id     Int?
+  updated_by_id     Int?
+
+  @@index([created_by_id], map: "files_created_by_id_fk")
+  @@index([updated_by_id], map: "files_updated_by_id_fk")
+  @@index([created_at], map: "upload_files_created_at_index")
+  @@index([ext], map: "upload_files_ext_index")
+  @@index([folder_path], map: "upload_files_folder_path_index")
+  @@index([name], map: "upload_files_name_index")
+  @@index([size], map: "upload_files_size_index")
+  @@index([updated_at], map: "upload_files_updated_at_index")
+}
+
+model globals {
+  id                 Int                  @id @default(autoincrement())
+  title              String?              @db.VarChar(255)
+  description        String?
+  created_at         DateTime?            @db.Timestamp(6)
+  updated_at         DateTime?            @db.Timestamp(6)
+  published_at       DateTime?            @db.Timestamp(6)
+  created_by_id      Int?
+  updated_by_id      Int?
+  globals_components globals_components[]
+
+  @@index([created_by_id], map: "globals_created_by_id_fk")
+  @@index([updated_by_id], map: "globals_updated_by_id_fk")
+}
+
+model globals_components {
+  id             Int      @id @default(autoincrement())
+  entity_id      Int?
+  component_id   Int?
+  component_type String?  @db.VarChar(255)
+  field          String?  @db.VarChar(255)
+  order          Float?
+  globals        globals? @relation(fields: [entity_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([entity_id, component_id, field, component_type], map: "globals_unique")
+  @@index([component_type], map: "globals_component_type_index")
+  @@index([entity_id], map: "globals_entity_fk")
+  @@index([field], map: "globals_field_index")
+}
+
+model home_pages {
+  id                    Int                     @id @default(autoincrement())
+  title                 String?                 @db.VarChar(255)
+  description           String?
+  created_at            DateTime?               @db.Timestamp(6)
+  updated_at            DateTime?               @db.Timestamp(6)
+  published_at          DateTime?               @db.Timestamp(6)
+  created_by_id         Int?
+  updated_by_id         Int?
+  home_pages_components home_pages_components[]
+
+  @@index([created_by_id], map: "home_pages_created_by_id_fk")
+  @@index([updated_by_id], map: "home_pages_updated_by_id_fk")
+}
+
+model home_pages_components {
+  id             Int         @id @default(autoincrement())
+  entity_id      Int?
+  component_id   Int?
+  component_type String?     @db.VarChar(255)
+  field          String?     @db.VarChar(255)
+  order          Float?
+  home_pages     home_pages? @relation(fields: [entity_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([entity_id, component_id, field, component_type], map: "home_pages_unique")
+  @@index([component_type], map: "home_pages_component_type_index")
+  @@index([entity_id], map: "home_pages_entity_fk")
+  @@index([field], map: "home_pages_field_index")
+}
+
+model inventory_items {
+  id                Int                 @id @default(autoincrement())
+  m_tech_barcode    String?             @db.VarChar(255)
+  make              String?             @db.VarChar(255)
+  model             String?             @db.VarChar(255)
+  category          String?             @db.VarChar(255)
+  description       String?             @db.VarChar(255)
+  accessories       String?             @db.VarChar(255)
+  storage_location  String?             @db.VarChar(255)
+  comments          String?
+  out               Boolean?            @default(false)
+  broken            Boolean?            @default(false)
+  created_at        DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(6)
+  created_by_id     Int?
+  updated_by_id     Int?
+  checkout_sessions checkout_sessions[]
+  bookings          bookings[]
+  inventory_reports inventory_reports[]
+
+  @@index([created_by_id], map: "inventory_items_created_by_id_fk")
+  @@index([updated_by_id], map: "inventory_items_updated_by_id_fk")
+}
+
+model inventory_reports {
+  id              Int               @id @default(autoincrement())
+  is_finished     Boolean?          @default(false)
+  notes           String?
+  inventory_size  Int?
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_by_id   Int?
+  created_by      User              @relation(fields: [created_by_id], references: [id])
+  created_by_id   String
+  inventory_items inventory_items[]
+
+  @@index([created_by_id], map: "inventory_reports_created_by_id_fk")
+  @@index([updated_by_id], map: "inventory_reports_updated_by_id_fk")
+}
+
+model roster_permissions {
+  id                 Int       @id @default(autoincrement())
+  permission_code    String?   @unique @db.VarChar(255)
+  permission_title   String?   @db.VarChar(255)
+  instructor         String?   @db.VarChar(255)
+  permission_details String?
+  permitted_studios  String[]
+  start_date         DateTime? @db.Timestamp(6)
+  end_date           DateTime? @db.Timestamp(6)
+  created_at         DateTime? @default(now()) @db.Timestamp(6)
+  updated_at         DateTime? @default(now()) @db.Timestamp(6)
+  rosters            rosters[]
+
+  @@index([permission_code], map: "roster_permission_code_fk")
+  @@index([permission_title], map: "roster_permission_title_fk")
+}
+
+model rosters {
+  id               Int                  @id @default(autoincrement())
+  stu_n            String?              @unique @db.VarChar(255)
+  net_id           String?              @db.VarChar(255)
+  stu_name         String?              @db.VarChar(255)
+  academic_level   String?              @db.VarChar(255)
+  academic_program String?              @db.VarChar(255)
+  agreement        Boolean?             @default(false)
+  excused_abs      Int?                 @default(0)
+  excused_late     Int?                 @default(0)
+  unexcused_abs    Int?                 @default(0)
+  unexcused_late   Int?                 @default(0)
+  late_return      Int?                 @default(0)
+  created_at       DateTime?            @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?            @default(now()) @db.Timestamp(6)
+  permissions      roster_permissions[]
+
+  @@index([stu_name], map: "rosters_stu_name_fk")
+  @@index([stu_n], map: "rosters_stu_n_fk")
+}
+
+model User {
+  id                        String              @id @default(cuid())
+  stu_id                    String?             @unique @map("stuId") @db.VarChar(255)
+  net_id                    String?             @unique @map("netId") @db.VarChar(255)
+  first_name                String?             @map("firstName") @db.VarChar(255)
+  last_name                 String?             @map("lastName") @db.VarChar(255)
+  email                     String?             @unique @db.VarChar(255)
+  emailVerified             DateTime?
+  image                     String?
+  password                  String?             @db.VarChar(255)
+  academic_level            String?             @map("academicLevel") @db.VarChar(255)
+  bio                       String?             @db.VarChar(255)
+  blocked                   Boolean?            @default(false)
+  accounts                  Account[]
+  sessions                  Session[]
+  // Optional for WebAuthn support
+  Authenticator             Authenticator[]
+  created_at                DateTime?           @default(now()) @map("createdAt") @db.Timestamp(6)
+  updated_at                DateTime?           @default(now()) @map("updatedAt") @db.Timestamp(6)
+  user_role                 user_role           @relation(fields: [user_roleId], references: [id])
+  created_by_id             Int?
+  updated_by_id             Int?
+  user_roleId               Int
+  inventory_reports         inventory_reports[]
+  checkout_session_users    checkout_sessions[] @relation("user")
+  checkout_session_creators checkout_sessions[] @relation("created_by")
+  bookings_created_by       bookings[]          @relation("created_by")
+  bookings_users            bookings[]          @relation("user")
+  bookings_updated_by       bookings[]          @relation("updated_by")
+}
+
+model user_role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(255)
+  users User[]
+}

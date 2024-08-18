@@ -1,9 +1,9 @@
 // export type InventoryColumnFields = {
-//   stuN?: string;
-//   netId?: string;
-//   stuName?: string;
-//   academicLevel?: string;
-//   academicProgram?: string;
+//   stu_n?: string;
+//   net_id?: string;
+//   stu_name?: string;
+//   academic_level?: string;
+//   academic_program?: string;
 // };
 
 export interface TableFieldStatus {
@@ -11,39 +11,39 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  stuN: TableFieldStatus;
-  netId: TableFieldStatus;
-  stuName: TableFieldStatus;
-  academicLevel: TableFieldStatus;
-  academicProgram: TableFieldStatus;
+  stu_n: TableFieldStatus;
+  net_id: TableFieldStatus;
+  stu_name: TableFieldStatus;
+  academic_level: TableFieldStatus;
+  academic_program: TableFieldStatus;
   agreement: TableFieldStatus;
-  excusedAbs: TableFieldStatus;
-  excusedLate: TableFieldStatus;
-  unexcusedAbs: TableFieldStatus;
-  unexcusedLate: TableFieldStatus;
-  lateReturn: TableFieldStatus;
+  excused_abs: TableFieldStatus;
+  excused_late: TableFieldStatus;
+  unexcused_abs: TableFieldStatus;
+  unexcused_late: TableFieldStatus;
+  late_return: TableFieldStatus;
 }
 
 export type ColumnKey = keyof TableColumnStatus;
 
 export const rosterColumnsDefault = {
-  stuN: {
+  stu_n: {
     header: "Student Number",
     visible: true,
   },
-  netId: {
+  net_id: {
     header: "NetID",
     visible: true,
   },
-  stuName: {
+  stu_name: {
     header: "Student Name",
     visible: true,
   },
-  academicLevel: {
+  academic_level: {
     header: "Level",
     visible: true,
   },
-  academicProgram: {
+  academic_program: {
     header: "Program",
     visible: false,
   },
@@ -51,23 +51,23 @@ export const rosterColumnsDefault = {
     header: "Agreement",
     visible: true,
   },
-  excusedAbs: {
+  excused_abs: {
     header: "Excused Absentce",
     visible: false,
   },
-  excusedLate: {
+  excused_late: {
     header: "Excused Late",
     visible: false,
   },
-  unexcusedAbs: {
+  unexcused_abs: {
     header: "Unexcused Absence",
     visible: false,
   },
-  unexcusedLate: {
+  unexcused_late: {
     header: "Unexcused Lte",
     visible: false,
   },
-  lateReturn: {
+  late_return: {
     header: "Late Return",
     visible: false,
   },
@@ -75,27 +75,27 @@ export const rosterColumnsDefault = {
 
 export const inventoryColumns = [
   {
-    accessorKey: "stuN",
+    accessorKey: "stu_n",
     header: "Student Number",
     visible: true,
   },
   {
-    accessorKey: "netId",
+    accessorKey: "net_id",
     header: "NetID",
     visible: true,
   },
   {
-    accessorKey: "stuName",
+    accessorKey: "stu_name",
     header: "Name",
     visible: true,
   },
   {
-    accessorKey: "academicLevel",
+    accessorKey: "academic_level",
     header: "Level",
     visible: true,
   },
   {
-    accessorKey: "academicProgram",
+    accessorKey: "academic_program",
     header: "Program",
     visible: false,
   },
@@ -104,9 +104,9 @@ export const inventoryColumns = [
     header: "Agreement",
     visible: true,
   },
-  { accessorKey: "excusedAbs", header: "Excused Absentce", visible: false },
-  { accessorKey: "excusedLate", header: "Excused Late", visible: false },
-  { accessorKey: "unexcusedAbs", header: "Unexcused Absence", visible: false },
-  { accessorKey: "unexcusedLate", header: "Unexcused Lte", visible: false },
-  { accessorKey: "lateReturn", header: "Late Return", visible: false },
+  { accessorKey: "excused_abs", header: "Excused Absentce", visible: false },
+  { accessorKey: "excused_late", header: "Excused Late", visible: false },
+  { accessorKey: "unexcused_abs", header: "Unexcused Absence", visible: false },
+  { accessorKey: "unexcused_late", header: "Unexcused Lte", visible: false },
+  { accessorKey: "late_return", header: "Late Return", visible: false },
 ];

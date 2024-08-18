@@ -12,16 +12,21 @@ import {
   Vault,
 } from "lucide-react";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { auth } from "@/auth";
 
 export default async function DashboardLayout({
   children,
 }: {
   readonly children: React.ReactNode;
 }) {
+  // const currentRole = "Admin";
   const { data: thisUser } = await getUserMeLoader();
-  const currentRole = thisUser.role?.name;
+  const currentRole = thisUser?.user_role?.name;
   // console.log(thisUser);
-  // if (thisUser.role.name !== "Admin" && thisUser.role.name !== "Monitor") {
+  // if (
+  //   thisUser?.user_role.name !== "Admin" &&
+  //   thisUser?.user_role.name !== "Monitor"
+  // ) {
   //   return <p>User Access Forbidden</p>;
   // }
   return (

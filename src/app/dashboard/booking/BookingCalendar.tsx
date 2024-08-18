@@ -17,7 +17,7 @@ import {
   endOfMonth,
 } from "date-fns";
 import "!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css";
-import { BookingType } from "@/data/definitions";
+import { BookingType, BookingWithUserAndItems } from "@/data/definitions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Loading from "./loading";
 import { Loader2 } from "lucide-react";
@@ -54,15 +54,16 @@ export default function BookingCalendar({
       setDate(newDate);
       setIsLoading(true);
       // window.alert(newDate);
-      getDateData(newDate).then(({ data, meta }) => {
+      getDateData(newDate).then(({ data, error }) => {
         setIsLoading(false);
+        // console.log("Date is ###############", data);
         setEvents(
-          data.map((booking: BookingType) => {
+          data.map((booking: BookingWithUserAndItems) => {
             return {
               id: booking.id,
-              title: `${booking.user?.firstName} ${booking.user?.lastName}`,
-              start: new Date(booking?.startTime ?? ``),
-              end: new Date(booking?.endTime ?? ``),
+              title: `${booking.user?.first_name} ${booking.user?.last_name}`,
+              start: new Date(booking?.start_time ?? ``),
+              end: new Date(booking?.end_time ?? ``),
             };
           }),
         );
@@ -99,7 +100,7 @@ export default function BookingCalendar({
 
       if (confirm)
         router.push(
-          `/dashboard/booking/new?startTime=${start.toISOString()}&view=${pageView}`,
+          `/dashboard/booking/new?start_time=${start.toISOString()}&view=${pageView}`,
         );
     },
     [setEvents],
@@ -161,14 +162,14 @@ export default function BookingCalendar({
 
       // console.log(subMonths(startOfMonth(newDate),1));
 
-      // console.log(start.toLocaleString(), end.toLocaleString());
-
       const query = qs.stringify({
-        populate: ["user"],
-        sort: ["createdAt:desc"],
-        filters: {
-          $and: [{ startTime: { $gte: start } }, { startTime: { $lt: end } }],
-        },
+        // populate: ["user"],
+        // sort: ["createdAt:desc"],
+        // filters: {
+        // $and: [{ startTime: { $gte: start } }, { startTime: { $lt: end } }],
+        // },
+        start: start,
+        end: end,
       });
       const url = new URL("/api/bookings", baseUrl);
       url.search = query;

@@ -97,7 +97,7 @@ export async function uploadProfileImageAction(
   if (!user.ok)
     throw new Error("You are not authorized to perform this action.");
 
-  const userId = user.data.id;
+  const userId = user?.data?.id;
 
   // CONVERT FORM DATA TO OBJECT
   const data = Object.fromEntries(formData);

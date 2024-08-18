@@ -1,5 +1,5 @@
 // import { Button } from '@/components/ui/button';
-import { getHomePageData } from "@/data/loaders";
+// import { getHomePageData } from "@/data/loaders";
 import { HeroSection } from "@/components/custom/HeroSection";
 // import { flattenAttributes } from "@/lib/utils";
 // import qs from "qs";
@@ -52,8 +52,91 @@ function blockRenderer(block: any) {
 // }
 
 export default async function Home() {
-  const strapiData = await getHomePageData();
+  // const strapiData = await getHomePageData();
   // console.log('data length: ',strapiData.data);
+  const strapiData = {
+    id: 1,
+
+    title: "Home Page",
+
+    description: "This is our first page",
+
+    createdAt: "2024-07-13T00:54:28.607Z",
+
+    updatedAt: "2024-08-12T06:39:08.885Z",
+
+    publishedAt: "2024-07-13T00:54:29.608Z",
+
+    blocks: [
+      {
+        id: 1,
+
+        __component: "layout.hero-section",
+
+        heading: "Studio Rat",
+
+        subHeading: "Your studio management assistant",
+
+        image: {},
+
+        link: {
+          id: 1,
+
+          url: "/signin",
+
+          text: "Sign In",
+
+          isExternal: false,
+        },
+      },
+
+      {
+        id: 1,
+
+        __component: "layout.features-section",
+
+        title: "Features Section",
+
+        description: "This is where our features live",
+
+        feature: [
+          {
+            id: 1,
+
+            heading: "Booking",
+
+            subHeading:
+              "Book a studio or equipment for your personal or academic projects. ",
+
+            icon: "CLOCK_ICON",
+          },
+
+          {
+            id: 3,
+
+            heading: "Studio Operation",
+
+            subHeading:
+              "Tools help studio monitors to keep the daily operation of the studios in check.",
+
+            icon: "CHECK_ICON",
+          },
+
+          {
+            id: 2,
+
+            heading: "On Cloud",
+
+            subHeading: "Everything is done on the cloud hassle free",
+
+            icon: "CLOUD_ICON",
+          },
+        ],
+      },
+    ],
+
+    meta: {},
+  };
 
   const { blocks } = strapiData;
 

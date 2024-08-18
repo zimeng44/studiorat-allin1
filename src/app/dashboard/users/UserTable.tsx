@@ -34,12 +34,12 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
   // console.log(sort);
 
   // let filterOpen = searchParams.get("filterOpen") === "true";
-  const pageIndex = searchParams.get("page") ?? "1";
+  const pageIndex = searchParams.get("pageIndex") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
   // const isAllSelected = searchParams.get("isAllSelected") === "true";
   // const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
-  // remember the current page and page size to tell if navigated to a new page or set a new page size
+  // remember the current pageIndex and pageIndex size to tell if navigated to a new pageIndex or set a new pageIndex size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
   // const [numRowsSelected, setNumRowsSelected] = useState(0);
@@ -68,7 +68,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
     router.replace(`${pathname}?${params.toString()}`);
   }, [rowsSelected]);
 
-  // clear the row selections when moving to a new page or setting a new page size
+  // clear the row selections when moving to a new pageIndex or setting a new pageIndex size
   if (pageIndex !== currentPage || pageSize !== currentPageSize) {
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
@@ -186,7 +186,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap" key={key}>
                   {value.header}
-                  {key === "mTechBarcode" ||
+                  {/* {key === "mTechBarcode" ||
                   key === "make" ||
                   key === "model" ||
                   key === "category" ||
@@ -200,7 +200,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                     </Button>
                   ) : (
                     ``
-                  )}
+                  )} */}
                 </TableHead>
               ) : (
                 ``
@@ -241,10 +241,10 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                       ``
                     );
                   }
-                  if (key === "fullName") {
+                  if (key === "full_name") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row.firstName} ${row.lastName}`}
+                        {`${row.first_name} ${row.last_name}`}
                       </TableCell>
                     ) : (
                       ``

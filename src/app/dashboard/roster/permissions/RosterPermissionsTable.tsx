@@ -32,6 +32,8 @@ import {
 } from "./rosterPermissionsColumns";
 import { TagsInput } from "react-tag-input-component";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { deleteRosterPermissionAction } from "@/data/actions/rosterPermission-actions";
 
 const MAX_TEXT_LEN = 20;
 
@@ -119,7 +121,7 @@ const RosterTable = ({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     const counter = rowsSelected.filter((item) => item === true).length;
     // console.log("Size of rowSelected is ", rowsSelected.length);
 
@@ -129,12 +131,16 @@ const RosterTable = ({
 
     if (!confirm) return;
 
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteRosterAction(data[index].id);
-      }
-    });
+    await Promise.all(
+      rowsSelected.map(async (row, index) => {
+        if (row) {
+          await deleteRosterPermissionAction(data[index].id);
+        }
+      }),
+    );
+
     setRowsSelected(Array(data.length).fill(false));
+    toast.success("Entries Deleted");
   };
 
   const handleSort = (field: string) => {
@@ -194,11 +200,11 @@ const RosterTable = ({
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
                   {value.header}
-                  {key === "permissionCode" ||
-                  key === "permissionTitle" ||
+                  {key === "permission_code" ||
+                  key === "permission_title" ||
                   key === "instructor" ||
-                  key === "startDate" ||
-                  key === "endDate" ? (
+                  key === "start_date" ||
+                  key === "end_date" ? (
                     <Button
                       className="p-1 text-left"
                       variant="ghost"
@@ -240,7 +246,7 @@ const RosterTable = ({
                   ``
                 )}
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "permissionDetails") {
+                  if (key === "permission_details") {
                     return value.visible ? (
                       <TableCell className="break-word" key={key}>
                         <HoverCard>
@@ -256,10 +262,10 @@ const RosterTable = ({
                             </div>
                           </HoverCardTrigger>
                           <HoverCardContent>
-                            {row.permissionDetails.startsWith("http") ? (
+                            {row?.permission_details?.startsWith("http") ? (
                               <a
                                 className="text-indigo-500"
-                                href={`${row.permissionDetails}`}
+                                href={`${row.permission_details}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) =>
@@ -273,7 +279,7 @@ const RosterTable = ({
                                 Link
                               </a>
                             ) : (
-                              row.permissionDetails
+                              row.permission_details
                             )}
                           </HoverCardContent>
                         </HoverCard>
@@ -301,13 +307,13 @@ const RosterTable = ({
                       ``
                     );
                   }
-                  if (key === "permittedStudios") {
+                  if (key === "permitted_studios") {
                     return value.visible ? (
                       <TableCell className="break-word" key={key}>
                         <TagsInput
-                          value={row.permittedStudios}
+                          value={row.permitted_studios}
                           // onChange={(value) => form.setValue(field.name, value)}
-                          name="permittedStudios"
+                          name="permitted_studios"
                           // placeHolder="Enter a studio"
                           disabled
                         />
@@ -317,7 +323,7 @@ const RosterTable = ({
                     );
                   }
 
-                  if (key === "startDate" || key === "endDate") {
+                  if (key === "start_date" || key === "end_date") {
                     return value.visible ? (
                       <TableCell className="break-word" key={key}>
                         {row[key] === null
