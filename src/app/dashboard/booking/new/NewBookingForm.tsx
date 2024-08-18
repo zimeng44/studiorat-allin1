@@ -374,15 +374,8 @@ const NewBookingForm = ({
       type: form.getValues("type"),
       start_time: updatedStart,
       end_time: updatedEnd,
-
       use_location: form.getValues("use_location") ?? "",
-      // bookingCreator: booking?.created_by?.id ?? 0,
       notes: form.getValues("notes") ?? "",
-      // userId: user?.id,
-      // created_by_id: currentUser.id,
-      // inventory_items: {
-      //   connect: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
-      // },
       user: {
         connect: { id: user?.id },
       },
@@ -399,12 +392,10 @@ const NewBookingForm = ({
           : undefined,
     };
 
-    // console.log(createValues);
-    // console.log("here");
-
     const { res, error } = await createBookingAction(createValues);
 
     // console.log(res);
+    if (error) setError(error);
 
     if (!error) {
       toast.success("New Booking Added Successfully");
@@ -418,7 +409,7 @@ const NewBookingForm = ({
 
   return (
     <div>
-      {error ? <p>{error}</p> : ``}
+      {error ? <p className="text-red-500">{error}</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

@@ -429,11 +429,6 @@ const EditBookingForm = ({
       return;
     }
 
-    // if (itemObjArr.length > 0)
-    //   updateValues.inventory_items = {
-    //     set: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
-    //   };
-
     const res = await updateBookingAction(updateValues, parseInt(bookingId));
 
     // console.log(res);
@@ -475,7 +470,7 @@ const EditBookingForm = ({
 
   return (
     <div>
-      {error ? <p>{error}</p> : ``}
+      {error ? <p className="text-red-500">{error}</p> : ``}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -835,6 +830,7 @@ const EditBookingForm = ({
                 if (res) {
                   toast.success("Booking Deleted");
                   router.push(`/dashboard/booking?view=${view}`);
+                  router.refresh();
                 }
               }}
               variant="destructive"

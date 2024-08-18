@@ -153,7 +153,7 @@ export async function createBookingAction(newBooking: any) {
     }
   } catch (error) {
     console.log(error);
-    return { res: null, error: error };
+    return { res: null, error: "Error creating booking" };
   }
 
   // console.log(newBooking.finishTime);

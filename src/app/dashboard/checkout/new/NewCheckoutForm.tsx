@@ -228,16 +228,24 @@ const NewCheckoutForm = ({
   }, 200);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
-    // let formValue: checkout_sessions = ;
-
     try {
       //update the out status of the items in the master inventory
-      itemObjArr.map((itemObj) =>
-        updateItemAction({ out: itemObj.out }, itemObj.id),
-      );
+      try {
+        await Promise.all(
+          itemObjArr.map(async (itemObj) => {
+            const { res, error } = await updateItemAction(
+              { out: itemObj.out },
+              itemObj.id,
+            );
+            if (error) {
+              throw Error("Error updateing items");
+            }
+          }),
+        );
+      } catch (error) {
+        console.log(error);
+      }
+
       //create the session in the checkout
       const { res, error } = await createCheckoutSessionAction({
         creation_time: new Date(values.creationTime),
