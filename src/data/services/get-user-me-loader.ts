@@ -17,6 +17,7 @@ export async function getUserMeLoader() {
   // url.search = query;
 
   const authToken = await getAuthToken();
+  // console.log(authToken);
   // console.log(await verifyUserService(authToken));
 
   // if (!authToken) return { ok: false, data: null, error: null };
@@ -34,6 +35,7 @@ export async function getUserMeLoader() {
     // if (data.error) return { ok: false, data: null, error: data.error };
     // return { ok: true, data: data, error: null };
     // console.log(await verifyUserService(authToken ?? ""));
+
     return await verifyUserService(authToken ?? "");
   } catch (error) {
     console.log(error);

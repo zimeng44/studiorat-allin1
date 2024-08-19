@@ -54,6 +54,7 @@ function blockRenderer(block: any) {
 export default async function Home() {
   // const strapiData = await getHomePageData();
   // console.log('data length: ',strapiData.data);
+  // console.log("here");
   const strapiData = {
     id: 1,
 

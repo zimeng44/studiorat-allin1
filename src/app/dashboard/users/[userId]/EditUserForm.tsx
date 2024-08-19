@@ -38,10 +38,10 @@ const INITIAL_STATE = {
   status: "",
 };
 
-const mTechBarcode = z.union([
-  z.string().min(12).and(z.string().max(13)),
-  z.string().length(0),
-]);
+// const mTechBarcode = z.union([
+//   z.string().min(12).and(z.string().max(13)),
+//   z.string().length(0),
+// ]);
 
 const formSchema = z.object({
   net_id: z
@@ -77,6 +77,12 @@ const formSchema = z.object({
     .max(20, {
       message: "Last Name must be between 2 and 20 characters",
     }),
+  password: z
+    .string()
+    .min(8, {
+      message: "Min length is 8",
+    })
+    .optional(),
   academic_level: z
     .string()
     .min(3, {
@@ -107,25 +113,7 @@ const EditUserForm = ({
   const searchParams = useSearchParams();
 
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
-  // const deleteSummaryById = deleteInventoryItemAction.bind(null, itemId);
 
-  // const [deleteState, deleteAction] = useFormState(
-  //   deleteSummaryById,
-  //   INITIAL_STATE,
-  // );
-
-  // const [updateState, updateAction] = useFormState(
-  //   updateInventoryItemAction,
-  //   INITIAL_STATE,
-  // );
-
-  // const [data, setData] = useState(item);
-  // const [currentRowId, setCurrentRowId] = useState(itemId);
-  // const data = item;
-
-  // console.log(itemId);
-
-  // 1. Define your form.
   const form =
     currentUserRole.name === "Admin"
       ? useForm<z.infer<typeof formSchema>>({
@@ -135,6 +123,7 @@ const EditUserForm = ({
             stu_id: user.stu_id ?? undefined,
             first_name: user.first_name ?? undefined,
             last_name: user.last_name ?? undefined,
+            password: undefined,
             academic_level: user.academic_level ?? undefined,
             user_role: user?.user_role?.id ?? undefined,
             email: user.email ?? undefined,
@@ -149,6 +138,7 @@ const EditUserForm = ({
             stu_id: user.stu_id ?? undefined,
             first_name: user.first_name ?? undefined,
             last_name: user.last_name ?? undefined,
+            password: undefined,
             academic_level: user.academic_level ?? undefined,
             user_role: user?.user_role?.id,
             email: user.email ?? undefined,
@@ -161,16 +151,14 @@ const EditUserForm = ({
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
     const submitValue = {
       ...values,
+      stu_id: form.getValues("stu_id") ? form.getValues("stu_id") : null,
       user_role: { connect: { id: values.user_role } },
     };
     // console.log(values);
     const { res, error } = await updateUserAction(submitValue, userId);
-    console.log(error);
+    // console.log(error);
     // setStrapiErrors(res.strapiErrors);
 
     if (!error) {
@@ -262,6 +250,19 @@ const EditUserForm = ({
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input {...field}></Input>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" placeholder="New Password"></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>

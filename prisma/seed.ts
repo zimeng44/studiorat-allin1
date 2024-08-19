@@ -12,7 +12,7 @@ async function main() {
       email: "alice@example.com",
       first_name: "Alice",
       password: "securepassword123",
-      user_roleId: 0, // Note: In a real application, ensure passwords are hashed!
+      user_role: { connect: { id: 2 } }, // Note: In a real application, ensure passwords are hashed!
     },
   });
 

@@ -24,26 +24,20 @@ export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
   const { data: currentUser } = await getUserMeLoader();
-  const data = await getBookingById(params.bookingId, currentUser);
+
+  const { data: bookingData, count } = await getBookingById(
+    params.bookingId,
+    currentUser,
+  );
   // console.log(data);
 
   const jwtCookie = cookies().get("jwt");
 
-  if (jwtCookie) {
-    const { value: authToken } = jwtCookie;
-    // You can now use authToken safely here
-    // console.log(authToken);
-  } else {
-    // Handle the case where the cookie is not found
-    console.error("JWT cookie not found");
-  }
+  if (!jwtCookie) console.error("JWT cookie not found");
 
-  if (!data) {
+  if (!bookingData) {
     return <p>No Booking Found</p>;
   }
-  // const temp = cookies().get(`tempBookingItems${params.bookingId}`) ?? "";
-  // const tempItems = temp?.value ? JSON.parse(temp.value) : undefined;
-  // console.log("data is", data);
 
   return (
     <div className="flex-col p-0 md:p-5">
@@ -69,7 +63,7 @@ export default async function BookingDetails({
       <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Booking</h1>
       <div className="flex items-center md:px-2">
         <EditBookingForm
-          booking={data}
+          booking={bookingData}
           bookingId={params.bookingId}
           currentUser={currentUser}
           authToken={jwtCookie?.value ?? ""}

@@ -12,11 +12,14 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardRoute() {
+  // console.log("here");
+
   const { data: thisUser, ok } = await getUserMeLoader();
 
   if (!ok || !thisUser) redirect("/signin");
 
   // const thisUser = await auth();
+  // console.log(thisUser);
 
   const pageIndex = "1";
   const pageSize = "20";
@@ -34,7 +37,7 @@ export default async function DashboardRoute() {
     use_location: null,
     type: null,
   };
-  const { data: upcomingBookings, count: bookingMeta } = await getBookings(
+  const { data: upcomingBookings, count: bookingCount } = await getBookings(
     bookingsSort,
     pageIndex.toString(),
     pageSize.toString(),
@@ -46,7 +49,7 @@ export default async function DashboardRoute() {
   const checkoutFilter = {
     finished: "unfinished",
   };
-  const { data: checkoutUnfinished, count: checkoutMeta } =
+  const { data: checkoutUnfinished, count: checkoutCount } =
     await getCheckoutSessions(
       checkoutSort,
       pageIndex.toString(),
@@ -58,7 +61,7 @@ export default async function DashboardRoute() {
   const inventoryFilter = {
     m_tech_barcode: "MT",
   };
-  const { data: inventoryItems, count: inventoryMeta } =
+  const { data: inventoryItems, count: inventoryCount } =
     await getInventoryItems(
       inventorySort,
       pageIndex.toString(),
@@ -73,7 +76,7 @@ export default async function DashboardRoute() {
       to: new Date().toISOString(),
     },
   };
-  const { data: inventoryReportsItems, count: inventoryReportsMeta } =
+  const { data: inventoryReportsItems, count: inventoryReportsCount } =
     await getInventoryReports(
       inventoryReportsSort,
       pageIndex.toString(),
@@ -81,7 +84,7 @@ export default async function DashboardRoute() {
       inventoryReportsFilter,
     );
 
-  // console.log(inventoryReportsFilter);
+  // console.log("inventoryReportsFilter");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -89,12 +92,12 @@ export default async function DashboardRoute() {
       <DashboardCards
         userRole={thisUser?.user_role.name}
         upcomingBookings={upcomingBookings}
-        upcomingBookingsNum={bookingMeta ?? 0}
+        upcomingBookingsNum={bookingCount ?? 0}
         checkoutUnfinished={checkoutUnfinished}
-        checkoutUnfinishedNum={checkoutMeta ?? 0}
-        inventorySizeTagged={inventoryMeta}
+        checkoutUnfinishedNum={checkoutCount ?? 0}
+        inventorySizeTagged={inventoryCount}
         inventoryReportsInADay={
-          inventoryReportsItems?.length ? inventoryReportsMeta : 0
+          inventoryReportsItems?.length ? inventoryReportsCount : 0
         }
       />
       {/* <LogoutButton /> */}

@@ -1,7 +1,10 @@
+"use server";
 import { getStrapiURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
 import prisma from "@/lib/prisma";
+import bcrypt from "bcrypt";
+import { Prisma } from "@prisma/client";
 
 const secretKey = "secret";
 const key = new TextEncoder().encode(secretKey);
@@ -16,30 +19,33 @@ export async function encrypt(payload: any) {
 }
 
 export async function decrypt(input?: string): Promise<any> {
-  if (!input || input === "") return { user: null, Expire: null };
+  if (!input || input === "") return { data: null, EXPIRE: null };
   const { payload } = await jwtVerify(input, key, {
     algorithms: ["HS256"],
   });
   return payload;
 }
 
-async function getUserByIdentifier(identifier: string) {
+export async function getUserByIdentifier(identifier: string) {
   try {
     const user = await prisma.user.findMany({
       where: {
         OR: [
-          { email: { contains: identifier, mode: "insensitive" } },
-          { net_id: { contains: identifier, mode: "insensitive" } },
+          { email: { equals: identifier } },
+          { net_id: { equals: identifier } },
         ],
       },
       include: { user_role: true },
     });
     // console.log(user);
-    return user[0];
+    return { data: user[0], error: null };
   } catch (error) {
     // console.log(error);
-    console.error("Failed to fetch user:", error);
-    throw new Error("Failed to fetch user.");
+    console.error(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return { data: null, error: error.message };
+    }
+    return { data: null, error: "Unknown Error Happened" };
   }
 }
 
@@ -78,16 +84,52 @@ export async function registerUserService(userData: RegisterUserProps) {
 }
 
 export async function loginUserService(userData: LoginUserProps) {
-  try {
-    const user = await getUserByIdentifier(userData.identifier);
-    // const expires = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7);
-    const jwt = await encrypt({ user, EXPIRE });
-    // console.log(jwt);
+  const url = new URL("/api/users/auth", baseUrl);
+  const authToken = await getAuthToken();
 
-    return { jwt: jwt, user: user };
+  // console.log(JSON.stringify({ ...userData }));
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...userData }),
+      cache: "no-cache",
+    });
+
+    const { data, error } = await response.json();
+
+    if (error) return { user: null, jwt: null, error: error };
+
+    const jwt = await encrypt({ data, EXPIRE });
+    return { jwt: jwt, user: data, error: null };
+    // console.log(await response.json());
+    // return response.json();
   } catch (error) {
-    return { error: error };
+    console.error("Login User Service Error:", error);
   }
+
+  // try {
+  //   const { data: user, error } = await getUserByIdentifier(
+  //     userData.identifier,
+  //   );
+
+  //   if (!user || !user.password) return { user: null, jwt: null };
+
+  //   console.log(userData.password);
+
+  //   const passwordMatches = await bcrypt.compare(
+  //     userData.password,
+  //     user.password,
+  //   );
+  //   const passwordMatches = true;
+
+  //   return { jwt: jwt, user: user };
+  // } catch (error) {
+  //   return { error: error };
+  // }
 
   // Create the session
 
@@ -118,21 +160,25 @@ export async function verifyUserService(jwt: string) {
     return { ok: false, data: null, error: "jwt not found" };
 
   try {
-    const { user, EXPIRE: currentExpire } = await decrypt(jwt);
+    const { data: user, EXPIRE: currentExpire } = await decrypt(jwt);
     // console.log(user);
     if (new Date(currentExpire).toISOString() <= new Date().toISOString())
       return { ok: false, data: null, error: "JWT expired" };
 
     // console.log(new Date(currentExpire).toISOString());
 
-    const userInDb = await getUserByIdentifier(user.net_id);
+    const { data: userInDb, error } = await getUserByIdentifier(user.net_id);
 
     // const expires = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7);
     // const jwtDb = await encrypt({ userInDb, EXPIRE });
 
-    if (userInDb) return { ok: true, data: userInDb, error: null };
+    if (userInDb) {
+      return { ok: true, data: userInDb, error: null };
+    } else {
+      return { ok: false, data: null, error: error };
+    }
 
-    return { ok: false, data: null, error: "jwt auth failed" };
+    // return { ok: false, data: null, error: "jwt auth failed" };
   } catch (error) {
     return { ok: false, data: null, error: error };
   }

@@ -54,9 +54,9 @@ export function ProfileForm({
       <div className="grid space-y-4 ">
         <div className="grid grid-cols-2 gap-4">
           <Input
-            id="username"
-            name="username"
-            placeholder="Username"
+            id="net_id"
+            name="net_id"
+            placeholder="NetID"
             defaultValue={data.net_id || ""}
             disabled
           />
@@ -72,16 +72,25 @@ export function ProfileForm({
 
         <div className="grid grid-cols-2 gap-4">
           <Input
-            id="firstName"
-            name="firstName"
+            id="first_name"
+            name="first_name"
             placeholder="First Name"
             defaultValue={data.first_name || ""}
           />
           <Input
-            id="lastName"
-            name="lastName"
+            id="last_name"
+            name="last_name"
             placeholder="Last Name"
             defaultValue={data.last_name || ""}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            id="password"
+            name="password"
+            placeholder="New Password"
+            defaultValue={undefined}
+            type="password"
           />
         </div>
         <Textarea
@@ -90,7 +99,7 @@ export function ProfileForm({
           placeholder="Write your bio here..."
           className="h-[124px] w-full resize-none rounded-md border p-2"
           defaultValue={data.bio || ""}
-          required
+          // required
         />
       </div>
       <div className="flex justify-end">

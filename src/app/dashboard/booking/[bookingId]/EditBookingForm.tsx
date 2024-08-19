@@ -1,15 +1,11 @@
 "use client";
 import React from "react";
 import { cn } from "@/lib/utils";
-// import { getCookies, setCookie, deleteCookie, getCookie } from "cookies-next";
 import {
   InventoryItem,
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
-  RetrievedItems,
-  // BookingTypePost,
-  UserType,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,9 +31,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-// import Link from "next/link";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
@@ -50,24 +44,11 @@ import {
   deleteBookingAction,
   updateBookingAction,
 } from "@/data/actions/booking-actions";
-import qs from "qs";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { bookings, inventory_items, Prisma, User } from "@prisma/client";
-
-type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
-  include: {
-    user: { include: { user_role: true } };
-    created_by: true;
-    inventory_items: true;
-    // user_role: true;
-  };
-}>;
-
-type UserWithRole = Prisma.UserGetPayload<{
-  include: { user_role: true };
-}>;
+import { inventory_items } from "@prisma/client";
+import { BookingWithUserAndItems, UserWithRole } from "@/data/definitions";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -89,14 +70,6 @@ const formSchema = z.object({
   // studio_user: z.string().optional(),
 });
 
-// const getIdArray: number[] = (booking: CheckoutSessionType) => {
-//   let IdArray: number[] = booking.inventory_items?.data.map(
-//     (item: InventoryItem) => item.id,
-//   );
-
-//   return IdArray;
-// };
-
 const EditBookingForm = ({
   booking,
   bookingId,
@@ -114,11 +87,8 @@ const EditBookingForm = ({
   const view = searchParams.get("view") ?? "calendar";
   const isPast = new Date() >= (booking?.start_time ?? new Date());
   const [error, setError] = useState("");
-  // console.log(isPast);
-  // const params = new URLSearchParams(searchParams);
 
   const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
-  // const inventoryItems = booking.inventory_items;
   const [itemObjArr, setItemObjArr] = useState(
     booking.inventory_items ?? Array(),
   );

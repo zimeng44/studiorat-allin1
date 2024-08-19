@@ -68,17 +68,17 @@ export function SignupForm({
               />
               <ZodErrors error={formState?.zodErrors?.net_id} />
             </div>
-            <div className="space-y-2">
-              {/* <Label htmlFor="email">Email</Label>
+            {/* <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoCapitalize="none"
                 placeholder="name@example.com"
-              /> */}
+              />
               <ZodErrors error={formState?.zodErrors?.email} />
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

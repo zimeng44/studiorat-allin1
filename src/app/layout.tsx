@@ -2,7 +2,6 @@ import type { Metadata, ResolvingMetadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-
 // import { getGlobalPageData, getGlobalPageMetadata } from "@/data/loaders";
 import { Header } from "@/components/custom/Header";
 import { Footer } from "@/components/custom/Footer";
@@ -11,7 +10,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 import { NavigationEvents } from "@/components/custom/navigation-events";
 import type { Viewport } from "next";
-import prisma from "@/lib/prisma";
+// import prisma from "@/lib/prisma";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -44,7 +43,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // const globalData = await getGlobalPageData();
-
   const globalData = {
     id: 1,
 
@@ -132,12 +130,7 @@ export default async function RootLayout({
 
     meta: {},
   };
-
-  // const data = await prisma.checkout_sessions.findMany({
-  //   include: { user: true, created_by: true, inventory_items: true },
-  // });
-  // console.log(data);
-
+  // console.log("here");
   return (
     <html lang="en">
       <body className={inter.className}>

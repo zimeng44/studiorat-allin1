@@ -15,7 +15,7 @@ export default async function AccountRoute() {
   const userData = user.data;
   const userImage = userData?.image;
 
-  if (!userData || !user || !userImage) return <p>No user found</p>;
+  if (!userData) return <p>No user found</p>;
 
   return (
     <>

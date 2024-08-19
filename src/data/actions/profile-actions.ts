@@ -11,6 +11,7 @@ import {
   fileUploadService,
 } from "@/data/services/file-service";
 import { revalidatePath } from "next/cache";
+import { updateUserAction } from "./users-actions";
 
 export async function updateProfileAction(
   userId: string,
@@ -19,21 +20,32 @@ export async function updateProfileAction(
 ) {
   const rawFormData = Object.fromEntries(formData);
 
-  const query = qs.stringify({
-    populate: "*",
-  });
+  const { data } = await getUserMeLoader();
+
+  if (data?.id !== userId) {
+    return {
+      ...prevState,
+      strapiErrors: null,
+      message: "You're not authorized to update this record",
+    };
+  }
+  // const query = qs.stringify({
+  //   populate: "*",
+  // });
 
   const payload = {
-    firstName: rawFormData.firstName,
-    lastName: rawFormData.lastName,
-    bio: rawFormData.bio,
+    first_name: rawFormData.first_name.toString(),
+    last_name: rawFormData.last_name.toString(),
+    bio: rawFormData.bio.toString(),
+    password: rawFormData.password.toString(),
   };
 
-  const responseData = await mutateData(
-    "PUT",
-    `/api/users/${userId}?${query}`,
-    payload,
-  );
+  // const responseData = await mutateData(
+  //   "PUT",
+  //   `/api/users/${userId}?${query}`,
+  //   payload,
+  // );
+  const responseData = await updateUserAction(payload, userId);
 
   if (!responseData) {
     return {
@@ -51,13 +63,13 @@ export async function updateProfileAction(
     };
   }
 
-  const flattenedData = flattenAttributes(responseData);
+  // const flattenedData = flattenAttributes(responseData);
   revalidatePath("/dashboard/account");
 
   return {
     ...prevState,
     message: "Profile Updated",
-    data: flattenedData,
+    data: { data: responseData },
     strapiErrors: null,
   };
 }

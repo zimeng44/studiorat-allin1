@@ -2,13 +2,15 @@
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
 import {
-  registerUserService,
+  // registerUserService,
   loginUserService,
 } from "@/data/services/auth-services";
 import { getUserMeLoader } from "../services/get-user-me-loader";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import bcrypt from "bcrypt";
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -108,35 +110,65 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
   }
 
+  const formPassword = formData.get("password")?.toString();
+  const hashedPassword = formPassword
+    ? await bcrypt.hash(formPassword, 10)
+    : undefined;
+
   const correctedData =
-    currentUser?.user_role.name === "Monitor"
+    currentUser?.user_role.name !== "Admin"
       ? {
           ...validatedFields.data,
           user_role: {
-            connect: { id: 2 },
+            connect: { id: 2 }, //anyone who isn't a Admin can only create user as Authenticated
           },
+          password: hashedPassword,
         }
       : {
           ...validatedFields.data,
           user_role: {
             connect: { id: parseInt(formData.get("user_role") as string) },
           },
+          stu_id: formData.get("stu_id")?.toString()
+            ? formData.get("stu_id")?.toString()
+            : null,
+          password: hashedPassword,
         };
 
   const payload = { data: correctedData };
   // console.log(validatedFields.data);
 
   // const responseData = await registerUserService(validatedFields.data);
-  const responseData = await prisma.user.create(payload);
-
-  if (!responseData) {
-    return {
-      ...prevState,
-      strapiErrors: null,
-      zodErrors: null,
-      message: "Ops! Something went wrong. Please try again.",
-    };
+  try {
+    await prisma.user.create(payload);
+    // if (!responseData) {
+    //   return {
+    //     ...prevState,
+    //     strapiErrors: {
+    //       message: "Ops! Something went wrong. Please try again.",
+    //     },
+    //     zodErrors: null,
+    //     message: "Ops! Something went wrong. Please try again.",
+    //   };
+    // }
+    // console.log("here");
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // if (error.code === "P2002")
+      console.log(error.message);
+      return {
+        ...prevState,
+        strapiErrors: {
+          name: error.name,
+          message: error.code === "P2002" ? "User exists" : error.message,
+        },
+        zodErrors: null,
+        message: null,
+      };
+    }
   }
+  revalidatePath("/dashboard/users");
+  redirect("/dashboard/users");
 
   // if (responseData.error) {
   //   return {
@@ -148,7 +180,6 @@ export async function registerUserAction(prevState: any, formData: FormData) {
   // }
 
   // cookies().set("jwt", responseData.jwt, config);
-  redirect("/dashboard/users");
 }
 
 const schemaLogin = z.object({
@@ -188,23 +219,24 @@ export async function loginUserAction(prevState: any, formData: FormData) {
 
   // console.log(responseData);
 
-  if (!responseData) {
+  if (!responseData?.user) {
     return {
       ...prevState,
-      // strapiErrors: responseData.error,
+      strapiErrors: { message: responseData?.error },
       zodErrors: null,
       message: "Ops! Something went wrong. Please try again.",
     };
   }
 
-  if (responseData.error) {
-    return {
-      ...prevState,
-      strapiErrors: responseData.error,
-      zodErrors: null,
-      message: "Failed to Login.",
-    };
-  }
+  // if (responseData.error) {
+  //   return {
+  //     ...prevState,
+  //     strapiErrors: responseData.error,
+  //     zodErrors: null,
+  //     message: "Failed to Login.",
+  //   };
+  // }
+  // console.log(responseData.jwt);
 
   cookies().set("jwt", responseData.jwt ?? "", config);
 

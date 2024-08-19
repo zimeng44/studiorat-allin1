@@ -3,9 +3,8 @@ import { Prisma } from "@prisma/client";
 export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
   include: {
     user: { include: { user_role: true } };
-    created_by: true;
+    created_by: { include: { user_role: true } };
     inventory_items: true;
-    // user_role: true;
   };
 }>;
 

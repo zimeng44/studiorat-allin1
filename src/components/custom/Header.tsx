@@ -9,7 +9,7 @@ import { SummaryForm } from "@/components/forms/SummaryForm";
 import { CalendarPlus2, PlusCircle, User } from "lucide-react";
 import HeaderMenu from "./HeaderMenu";
 import { UserRole } from "@/data/definitions";
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
 
 interface HeaderProps {
   data: {

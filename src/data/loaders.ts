@@ -905,7 +905,7 @@ export async function getBookings(
     include: {
       inventory_items: true,
       user: { include: { user_role: true } },
-      created_by: true,
+      created_by: { include: { user_role: true } },
     },
     where: {
       AND:
@@ -943,7 +943,7 @@ export async function getBookingById(
       inventory_items: true,
     },
   };
-  return await prisma.bookings.findFirst(query);
+  return { data: await prisma.bookings.findFirst(query), count: 1 };
   // console.log(url.href);
 
   // return fetchData(url.href);
@@ -1191,7 +1191,7 @@ export async function getBookingsByQuery(
           ],
         },
   };
-  
+
   const countQuery = {
     where: query.where,
   };
