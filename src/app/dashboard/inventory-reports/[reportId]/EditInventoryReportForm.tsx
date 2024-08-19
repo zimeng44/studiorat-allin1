@@ -158,7 +158,7 @@ const EditInventoryReportForm = ({
           setItemObjArr([data[0], ...itemObjArr]);
 
           // Auto Save
-          if (itemObjArr.length > 4) {
+          if (itemObjArr.length > 4 && itemObjArr.length % 5 === 0) {
             // onSubmit(form.watch());
             let updateValues: Prisma.inventory_reportsUpdateInput = {
               created_by: { connect: { id: thisMonitor.id } },
@@ -179,7 +179,9 @@ const EditInventoryReportForm = ({
               if (res) {
                 toast.success("Report Autosaved.");
                 // redirect();
-                router.push("/dashboard/inventory-reports/" + (await res).id);
+                router.push("/dashboard/inventory-reports/" + res.id);
+              } else {
+                toast.error("Error Auto Saving Inventory Report");
               }
             } catch (error) {
               toast.error("Error Auto Saving Inventory Report");
@@ -189,7 +191,7 @@ const EditInventoryReportForm = ({
               //   name: "New Inventory Report Error",
               // });
               // setLoading(false);
-              return;
+              // return;
             }
 
             // setAutoSaved(true)

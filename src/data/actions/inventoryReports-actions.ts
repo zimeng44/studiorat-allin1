@@ -24,8 +24,13 @@ export async function createInventoryReportAction(
     const resData = prisma.inventory_reports.create(payload);
     return { res: resData, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: "Error adding new item" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }
 
@@ -45,30 +50,32 @@ export const updateInventoryReportAction = async (
     revalidatePath("/dashboard/inventory-reports");
     return { res: responseData, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: "Error updating the item" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 };
 
 export async function deleteInventoryReportAction(id: string) {
-  const responseData = await mutateData(
-    "DELETE",
-    `/api/inventory-reports/${id}`,
-  );
-
-  if (!responseData) {
-    return {
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
-  }
-
-  if (responseData.error) {
-    return {
-      strapiErrors: responseData.error,
-      message: "Failed to delete Item.",
-    };
-  }
-
-  redirect("/dashboard/inventory-reports");
+  // const responseData = await mutateData(
+  //   "DELETE",
+  //   `/api/inventory-reports/${id}`,
+  // );
+  // if (!responseData) {
+  //   return {
+  //     strapiErrors: null,
+  //     message: "Oops! Something went wrong. Please try again.",
+  //   };
+  // }
+  // if (responseData.error) {
+  //   return {
+  //     strapiErrors: responseData.error,
+  //     message: "Failed to delete Item.",
+  //   };
+  // }
+  // redirect("/dashboard/inventory-reports");
 }

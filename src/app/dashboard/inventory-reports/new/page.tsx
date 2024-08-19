@@ -59,7 +59,7 @@ const NewInventoryReportPage = async () => {
       category: "",
       description: "",
       accessories: "",
-      storage_location: "",
+      storage_location: "Floor 8",
       comments: "",
       out: false,
       broken: false,

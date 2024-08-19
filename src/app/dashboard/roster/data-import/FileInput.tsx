@@ -94,6 +94,7 @@ function FileInput({ authToken }: { authToken: string }) {
         },
       );
 
+      let currentRosterProgress = 0;
       // console.log("roster length: ", rawRosterWithoutPermissionId.length);
 
       // get the permission IDs by permission code
@@ -107,11 +108,11 @@ function FileInput({ authToken }: { authToken: string }) {
             // console.log(item.permissions);
           } else {
             item.permissions = [];
-            // console.log(
-            //   "permission_code Not Found in Permissions for",
-            //   item.stuName,
-            // );
           }
+          // currentRosterProgress += 1;
+          // setRosterProgress(
+          //   (currentRosterProgress / (rosterWithUniqueUsers.length * 3)) * 100,
+          // );
           return item;
         }),
       );
@@ -142,8 +143,6 @@ function FileInput({ authToken }: { authToken: string }) {
         // Get all roster entries with non-empty permission id lists of the current student number
         const rosterEntriesOfTheSamePerson = rawRosterWithPermissionId.filter(
           (notUniqueRosterEntry) =>
-            // notUniqueRosterEntry.permissions.length !== 0 &&
-            // notUniqueRosterEntry.stu_n &&
             notUniqueRosterEntry.stu_n === rawRosterEntry.stu_n,
         );
 
@@ -169,9 +168,13 @@ function FileInput({ authToken }: { authToken: string }) {
         ) {
           rosterWithUniqueUsers.push(newUniqueRosterEntry);
         }
+        currentRosterProgress += 1;
+        setRosterProgress(
+          (currentRosterProgress / (rosterWithUniqueUsers.length * 2)) * 100,
+        );
       });
 
-      let currentRosterProgress = 0;
+      // let currentRosterProgress = 0;
 
       await Promise.all(
         rosterWithUniqueUsers.map(async (uniqueUserRosterEntry) => {
@@ -185,26 +188,10 @@ function FileInput({ authToken }: { authToken: string }) {
           }
           currentRosterProgress += 1;
           setRosterProgress(
-            (currentRosterProgress / rosterWithUniqueUsers.length) * 100,
+            (currentRosterProgress / (rosterWithUniqueUsers.length * 2)) * 100,
           );
         }),
       );
-
-      // const cleanedRoseter = rosterWithUniqueUsers.map(
-      //   (uniqueUserRosterEntry as Prisma.rostersCreateInput) => {
-      //     delete uniqueUserRosterEntry.permission_code;
-      //     if (
-      //       uniqueUserRosterEntry.permissions &&
-      //       uniqueUserRosterEntry.permissions[0]
-      //     ) {
-      //       uniqueUserRosterEntry.permissions =
-      //         uniqueUserRosterEntry.permissions.map((i) => ({ id: i }));
-      //     }
-      //     return JSON.parse(JSON.stringify(uniqueUserRosterEntry));
-      //   },
-      // );
-
-      // const { res, error } = await createManyRosterAction(cleanedRoseter);
 
       setRosterData(rosterWithUniqueUsers);
       setRosterUploaded(true);

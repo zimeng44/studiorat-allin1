@@ -52,12 +52,12 @@ const formSchema = z.object({
   // username: z.string().min(2).max(50),
   // mTechBarcode: z.string().min(12).and(z.string().max(13)),
   permission_code: z.string().min(2),
-  permission_title: z.string().optional(),
+  permission_title: z.string().min(2),
   instructor: z.string().optional(),
   permission_details: z.string().optional(),
   permitted_studios: z.string().array().optional(),
-  start_date: z.string().nullable(),
-  end_date: z.string().nullable(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
 });
 
 const AddRosterPermissionForm = (
@@ -105,10 +105,10 @@ const AddRosterPermissionForm = (
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      permission_code: "",
-      permission_title: "",
-      instructor: "",
-      permission_details: "",
+      permission_code: undefined,
+      permission_title: undefined,
+      instructor: undefined,
+      permission_details: undefined,
       permitted_studios: ["example"],
       start_date: undefined,
       end_date: undefined,
@@ -126,8 +126,8 @@ const AddRosterPermissionForm = (
     // values.permitted_studios = permitted_studios;
     const createValues = {
       ...values,
-      start_date: values.start_date === "" ? null : values.start_date,
-      end_date: values.end_date === "" ? null : values.end_date,
+      start_date: !values.start_date ? null : values.start_date,
+      end_date: !values.end_date ? null : values.end_date,
     };
 
     try {
@@ -135,7 +135,7 @@ const AddRosterPermissionForm = (
       // setError(res?.strapiErrors ?? null);
       if (res) {
         router.push("/dashboard/roster/permissions");
-        toast.success("Roster Saved.");
+        toast.success("Permission Added Successfully.");
       }
     } catch (error) {
       toast.error("Error Updating Checkout Session");
@@ -351,19 +351,6 @@ const AddRosterPermissionForm = (
 
             {/* <div className="col-span-1"></div> */}
           </div>
-
-          {/* <div className="col-span-1 flex size-full max-w-2xl justify-start gap-2 md:col-span-2 ">
-            <RosterEmbededTable
-              data={itemObjArr}
-              columns={rosterPermissionsColumns}
-              handleRemoveFromBooking={handleRemoveFromBooking}
-              isPast={true}
-            />
-          </div> */}
-
-          {/* <Button className="align-right" type="submit">
-            Save
-          </Button> */}
 
           <div className="col-span-1 flex size-fit max-w-xl gap-1 md:col-span-2">
             <SubmitButton

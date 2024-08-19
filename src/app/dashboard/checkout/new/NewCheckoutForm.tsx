@@ -47,8 +47,8 @@ import { checkout_sessions, User } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
 interface StrapiErrorsProps {
-  message: string | null;
-  name: string;
+  message?: string | null;
+  name?: string;
 }
 
 const INITIAL_STATE = {
@@ -58,11 +58,16 @@ const INITIAL_STATE = {
 
 const formSchema = z.object({
   creationTime: z.date().or(z.string()),
-  stuIDCheckout: z.string().min(15).max(16),
+  stuIDCheckout: z
+    .string()
+    .min(15, { message: "ID barcode is 16 digits long" })
+    .max(16, { message: "ID barcode is 16 digits long" }),
   userName: z.string().optional(),
   studio: z.string().min(1),
   other_location: z.string().optional(),
-  creationMonitor: z.string().min(1),
+  creationMonitor: z
+    .string()
+    .min(1, { message: "Creation monitor can't be blank" }),
   notes: z.string().optional(),
   noTagItems: z.string().array().optional(),
   scan: z.string().optional(),
@@ -76,13 +81,21 @@ const NewCheckoutForm = ({
   authToken: string;
 }) => {
   const router = useRouter();
-  const [data, setData] = useState({
+  const [userId, setUserId] = useState("");
+  const [itemIdArray, setItemIdArray] = useState(Array());
+  const [itemObjArr, setItemObjArr] = useState(Array());
+  const [noTagItems, setNoTagItems] = useState([
+    "unreturned",
+    "example: xlr cable 1",
+  ]);
+  const [formData, setFormData] = useState({
     creationTime: `${new Date().toLocaleString()}`,
     stuIDCheckout: "",
     studio: "",
     other_location: undefined,
-    creationMonitor: `${thisMonitor.first_name} ${thisMonitor.last_name}`,
-    notes: "",
+    creationMonitor:
+      `${thisMonitor.first_name} ${thisMonitor.last_name}` ?? undefined,
+    notes: undefined,
     noTagItems: undefined,
   });
 
@@ -93,27 +106,11 @@ const NewCheckoutForm = ({
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      creationTime: data.creationTime,
-      stuIDCheckout: data.stuIDCheckout,
-      userName: "",
-      studio: data.studio ?? "",
-      other_location: data.other_location ? data.other_location : "",
-      creationMonitor: data.creationMonitor,
-      notes: data.notes ? data.notes : "",
-      noTagItems: [""],
-    },
+
     mode: "onChange",
-    values: data,
+    values: formData,
   });
 
-  const [userId, setUserId] = useState("");
-  const [itemIdArray, setItemIdArray] = useState(Array());
-  const [itemObjArr, setItemObjArr] = useState(Array());
-  const [noTagItems, setNoTagItems] = useState([
-    "unreturned",
-    "example: xlr cable 1",
-  ]);
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
@@ -176,7 +173,7 @@ const NewCheckoutForm = ({
       form.setFocus("stuIDCheckout");
     }
     // console.log(params.toString());
-  }, 200);
+  }, 50);
 
   async function getItemByBarcode(barcode: string) {
     const query = qs.stringify({
@@ -225,51 +222,56 @@ const NewCheckoutForm = ({
     form.setFocus("scan");
 
     // console.log(params.toString());
-  }, 200);
+  }, 50);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    //update the out status of the items in the master inventory
     try {
-      //update the out status of the items in the master inventory
-      try {
-        await Promise.all(
-          itemObjArr.map(async (itemObj) => {
-            const { res, error } = await updateItemAction(
-              { out: itemObj.out },
-              itemObj.id,
-            );
-            if (error) {
-              throw Error("Error updateing items");
-            }
-          }),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+      await Promise.all(
+        itemObjArr.map(async (itemObj) => {
+          const { res, error } = await updateItemAction(
+            { out: itemObj.out },
+            itemObj.id,
+          );
+          if (error) {
+            setError({ name: "Error updating items", message: error });
+          }
+        }),
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
-      //create the session in the checkout
-      const { res, error } = await createCheckoutSessionAction({
-        creation_time: new Date(values.creationTime),
-        studio: values.studio,
-        other_location: values.other_location ?? null,
-        finished: false,
-        notes: values.notes ?? null,
-        inventory_items: {
-          connect: itemIdArray.map((id) => ({ id })),
-        },
-        no_tag_items: noTagItems,
-        user: {
-          connect: { id: userId },
-        },
-        created_by: {
-          connect: { id: thisMonitor.id },
-        },
-      });
+    //create new session in the checkout
+    const createValues = {
+      creation_time: new Date(values.creationTime),
+      studio: values.studio,
+      other_location: values.other_location ?? null,
+      finished: false,
+      notes: values.notes ?? null,
+      inventory_items: {
+        connect: itemIdArray.map((id) => ({ id })),
+      },
+      no_tag_items: noTagItems,
+      user: {
+        connect: { id: userId },
+      },
+      created_by: {
+        connect: { id: thisMonitor.id },
+      },
+    };
+
+    try {
+      const { res, error } = await createCheckoutSessionAction(createValues);
       // setError(res?.strapiErrors);
       // console.log(res);
       if (res) {
         router.push("/dashboard/checkout");
         router.refresh();
         toast.success("New Checkout Session Added");
+      } else {
+        toast.error("Error happened");
+        setError({ name: "Error creating new session", message: error });
       }
     } catch (error) {
       // console.log(error);
@@ -280,13 +282,16 @@ const NewCheckoutForm = ({
         name: "New Checkout Session Error",
       });
       // setLoading(false);
-      return;
+      // return;
     }
-    return;
+    // return;
   }
 
   return (
     <div>
+      <div className="max-w-60">
+        <StrapiErrors error={error} />
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -497,9 +502,6 @@ const NewCheckoutForm = ({
                 Cancel
               </Button>
             </Link>
-          </div>
-          <div className="max-w-60">
-            <StrapiErrors error={error} />
           </div>
         </form>
       </Form>

@@ -108,8 +108,8 @@ const EditRosterPermissionForm = ({
       permitted_studios: (permission.permitted_studios as string[]) ?? [
         "example",
       ],
-      start_date: permission.start_date?.toISOString(),
-      end_date: permission.end_date?.toISOString(),
+      start_date: permission.start_date?.toISOString() ?? null,
+      end_date: permission.end_date?.toISOString() ?? null,
     },
   });
   // if (isLoading) return <p>Loading...</p>;
@@ -121,43 +121,30 @@ const EditRosterPermissionForm = ({
     // ✅ This will be type-safe and validated.
 
     // console.log(values);
-    if (values.start_date === "") values.start_date = null;
-    if (values.end_date === "") values.end_date = null;
+    if (!values.start_date) values.start_date = null;
+    else values.start_date = new Date(values.start_date).toISOString();
+    if (!values.end_date) values.end_date = null;
+    else values.end_date = new Date(values.end_date).toISOString();
 
     // values.permitted_studios = permitted_studios;
 
     try {
-      const res = await updateRosterPermissionAction(values, permissionId);
-      setError(res?.strapiErrors ?? null);
-      if (!res?.strapiErrors?.status) {
-        router.push("/dashboard/roster/permissions");
-        toast.success("Roster Saved.");
+      const { res, error } = await updateRosterPermissionAction(
+        values,
+        permissionId,
+      );
+      if (error) {
+        window.alert(error);
+        return;
       }
+      // setError({ message: error });
     } catch (error) {
       toast.error("Error Updating Checkout Session");
-      // setError({
-      //   ...INITIAL_STATE,
-      //   message: "Error Creating Summary",
-      //   name: "Summary Error",
-      // });
-      // setLoading(false);
       return;
     }
-
-    // router.refresh();
-    // console.log(res);
-
-    // closeDetail();
-    // console.log("Form Submitted!!");
-    // setDialogOpen(false);
+    router.push("/dashboard/roster/permissions");
+    toast.success("Permission Saved.");
   }
-
-  // const handleRemoveFromBooking = (row: RosterPermissionType) => {
-  //   let newArr = itemObjArr.filter((item) => item.id !== row.id);
-  //   setItemObjArr(newArr);
-  //   // router.refresh();
-  //   // console.log("item should be removed")
-  // };
 
   async function handleDelete(e: any) {
     const confirm = window.confirm(
@@ -169,7 +156,7 @@ const EditRosterPermissionForm = ({
     const { res, error } = await deleteRosterPermissionAction(permissionId);
 
     if (!error) {
-      toast.success("Roster Deleted");
+      toast.success("Permission Deleted");
       router.push("/dashboard/roster/permissions");
     }
 

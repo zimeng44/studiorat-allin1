@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
   if (!user.ok || !token)
     return new Response(
-      JSON.stringify({ data: null, error: "Not authenticated" }),
+      JSON.stringify({ data: null, error: "Not authorized" }),
       { status: 401 },
     );
 
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Error processing request:", error);
     if (error instanceof Error)
-      return new Response(JSON.stringify({ error: error }));
-    return new Response(JSON.stringify({ error: "Unknown error" }));
+      return new Response(JSON.stringify({ data: null, error: error }));
+    return new Response(JSON.stringify({ data: null, error: "Unknown error" }));
   }
 }

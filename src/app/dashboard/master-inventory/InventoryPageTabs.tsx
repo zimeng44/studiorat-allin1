@@ -20,6 +20,7 @@ interface ViewTabsProps {
   // meta: { pagination: { pageCount: number; total: number } };
   totalEntries: number;
   filter: {};
+  userRole: string;
 }
 
 function LinkCard(item: Readonly<inventory_items>) {
@@ -40,7 +41,12 @@ function LinkCard(item: Readonly<inventory_items>) {
   );
 }
 
-const InventoryPageTabs = ({ data, totalEntries, filter }: ViewTabsProps) => {
+const InventoryPageTabs = ({
+  data,
+  totalEntries,
+  filter,
+  userRole,
+}: ViewTabsProps) => {
   const [columnsStatus, setColumnsStatus] = useState<TableColumnStatus>(
     structuredClone(inventoryColumnsDefault),
   );
@@ -66,6 +72,7 @@ const InventoryPageTabs = ({ data, totalEntries, filter }: ViewTabsProps) => {
           columnsStatus={columnsStatus}
           filter={filter}
           setColumnsStatus={setColumnsStatus}
+          userRole={userRole}
         />
 
         <TabsContent value="list">

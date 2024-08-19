@@ -5,21 +5,18 @@ import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
 import {
   addDays,
-  subDays,
   startOfDay,
   addHours,
   compareDesc,
   compareAsc,
   startOfMonth,
   subMonths,
-  startOfWeek,
-  endOfWeek,
   endOfMonth,
 } from "date-fns";
 import "!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css";
-import { BookingType, BookingWithUserAndItems } from "@/data/definitions";
+import { BookingWithUserAndItems } from "@/data/definitions";
 import { useRouter, useSearchParams } from "next/navigation";
-import Loading from "./loading";
+// import Loading from "./loading";
 import { Loader2 } from "lucide-react";
 
 // const mLocalizer = momentLocalizer(moment);
@@ -75,11 +72,6 @@ export default function BookingCalendar({
 
   const handleSelectSlot = useCallback(
     ({ start, end }: { start: Date; end: Date }) => {
-      // console.log(view);
-      // const title = window.prompt("New Event name");
-      // if (title) {
-      //   setEvents((prev) => [...prev, { start, end, title }]);
-      // }
       if (compareAsc(addDays(new Date(), 1), start) > 0) {
         window.alert("No booking allowed within 24 hours or in the past.");
         return;
@@ -129,9 +121,6 @@ export default function BookingCalendar({
   const baseUrl = getStrapiURL();
 
   async function fetchData(url: string) {
-    // const authToken = getAuthToken();
-    // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-    // console.log(authToken);
     const headers = {
       method: "GET",
       headers: {

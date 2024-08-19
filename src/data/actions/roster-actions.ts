@@ -37,6 +37,7 @@ export async function createRosterAction(
 
   try {
     const data = await prisma.rosters.create(payload);
+    revalidatePath("/dashboard/roster");
     return { res: data, error: null };
   } catch (error) {
     console.log(error);
@@ -82,59 +83,9 @@ export const updateRosterAction = async (
   } catch (error) {
     return { res: null, error: JSON.stringify(error) };
   }
-
-  // const responseData = await mutateData("PUT", `/api/rosters/${id}`, payload);
-
-  // // console.log(responseData);
-
-  // if (!responseData) {
-  //   return {
-  //     // ...prevState,
-  //     strapiErrors: null,
-  //     message: "Oops! Something went wrong. Please try again.",
-  //   };
-  // }
-
-  // if (responseData.error) {
-  //   // console.log("responseData.error", responseData.error);
-  //   return {
-  //     // ...prevState,
-  //     strapiErrors: responseData.error,
-  //     message: "Failed to update summary.",
-  //   };
-  // }
-
-  // const flattenedData = flattenAttributes(responseData);
-  // revalidatePath("/dashboard/roster");
-
-  // redirect("/dashboard/roster");
-
-  // console.log(flattenedData);
-
-  // return {
-  // ...prevState,
-  //   message: "Summary updated successfully",
-  //   data: flattenedData,
-  //   strapiErrors: null,
-  // };
 };
 
 export async function deleteRosterAction(id: string) {
-  // const responseData = await mutateData("DELETE", `/api/rosters/${id}`);
-
-  // if (!responseData) {
-  //   return {
-  //     strapiErrors: null,
-  //     message: "Oops! Something went wrong. Please try again.",
-  //   };
-  // }
-
-  // if (responseData.error) {
-  //   return {
-  //     strapiErrors: responseData.error,
-  //     message: "Failed to delete Item.",
-  //   };
-  // }
   try {
     const res = await prisma.rosters.delete({ where: { id: parseInt(id) } });
     revalidatePath("/dashboard/roster");

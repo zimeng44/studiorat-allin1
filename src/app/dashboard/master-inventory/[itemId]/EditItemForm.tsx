@@ -114,7 +114,10 @@ const EditItemForm = ({
 
     if (!error) {
       router.push("/dashboard/master-inventory");
+      router.refresh();
       toast.success("Item Deleted");
+    } else {
+      window.alert(error);
     }
   }
 

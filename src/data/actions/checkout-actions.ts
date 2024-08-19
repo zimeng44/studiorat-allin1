@@ -1,18 +1,18 @@
 "use server";
 
 import { getAuthToken } from "@/data/services/get-token";
-import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
+// import { mutateData } from "@/data/services/mutate-data";
+// import { flattenAttributes } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import {
-  CheckoutSessionType,
-  CheckoutSessionTypePost,
-  InventoryItem,
-} from "@/data/definitions";
+// import {
+//   CheckoutSessionType,
+//   CheckoutSessionTypePost,
+//   InventoryItem,
+// } from "@/data/definitions";
 import { updateItemAction } from "./inventory-actions";
 import prisma from "@/lib/prisma";
-import { checkout_sessions, inventory_items, Prisma } from "@prisma/client";
+import { inventory_items, Prisma } from "@prisma/client";
 
 export async function createCheckoutSessionAction(
   newSession: Prisma.checkout_sessionsCreateInput,
@@ -29,8 +29,13 @@ export async function createCheckoutSessionAction(
     const res = await prisma.checkout_sessions.create(payload);
     return { res: res, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: "Error creating new session" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }
 
@@ -39,23 +44,7 @@ export const updateCheckoutSessionActionWithItems = async (
   id: string,
   items: inventory_items[],
 ) => {
-  const payload = {
-    where: { id: parseInt(id) },
-    data: updatedSession,
-    include: { inventory_items: true, user: true, created_by: true },
-  };
-
-  try {
-    const responseData = await prisma.checkout_sessions.update(payload);
-  } catch (error) {
-    return {
-      // ...prevState,
-      // strapiErrors: null,
-      res: null,
-      error: "Oops! Something went wrong. Please try again.",
-    };
-  }
-
+  // update items info first
   let itemsResponses = Array(items.length);
 
   try {
@@ -69,12 +58,40 @@ export const updateCheckoutSessionActionWithItems = async (
         );
       }),
     );
+    // return { res: "done", error: null };
   } catch (error) {
-    console.log(itemsResponses);
-    return { res: null, error: "Error updating inventory item(s)" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 
-  return { res: "done", error: null };
+  // update the checkout session
+  const payload = {
+    where: { id: parseInt(id) },
+    data: updatedSession,
+    include: { inventory_items: true, user: true, created_by: true },
+  };
+
+  try {
+    const responseData = await prisma.checkout_sessions.update(payload);
+    revalidatePath("/dashboard/checkout");
+
+    return { res: responseData, error: null };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+
+      return { res: null, error: "Error Unknown from Database" };
+    }
+  }
 };
 
 export async function deleteCheckoutSessionAction(id: string) {
@@ -90,7 +107,12 @@ export async function deleteCheckoutSessionAction(id: string) {
     // revalidatePath("/dashboard/booking");
     return { res: res, error: null };
   } catch (error: any) {
-    // console.log(error);
-    return { res: null, error: error.toString() };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }

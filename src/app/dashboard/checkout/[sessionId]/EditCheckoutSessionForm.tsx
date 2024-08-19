@@ -113,15 +113,9 @@ const EditCheckoutSessionForm = ({
   const [noTagItems, setNoTagItems] = useState(
     session.no_tag_items ?? ["unreturned", "example: xlr cable 2"],
   );
-  // const [itemObjArr, setItemObjArr] = useState(
-  //   inventoryItems.data ?? Array(),
-  // );
 
-  const [itemIdArray, setItemIdArray] = useState(
-    session.inventory_items?.map((item: any) => item.id),
-  );
   const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
-    session.inventory_items ?? Array(),
+    session.inventory_items ?? undefined,
   );
 
   // 1. Define your form.
@@ -144,7 +138,7 @@ const EditCheckoutSessionForm = ({
       notes: session.notes ?? "",
       finished: session.finished ?? false,
       noTagItems: session.no_tag_items ?? [""],
-      scan: "",
+      scan: undefined,
     },
     mode: "onChange",
   });
@@ -187,10 +181,14 @@ const EditCheckoutSessionForm = ({
   const handleScan = useDebouncedCallback((term: string) => {
     // window.alert("you did it!!");
     if (term.length > 9) {
-      getItemByBarcode(term).then(({ data, meta }) => {
-        if (data[0]) {
-          let newArr = [...itemIdArray];
-          if (newArr.includes(data[0].id)) {
+      getItemByBarcode(term).then(({ data, error }) => {
+        if (data) {
+          if (data.length > 1) {
+            window.alert(
+              "Inventpory warning: multiple items found with the same barcode, the first item found will be added",
+            );
+          }
+          if (itemObjArr.map((item) => item.id).includes(data[0].id)) {
             let newItemObjArr = structuredClone(itemObjArr);
             newItemObjArr.map((item: any) => {
               if (item.id === data[0].id) item.out = !item.out;
@@ -199,12 +197,10 @@ const EditCheckoutSessionForm = ({
           } else {
             let newItem: inventory_items = data[0];
             newItem.out = true;
-            newArr = [...itemIdArray, data[0].id];
-            setItemIdArray(newArr);
             setItemObjArr([...itemObjArr, newItem]);
           }
         } else {
-          window.alert("Item not found.");
+          window.alert(error);
         }
       });
     } else {
@@ -213,7 +209,7 @@ const EditCheckoutSessionForm = ({
 
     form.setValue("scan", "");
     form.setFocus("scan");
-  }, 200);
+  }, 50);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -234,7 +230,7 @@ const EditCheckoutSessionForm = ({
       //   values.finish_time === "" ? undefined : new Date().toISOString(),
       finished_by: values.finishMonitor ?? null,
       finished: values.finished,
-      notes: values.notes ?? "",
+      notes: values.notes ?? null,
       // inventory_items: itemIdArray ?? [0],
       no_tag_items: noTagItems ?? [""],
       // user: session.user?.id ?? 0,
@@ -302,6 +298,16 @@ const EditCheckoutSessionForm = ({
     form.setValue("finished", true);
     onSubmit(form.getValues());
   }
+
+  const handleReturnId = useDebouncedCallback((term: string) => {
+    // window.alert("you did it!!");
+    if (term.length > 15) {
+    } else {
+      window.alert("hand typing not allowed, please use a scanner.");
+      form.setValue("return_id", "");
+      form.setFocus("return_id");
+    }
+  }, 50);
 
   return (
     <div>
@@ -393,7 +399,11 @@ const EditCheckoutSessionForm = ({
             render={({ field }) => (
               <FormItem className="col-span-1 size-full">
                 <FormLabel>Return ID</FormLabel>
-                <FormControl>
+                <FormControl
+                  onChange={(e) =>
+                    handleReturnId((e.target as HTMLInputElement).value)
+                  }
+                >
                   <Input
                     {...field}
                     disabled={session.finished ?? false}

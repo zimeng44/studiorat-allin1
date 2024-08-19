@@ -16,9 +16,6 @@ export async function getPermissionByPermissionCode(permission_code: string) {
       permission_code: { equals: permission_code },
     },
   };
-  // const url = new URL("/api/roster-permissions", baseUrl);
-  // url.search = query;
-  // console.log("query data", url.href);
   try {
     const data = await prisma.roster_permissions.findMany(query);
     return { data: data, error: null };
@@ -39,6 +36,7 @@ export async function createRosterPermissionAction(
 
   try {
     const data = await prisma.roster_permissions.create(payload);
+    revalidatePath("/dashboard/roster/permissions");
     return data;
   } catch (error) {
     console.log(error);
@@ -49,56 +47,24 @@ export const updateRosterPermissionAction = async (
   updatedRosterPermission: RosterPermissionTypePost,
   id: string,
 ) => {
-  // if (updatedRosterPermission.startTime === undefined) delete updatedRosterPermission.startTime;
-  // else
-  //   updatedRosterPermission.startTime = new Date(updatedRosterPermission.startTime).toISOString();
-
-  // if (updatedRosterPermission.endTime === undefined || updatedRosterPermission.endTime === "")
-  //   delete updatedRosterPermission.endTime;
-  // else updatedRosterPermission.endTime = new Date(updatedRosterPermission.endTime).toISOString();
-
   const payload = {
     data: updatedRosterPermission,
+    where: { id: parseInt(id) },
   };
 
-  const responseData = await mutateData(
-    "PUT",
-    `/api/roster-permissions/${id}`,
-    payload,
-  );
-
-  // console.log(updatedRosterPermission);
-
-  if (!responseData) {
-    return {
-      // ...prevState,
-      strapiErrors: null,
-      message: "Oops! Something went wrong. Please try again.",
-    };
+  try {
+    const res = prisma.roster_permissions.update(payload);
+    revalidatePath("/dashboard/roster/permissions");
+    return { res: res, error: null };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown" };
+    }
   }
-
-  if (responseData.error) {
-    // console.log("responseData.error", responseData.error);
-    return {
-      // ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to update summary.",
-    };
-  }
-
-  const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/roster");
-
-  redirect("/dashboard/roster/permissions");
-
-  // console.log(flattenedData);
-
-  return {
-    // ...prevState,
-    message: "Summary updated successfully",
-    data: flattenedData,
-    strapiErrors: null,
-  };
 };
 
 export async function deleteRosterPermissionAction(id: string) {

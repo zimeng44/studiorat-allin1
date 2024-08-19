@@ -6,9 +6,7 @@ import {
   getInventoryItems,
   getInventoryReports,
 } from "@/data/loaders";
-import { finished } from "stream";
 import { subDays } from "date-fns";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardRoute() {

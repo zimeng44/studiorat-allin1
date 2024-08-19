@@ -105,7 +105,12 @@ export default async function MasterInventory({
         </BreadcrumbList>
       </Breadcrumb>
       <Suspense fallback={<h1>Loading . . .</h1>}>
-        <InventoryPageTabs data={data} totalEntries={count} filter={filter} />
+        <InventoryPageTabs
+          data={data}
+          totalEntries={count}
+          filter={filter}
+          userRole={thisUser.user_role.name}
+        />
       </Suspense>
     </div>
   );

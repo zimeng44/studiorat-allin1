@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Filter, PlusCircle, Settings } from "lucide-react";
+import { Filter, Import, PlusCircle, Settings } from "lucide-react";
 import { Search } from "@/components/custom/Search";
 import Link from "next/link";
 import InventoryFilterForm from "./InventoryFilterForm";
@@ -31,12 +31,14 @@ interface TableHeaderProps {
   columnsStatus: TableColumnStatus;
   filter: {};
   setColumnsStatus: Function;
+  userRole: string;
 }
 
 const TabHeader = ({
   columnsStatus,
   filter,
   setColumnsStatus,
+  userRole,
 }: TableHeaderProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -92,6 +94,16 @@ const TabHeader = ({
             Add
           </Button>
         </Link>
+        {userRole === "Admin" || userRole === "InventoryManager" ? (
+          <Link href="/dashboard/master-inventory/data-import">
+            <Button variant="outline" className="h10 ml-5">
+              <Import className="mr-2 h-4 w-4" />
+              Import
+            </Button>
+          </Link>
+        ) : (
+          ``
+        )}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
