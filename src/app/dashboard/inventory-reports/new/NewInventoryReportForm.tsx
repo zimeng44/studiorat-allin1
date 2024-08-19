@@ -26,7 +26,7 @@ import { SubmitButton } from "@/components/custom/SubmitButton";
 import { createInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { Prisma, User } from "@prisma/client";
+import { inventory_items, Prisma, User } from "@prisma/client";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -64,8 +64,8 @@ const NewInventoryReportForm = ({
     scan: "",
   });
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
-  const [itemIdArray, setItemIdArray] = useState(Array());
-  const [itemObjArr, setItemObjArr] = useState(Array());
+  // const [itemIdArray, setItemIdArray] = useState(Array());
+  const [itemObjArr, setItemObjArr] = useState<inventory_items[]>();
 
   // console.log(inventory_size);
 
@@ -126,18 +126,19 @@ const NewInventoryReportForm = ({
     if (term.length > 9) {
       const { data, error } = await getItemByBarcode(term);
       if (data[0]) {
-        let newArr = [...itemIdArray];
-        if (newArr.includes(data[0].id)) {
+        // let newArr = [...itemIdArray];
+        if (itemObjArr?.map((item) => item.id).includes(data[0].id)) {
           window.alert("Item scanned already.");
           form.setValue("scan", "");
           form.setFocus("scan");
         } else {
-          const newIdArray = [data[0].id, ...itemIdArray];
-          setItemIdArray(newIdArray);
-          setItemObjArr([data[0], ...itemObjArr]);
+          // const newIdArray = [data[0].id, ...itemIdArray];
+          // setItemIdArray(newIdArray);
+          const newObjArr = itemObjArr ? [data[0], ...itemObjArr] : [data[0]];
+          setItemObjArr(newObjArr);
 
           // Auto Save
-          if (itemObjArr.length > 4) {
+          if (newObjArr.length > 4) {
             // onSubmit(form.watch());
             let createValues: Prisma.inventory_reportsCreateInput = {
               created_by: { connect: { id: thisMonitor.id } },
@@ -145,7 +146,7 @@ const NewInventoryReportForm = ({
               notes: form.getValues("notes"),
               is_finished: form.getValues("is_finished"),
               inventory_items: {
-                connect: itemIdArray.map((id) => ({ id: id })),
+                connect: newObjArr.map((item) => ({ id: item.id })),
               },
             };
 
@@ -196,7 +197,7 @@ const NewInventoryReportForm = ({
       notes: values.notes,
       is_finished: values.is_finished,
       inventory_items: {
-        connect: itemIdArray.map((id) => ({ id: id })),
+        connect: itemObjArr?.map((item) => ({ id: item.id })),
       },
     };
 
@@ -319,18 +320,13 @@ const NewInventoryReportForm = ({
                 <FormControl>
                   <div className="pt-1 text-lg">
                     <Badge variant="default" className="ml-3 mr-2">
-                      {itemIdArray.length?.toString() ?? "0"}
+                      {itemObjArr?.length?.toString() ?? "0"}
                     </Badge>
                     of
                     <Badge variant="secondary" className="ml-2">
                       {field.value.toString()}
                     </Badge>
                   </div>
-                  {/* <Input
-                    {...field}
-                    disabled
-                    value={`${itemIdArray.length?.toString() ?? "0"} of ${field.value.toString()}`}
-                  ></Input> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>

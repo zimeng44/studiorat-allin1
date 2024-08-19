@@ -16,7 +16,7 @@ import { inventory_items } from "@prisma/client";
 const MAX_TEXT_LEN = 30;
 
 interface InventoryTableProps {
-  data: inventory_items[];
+  data?: inventory_items[];
   setItemObjArr: Function;
   columns: any[];
   disabled: boolean;
@@ -126,7 +126,7 @@ const EmbededInventoryTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length ? (
+            {data ? (
               data.map((row, index) => (
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (

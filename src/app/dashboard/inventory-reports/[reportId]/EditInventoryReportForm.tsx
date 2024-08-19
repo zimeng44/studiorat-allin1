@@ -84,11 +84,11 @@ const EditInventoryReportForm = ({
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
   // const inventory_items = report.inventory_items as RetrievedItems;
 
-  const [itemIdArray, setItemIdArray] = useState(
-    report.inventory_items?.map((item: inventory_items) => item.id) ?? [],
-  );
+  // const [itemIdArray, setItemIdArray] = useState(
+  //   report.inventory_items?.map((item: inventory_items) => item.id) ?? [],
+  // );
   const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
-    report.inventory_items ?? Array(),
+    report.inventory_items,
   );
   // const [autoSaved, setAutoSaved] = useState(false);
   // 1. Define your form.
@@ -147,18 +147,19 @@ const EditInventoryReportForm = ({
       const { data, error } = await getItemByBarcode(term);
       // console.log(data);
       if (data[0]) {
-        let newArr = [...itemIdArray];
-        if (newArr.includes(data[0].id)) {
+        // let newArr = [...itemIdArray];
+        if (itemObjArr.map((item) => item.id).includes(data[0].id)) {
           window.alert("Item scanned already.");
           form.setValue("scan", "");
           form.setFocus("scan");
         } else {
-          const newIdArray = [data[0].id, ...itemIdArray];
-          setItemIdArray(newIdArray);
-          setItemObjArr([data[0], ...itemObjArr]);
+          // const newIdArray = [data[0].id, ...itemIdArray];
+          // setItemIdArray(newIdArray);
+          const newObjArr = [data[0], ...itemObjArr];
+          setItemObjArr(newObjArr);
 
           // Auto Save
-          if (itemObjArr.length > 4 && itemObjArr.length % 5 === 0) {
+          if (newObjArr.length > 4 && newObjArr.length % 5 === 0) {
             // onSubmit(form.watch());
             let updateValues: Prisma.inventory_reportsUpdateInput = {
               created_by: { connect: { id: thisMonitor.id } },
@@ -166,7 +167,7 @@ const EditInventoryReportForm = ({
               notes: form.getValues("notes"),
               is_finished: form.getValues("is_finished"),
               inventory_items: {
-                set: itemIdArray.map((id) => ({ id: id })),
+                set: newObjArr.map((item) => ({ id: item.id })),
               },
             };
 
@@ -219,7 +220,7 @@ const EditInventoryReportForm = ({
       notes: values.notes,
       is_finished: values.is_finished,
       inventory_items: {
-        connect: itemIdArray.map((id) => ({ id: id })),
+        connect: itemObjArr.map((item) => ({ id: item.id })),
       },
     };
 
@@ -356,7 +357,7 @@ const EditInventoryReportForm = ({
                 <FormControl>
                   <div className="pt-1 text-lg">
                     <Badge variant="default" className="ml-3 mr-2">
-                      {itemIdArray.length?.toString() ?? "0"}
+                      {itemObjArr.length?.toString() ?? "0"}
                     </Badge>
                     of
                     <Badge variant="secondary" className="ml-2">
