@@ -21,11 +21,9 @@ type UserWithRole = Prisma.UserGetPayload<{
   include: { user_role: true };
 }>;
 
-async function itemConflictCheck(booking: any) {
-  // console.log(booking.inventory_items);
-
-  if (!booking.inventory_items) return new Array();
-  if (booking.inventory_items.length === 0) return new Array();
+async function itemConflictCheck(booking: any, bookingId?: number) {
+  if (!booking.inventory_items || booking.inventory_items.length === 0)
+    return 0;
 
   let inventoryItems = [];
 
@@ -36,12 +34,7 @@ async function itemConflictCheck(booking: any) {
 
   const itemList = inventoryItems.map((item: any) => item.id);
 
-  // console.log(itemList);
-
   const query = {
-    // sort: ["createdAt:desc"],
-    // populate: "*",
-    // include: { inventory_items: true },
     where: {
       AND: [
         {
@@ -75,17 +68,16 @@ async function itemConflictCheck(booking: any) {
             },
           },
         },
+        { id: bookingId ? { not: bookingId } : undefined },
       ],
     },
   };
-  // const url = new URL("/api/bookings", baseUrl);
-  // url.search = query;
-  // console.log("query data", query)
-  // return fetchData(url.href);
-  return await prisma.bookings.findMany(query);
+  return await prisma.bookings.count(query);
 }
 
-async function locationConflictCheck(booking: any) {
+async function locationConflictCheck(booking: any, bookingId?: number) {
+  if (booking.user_location === "Outside") return 0;
+
   const query = {
     where: {
       AND: [
@@ -114,11 +106,12 @@ async function locationConflictCheck(booking: any) {
         {
           use_location: { equals: booking.use_location },
         },
+        { id: bookingId ? { not: bookingId } : undefined },
       ],
     },
   };
 
-  return await prisma.bookings.findMany(query);
+  return await prisma.bookings.count(query);
 }
 
 export async function createBookingAction(newBooking: any) {
@@ -132,19 +125,20 @@ export async function createBookingAction(newBooking: any) {
       include: { user: true, inventory_items: true, created_by: true },
     };
 
-    const data = await itemConflictCheck(newBooking);
+    const itemConflictCount = await itemConflictCheck(newBooking);
 
     // console.log(data);
 
-    if (data.length !== 0) {
+    if (itemConflictCount !== 0) {
       return { res: null, error: "Item Conflict Found." };
     }
+
     if (newBooking.use_location === "Outside") {
       const res = await prisma.bookings.create(payload);
       return { res: res, error: null };
     } else {
-      const data = await locationConflictCheck(newBooking);
-      if (data.length !== 0) {
+      const locationConflictCount = await locationConflictCheck(newBooking);
+      if (locationConflictCount !== 0) {
         return { res: null, error: "Location Conflict Found." };
       }
 
@@ -152,25 +146,14 @@ export async function createBookingAction(newBooking: any) {
       return { res: res, error: null };
     }
   } catch (error) {
-    console.log(error);
-    return { res: null, error: "Error creating booking" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
-
-  // console.log(newBooking.finishTime);
-  // if (newBooking.startTime)
-  //   newBooking.startTime = new Date(newBooking.startTime).toISOString();
-  // if (newBooking.endTime)
-  //   newBooking.endTime = new Date(newBooking.endTime).toISOString();
-
-  // const payload = {
-  //   data: newBooking,
-  // };
-
-  // const data = await mutateData("POST", "/api/bookings", payload);
-  // const flattenedData = flattenAttributes(data);
-  // console.log("data submited#########", flattenedData);
-  // redirect("/dashboard/booking/" + flattenedData.id);
-  // redirect("/dashboard/booking");
 }
 
 export const updateBookingAction = async (
@@ -186,33 +169,40 @@ export const updateBookingAction = async (
       data: updatedBooking,
     };
 
-    const data = await itemConflictCheck(updatedBooking);
+    const itemConflictCount = await itemConflictCheck(updatedBooking, id);
 
     // console.log(data);
 
-    if (data.length > 1) {
+    if (itemConflictCount !== 0) {
       return { res: null, error: "Item Conflict Found." };
     }
-    if (updatedBooking.use_location === "Outside") {
-      const res = await prisma.bookings.update(payload);
-      revalidatePath("/dashboard/booking");
-      return { res: res, error: null };
-    } else {
-      const bookingForCheck = { ...updatedBooking };
-      const data = await locationConflictCheck(bookingForCheck);
+    // if (updatedBooking.use_location === "Outside") {
+    //   const res = await prisma.bookings.update(payload);
+    //   revalidatePath("/dashboard/booking");
+    //   return { res: res, error: null };
+    // } else {
+    // const bookingForCheck = { ...updatedBooking };
+    const locationConflictCount = await locationConflictCheck(
+      updatedBooking,
+      id,
+    );
 
-      if (data.length > 1) {
-        return { res: null, error: "Location Conflict Found." };
-      }
-
-      const res = await prisma.bookings.update(payload);
-      // console.log(res);
-      revalidatePath("/dashboard/booking");
-      return { res: res, error: null };
+    if (locationConflictCount !== 0) {
+      return { res: null, error: "Location Conflict Found." };
     }
+
+    const res = await prisma.bookings.update(payload);
+    revalidatePath("/dashboard/booking");
+    return { res: res, error: null };
+    // }
   } catch (error) {
-    console.log(error);
-    return { res: null, error: "Error updateing booking" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 };
 

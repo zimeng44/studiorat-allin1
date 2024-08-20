@@ -12,9 +12,9 @@ import { ZodErrors } from "@/components/custom/ZodErrors";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 
 interface ProfileImageFormProps {
-  id: string | null;
-  url?: string | null;
-  alternativeText?: string | null;
+  id: number;
+  url: string | null;
+  name?: string | null;
 }
 
 const initialState = {
@@ -28,12 +28,12 @@ export function ProfileImageForm({
   data,
   className,
 }: {
-  data: Readonly<ProfileImageFormProps>;
+  data: Readonly<ProfileImageFormProps> | null;
   className?: string;
 }) {
   const uploadProfileImageWithIdAction = uploadProfileImageAction.bind(
     null,
-    data?.id ?? "",
+    data?.id ?? null,
   );
 
   const [formState, formAction] = useFormState(

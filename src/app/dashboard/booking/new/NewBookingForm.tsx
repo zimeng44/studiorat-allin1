@@ -151,7 +151,6 @@ const NewBookingForm = ({
 
   // const inventoryItems = booking.inventory_items as RetrievedItems;
   const [itemObjArr, setItemObjArr] = useState(Array());
-
   const [user, setUser] = useState<UserWithRole | null>(booking.user);
   const [bookingType, setBookingType] = useState(booking.type);
   const [error, setError] = useState("");

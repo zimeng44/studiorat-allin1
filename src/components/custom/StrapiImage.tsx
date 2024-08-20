@@ -3,9 +3,9 @@ import { getStrapiMedia } from "@/lib/utils";
 
 interface StrapiImageProps {
   src: string;
-  alt: string;
-  height: number;
-  width: number;
+  alt?: string;
+  height?: number;
+  width?: number;
   className?: string;
 }
 
@@ -23,9 +23,9 @@ export function StrapiImage({
   return (
     <Image
       src={imageUrl ?? imageFallback}
-      alt={alt}
-      height={height}
-      width={width}
+      alt={alt ?? "user image"}
+      height={height ?? 50}
+      width={width ?? 50}
       className={className}
     />
   );

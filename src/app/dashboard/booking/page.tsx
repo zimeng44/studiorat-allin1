@@ -14,12 +14,12 @@ import {
 } from "@/data/loaders";
 import BookingPageTabs from "./BookingPageTabs";
 import { cookies } from "next/headers";
-import {
-  BookingType,
-  BookingWithUserAndItems,
-  UserWithRole,
-} from "@/data/definitions";
-import { bookings } from "@prisma/client";
+// import {
+//   BookingType,
+//   BookingWithUserAndItems,
+//   UserWithRole,
+// } from "@/data/definitions";
+// import { bookings } from "@prisma/client";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 interface SearchParamsProps {

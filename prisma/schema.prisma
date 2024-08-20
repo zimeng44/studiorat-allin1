@@ -208,7 +208,8 @@ model inventory_items {
   accessories       String?             @db.VarChar(255)
   storage_location  String?             @db.VarChar(255)
   comments          String?
-  image             Bytes?
+  image             Image?              @relation(fields: [image_id], references: [id])
+  image_id          Int?
   out               Boolean?            @default(false)
   broken            Boolean?            @default(false)
   created_at        DateTime?           @default(now()) @db.Timestamp(6)
@@ -285,7 +286,8 @@ model User {
   last_name                 String?             @map("lastName") @db.VarChar(255)
   email                     String?             @unique @db.VarChar(255)
   emailVerified             DateTime?
-  image                     Bytes?
+  image                     Image?              @relation(fields: [image_id], references: [id])
+  image_id                  Int?
   password                  String?             @db.VarChar(255)
   academic_level            String?             @map("academicLevel") @db.VarChar(255)
   bio                       String?             @db.VarChar(255)
@@ -312,4 +314,12 @@ model user_role {
   id    Int    @id @default(autoincrement())
   name  String @unique @db.VarChar(255)
   users User[]
+}
+
+model Image {
+  id              Int               @id @default(autoincrement())
+  name            String?           @unique @db.VarChar(255)
+  url             String
+  User            User[]
+  inventory_items inventory_items[]
 }

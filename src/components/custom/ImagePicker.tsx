@@ -64,6 +64,7 @@ export default function ImagePicker({
   label,
   defaultValue,
 }: Readonly<ImagePickerProps>) {
+  // console.log(defaultValue);
   const fileInput = useRef<HTMLInputElement>(null);
   const [dataUrl, setDataUrl] = useState<string | null>(defaultValue ?? null);
 

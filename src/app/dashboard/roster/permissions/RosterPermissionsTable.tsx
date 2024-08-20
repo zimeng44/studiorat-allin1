@@ -23,9 +23,9 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteRosterAction } from "@/data/actions/roster-actions";
+// import { deleteRosterAction } from "@/data/actions/roster-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import {
   rosterPermissionsColumnsDefault,
   TableColumnStatus,
@@ -283,25 +283,6 @@ const RosterTable = ({
                             )}
                           </HoverCardContent>
                         </HoverCard>
-                        {/* {row[key].startsWith("http") ? (
-                          <a
-                            className="text-indigo-500"
-                            href={`${row[key]}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) =>
-                              !window.confirm(
-                                "You're headed to a external link",
-                              )
-                                ? e.preventDefault()
-                                : ""
-                            }
-                          >
-                            Link
-                          </a>
-                        ) : (
-                          row[key]
-                        )} */}
                       </TableCell>
                     ) : (
                       ``

@@ -62,12 +62,6 @@ export default async function Home() {
 
     description: "This is our first page",
 
-    createdAt: "2024-07-13T00:54:28.607Z",
-
-    updatedAt: "2024-08-12T06:39:08.885Z",
-
-    publishedAt: "2024-07-13T00:54:29.608Z",
-
     blocks: [
       {
         id: 1,
@@ -78,7 +72,7 @@ export default async function Home() {
 
         subHeading: "Your studio management assistant",
 
-        image: {},
+        image: { url: "/uploads/hero.jpg" },
 
         link: {
           id: 1,

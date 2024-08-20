@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+// import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import { getAuthToken } from "./data/services/get-token";
 import { decrypt } from "./data/services/auth-services";
 

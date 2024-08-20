@@ -2,9 +2,10 @@
 import { getStrapiURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
-import prisma from "@/lib/prisma";
-import bcrypt from "bcrypt";
-import { Prisma } from "@prisma/client";
+// import prisma from "@/lib/prisma";
+// import bcrypt from "bcrypt";
+// import { Prisma } from "@prisma/client";
+import { getUserByIdentifier } from "../loaders";
 
 const secretKey = "secret";
 const key = new TextEncoder().encode(secretKey);
@@ -24,29 +25,6 @@ export async function decrypt(input?: string): Promise<any> {
     algorithms: ["HS256"],
   });
   return payload;
-}
-
-export async function getUserByIdentifier(identifier: string) {
-  try {
-    const user = await prisma.user.findMany({
-      where: {
-        OR: [
-          { email: { equals: identifier } },
-          { net_id: { equals: identifier } },
-        ],
-      },
-      include: { user_role: true },
-    });
-    // console.log(user);
-    return { data: user[0], error: null };
-  } catch (error) {
-    // console.log(error);
-    console.error(error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return { data: null, error: error.message };
-    }
-    return { data: null, error: "Unknown Error Happened" };
-  }
 }
 
 interface RegisterUserProps {
@@ -110,48 +88,6 @@ export async function loginUserService(userData: LoginUserProps) {
   } catch (error) {
     console.error("Login User Service Error:", error);
   }
-
-  // try {
-  //   const { data: user, error } = await getUserByIdentifier(
-  //     userData.identifier,
-  //   );
-
-  //   if (!user || !user.password) return { user: null, jwt: null };
-
-  //   console.log(userData.password);
-
-  //   const passwordMatches = await bcrypt.compare(
-  //     userData.password,
-  //     user.password,
-  //   );
-  //   const passwordMatches = true;
-
-  //   return { jwt: jwt, user: user };
-  // } catch (error) {
-  //   return { error: error };
-  // }
-
-  // Create the session
-
-  // const url = new URL("/api/auth/local", baseUrl);
-
-  // console.log("user data is !!!!!!!!!!!!!!!", userData);
-
-  // try {
-  //   const response = await fetch(url, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ ...userData }),
-  //     cache: "no-cache",
-  //   });
-
-  //   return response.json();
-  // } catch (error) {
-  //   console.error("Login Service Error:", error);
-  //   throw error;
-  // }
 }
 
 export async function verifyUserService(jwt: string) {
@@ -177,19 +113,7 @@ export async function verifyUserService(jwt: string) {
     } else {
       return { ok: false, data: null, error: error };
     }
-
-    // return { ok: false, data: null, error: "jwt auth failed" };
   } catch (error) {
     return { ok: false, data: null, error: error };
   }
-
-  // parsed.expires = new Date(Date.now() + 10 * 1000);
-  // const res = NextResponse.next();
-  // res.cookies.set({
-  //   name: "session",
-  //   value: await encrypt(parsed),
-  //   httpOnly: true,
-  //   expires: parsed.expires,
-  // // });
-  // return res;
 }

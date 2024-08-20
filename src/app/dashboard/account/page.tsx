@@ -13,7 +13,9 @@ import {
 export default async function AccountRoute() {
   const user = await getUserMeLoader();
   const userData = user.data;
-  const userImage = userData?.image;
+  const userImage = userData?.image ?? null;
+
+  // console.log(userImage);
 
   if (!userData) return <p>No user found</p>;
 
@@ -36,10 +38,10 @@ export default async function AccountRoute() {
       </Breadcrumb>
       <div className="grid grid-cols-1 content-center gap-4 px-5 py-2 md:grid-cols-5 lg:grid-cols-5">
         <ProfileForm data={userData} className="col-span-1 md:col-span-3" />
-        {/* <ProfileImageForm
+        <ProfileImageForm
           data={userImage}
           className="col-span-1 md:col-span-2"
-        /> */}
+        />
       </div>
     </>
   );

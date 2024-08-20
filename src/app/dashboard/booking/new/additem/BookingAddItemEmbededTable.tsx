@@ -166,14 +166,14 @@ const BookingAddItemEmbededTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length ? (
+            {data ? (
               data.map((row, index) => (
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (
                     <TableCell
                       className="whitespace-nowrap p-1 md:p-4"
                       key={header[0]}
-                    >{`${row.m_btechBarcode}`}</TableCell>
+                    >{`${row.m_tech_barcode}`}</TableCell>
                   ) : (
                     ``
                   )}

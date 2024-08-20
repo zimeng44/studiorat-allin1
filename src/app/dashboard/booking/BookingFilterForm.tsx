@@ -80,7 +80,7 @@ const FilterForm = ({ filter }: { filter: BookingFilterFormProps }) => {
     params.set("filterOpen", "false");
     params.set("filterOn", "true");
     for (const [key, value] of Object.entries(filterValues)) {
-      if (value === "" || value === "All") {
+      if (!value || value === "All") {
         params.delete(key);
         continue;
       }
@@ -134,17 +134,17 @@ const FilterForm = ({ filter }: { filter: BookingFilterFormProps }) => {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      start_time: {
-        from: filter.start_time?.from,
-        to: filter.start_time?.to,
-      },
-      end_time: {
-        from: filter.end_time?.from,
-        to: filter.end_time?.to,
-      },
-      // ...filter,
-    },
+    // defaultValues: {
+    //   start_time: {
+    //     from: filter.start_time?.from,
+    //     to: filter.start_time?.to,
+    //   },
+    //   end_time: {
+    //     from: filter.end_time?.from,
+    //     to: filter.end_time?.to,
+    //   },
+    //   // ...filter,
+    // },
     values: data,
   });
 
@@ -319,12 +319,12 @@ const FilterForm = ({ filter }: { filter: BookingFilterFormProps }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    {bookingLocationList.map((studio, index) => (
+                    <SelectItem value="All">All</SelectItem>
+                    {bookingLocationList.map((location, index) => (
                       <SelectItem
                         key={index}
-                        value={`${studio}`}
-                      >{`${studio}`}</SelectItem>
+                        value={`${location}`}
+                      >{`${location}`}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

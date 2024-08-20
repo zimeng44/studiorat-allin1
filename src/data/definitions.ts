@@ -9,7 +9,7 @@ export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
 }>;
 
 export type UserWithRole = Prisma.UserGetPayload<{
-  include: { user_role: true };
+  include: { user_role: true; image: true };
 }>;
 
 export type CheckoutWithUserAndItems = Prisma.checkout_sessionsGetPayload<{

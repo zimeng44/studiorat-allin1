@@ -61,7 +61,9 @@ const formSchema = z.object({
     message: "Type in a NetID to retrieve the user name",
   }),
   // studio: z.enum(bookingLocationList),
-  use_location: z.string(),
+  use_location: z.string().min(1, {
+    message: "Location can't be blank",
+  }),
   type: z.string(),
   bookingCreatorName: z.string().min(1),
   notes: z.string().optional(),
@@ -88,7 +90,24 @@ const EditBookingForm = ({
   const isPast = new Date() >= (booking?.start_time ?? new Date());
   const [error, setError] = useState("");
 
-  const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
+  const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>({
+    start_date: booking.start_time ? new Date(booking.start_time) : new Date(),
+    startTime: booking.start_time
+      ? format(new Date(booking.start_time), "hh:mm a")
+      : "",
+    end_date: booking.end_time ? new Date(booking.end_time) : new Date(),
+    endTime: booking.end_time
+      ? format(new Date(booking.end_time), "hh:mm a")
+      : "",
+    userName: `${booking.user?.first_name} ${booking.user?.last_name}`,
+    use_location: booking.use_location ?? "",
+    type: booking.type ?? "",
+    bookingCreatorName:
+      `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
+      "",
+    notes: booking.notes ?? "",
+    scan: "",
+  });
   const [itemObjArr, setItemObjArr] = useState(
     booking.inventory_items ?? Array(),
   );
@@ -97,26 +116,7 @@ const EditBookingForm = ({
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      start_date: booking.start_time
-        ? new Date(booking.start_time)
-        : new Date(),
-      startTime: booking.start_time
-        ? format(new Date(booking.start_time), "hh:mm a")
-        : "",
-      end_date: booking.end_time ? new Date(booking.end_time) : new Date(),
-      endTime: booking.end_time
-        ? format(new Date(booking.end_time), "hh:mm a")
-        : "",
-      userName: `${booking.user?.first_name} ${booking.user?.last_name}`,
-      use_location: booking.use_location ?? "",
-      type: booking.type ?? "",
-      bookingCreatorName:
-        `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
-        "",
-      notes: booking.notes ?? "",
-      scan: "",
-    },
+    // defaultValues: ,
     mode: "onChange",
     values: tempForm,
   });
@@ -209,17 +209,6 @@ const EditBookingForm = ({
       created_by: booking.created_by,
     };
 
-    // tempBooking.start_time = `${form.getValues("start_date")}, ${form.getValues("startTime")}`;
-    // tempBooking.end_time = `${form.getValues("end_date")}, ${form.getValues("endTime")}`;
-    // delete tempBooking.start_date;
-    // delete tempBooking.end_date;
-    // console.log(tempBooking);
-    // setCookie(`tempBooking${bookingId}`, JSON.stringify(tempBooking), config);
-
-    // tempBooking.inventory_items = itemObjArr;
-    // tempBooking.user = booking.user;
-    // tempBooking.created_by = booking.created_by;
-
     localStorage.setItem(
       `tempBooking${bookingId}`,
       JSON.stringify(tempBooking),
@@ -253,121 +242,6 @@ const EditBookingForm = ({
     return `${convertedHour}:${minute}:00`;
   }
 
-  // const baseUrl = getStrapiURL();
-
-  // async function fetchData(url: string) {
-  //   // const authToken = getAuthToken();
-  //   // const authToken = process.env.NEXT_PUBLIC_API_TOKEN;
-
-  //   const headers = {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${authToken}`,
-  //     },
-  //   };
-
-  //   try {
-  //     const response = await fetch(url, authToken ? headers : {});
-  //     const data = await response.json();
-  //     // console.log(data);
-  //     return flattenAttributes(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     throw error; // or return null;
-  //   }
-  // }
-
-  // async function itemConflictCheck(booking: BookingTypePost) {
-  //   const inventoryItems = booking?.inventory_items as InventoryItem[];
-  //   const itemList = inventoryItems.length > 0 ? [...inventoryItems] : [0];
-
-  //   // console.log(itemList);
-  //   const query = qs.stringify({
-  //     // sort: ["createdAt:desc"],
-  //     populate: "*",
-  //     filters: {
-  //       $and: [
-  //         {
-  //           id: { $ne: bookingId },
-  //         },
-  //         {
-  //           $or: [
-  //             {
-  //               startTime: {
-  //                 $between: [booking.start_time, booking.end_time],
-  //               },
-  //             },
-  //             {
-  //               endTime: {
-  //                 $between: [booking.start_time, booking.end_time],
-  //               },
-  //             },
-  //             {
-  //               $and: [
-  //                 { startTime: { $lte: booking.start_time } },
-  //                 { endTime: { $gte: booking.end_time } },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //         {
-  //           inventory_items: {
-  //             id: {
-  //               $in: [...itemList],
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   });
-  //   const url = new URL("/api/bookings", baseUrl);
-  //   url.search = query;
-  //   // console.log("query data", query)
-  //   return fetchData(url.href);
-  // }
-
-  // async function locationConflictCheck(booking: BookingTypePost) {
-  //   const query = qs.stringify({
-  //     // sort: ["createdAt:desc"],
-  //     // populate: "*",
-  //     filters: {
-  //       $and: [
-  //         {
-  //           id: { $ne: bookingId },
-  //         },
-  //         {
-  //           $or: [
-  //             {
-  //               startTime: {
-  //                 $between: [booking.start_time, booking.end_time],
-  //               },
-  //             },
-  //             {
-  //               endTime: {
-  //                 $between: [booking.start_time, booking.end_time],
-  //               },
-  //             },
-  //             {
-  //               $and: [
-  //                 { startTime: { $lte: booking.start_time } },
-  //                 { endTime: { $gte: booking.end_time } },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //         {
-  //           use_location: { $eq: booking.use_location },
-  //         },
-  //       ],
-  //     },
-  //   });
-  //   const url = new URL("/api/bookings", baseUrl);
-  //   url.search = query;
-  //   // console.log("query data", query)
-  //   return fetchData(url.href);
-  // }
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
@@ -382,16 +256,16 @@ const EditBookingForm = ({
       end_time: new Date(
         `${format(new Date(form.getValues("end_date")), "yyyy-MM-dd")}T${time12To24(form.getValues("endTime").toString())}`,
       ),
-      // user: booking?.user?.id ?? 0,
       use_location: form.getValues("use_location"),
-      // created_by: booking?.created_by?.id ?? 0,
-      notes: form.getValues("notes") ?? "",
+      notes: form.getValues("notes") ?? null,
       inventory_items:
         itemObjArr.length > 0
           ? {
               set: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
             }
-          : undefined,
+          : {
+              set: [],
+            },
     };
 
     if (updateValues.start_time >= updateValues.end_time) {

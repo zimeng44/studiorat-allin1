@@ -855,7 +855,7 @@ export async function getBookings(
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
     // if (value === "" || value === false || value === "false") continue;
-    if (value === "All" || value === null || value === "") continue;
+    if (value === "All" || !value) continue;
 
     if (key === "start_time" || key === "end_time") {
       if (!value.from && !value.to) {
@@ -897,6 +897,7 @@ export async function getBookings(
       continue;
     }
   }
+  // console.log("Filter Array is",filterArr)
 
   const query = {
     skip: parseInt(pageSize) * (parseInt(pageIndex) - 1),
@@ -1272,7 +1273,7 @@ export async function getUsers(
           ? [...filterArr]
           : [...filterArr, { user_role: { id: 2 } }],
     },
-    include: { user_role: true },
+    include: { user_role: true, image: true },
   };
 
   const countQuery = {
@@ -1289,7 +1290,7 @@ export async function getUserById(userId: string) {
   // return fetchData(`${baseUrl}/api/users/${userId}?populate=role`);
   return prisma.user.findUnique({
     where: { id: userId },
-    include: { user_role: true },
+    include: { user_role: true, image: true },
   });
 }
 
@@ -1371,7 +1372,7 @@ export async function getUsersByQuery(
         : {
             AND: [{ OR: orClause }, { user_role: { id: 2 } }],
           },
-    include: { user_role: true },
+    include: { user_role: true, image: true },
   };
 
   const countQuery = {
@@ -1385,6 +1386,29 @@ export async function getUsersByQuery(
   const data = await prisma.user.findMany(query);
   const count = await prisma.user.count(countQuery);
   return { data, count };
+}
+
+export async function getUserByIdentifier(identifier: string) {
+  try {
+    const user = await prisma.user.findMany({
+      where: {
+        OR: [
+          { email: { equals: identifier } },
+          { net_id: { equals: identifier } },
+        ],
+      },
+      include: { user_role: true, image: true },
+    });
+    // console.log(user);
+    return { data: user[0], error: null };
+  } catch (error) {
+    // console.log(error);
+    console.error(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return { data: null, error: error.message };
+    }
+    return { data: null, error: "Unknown Error Happened" };
+  }
 }
 
 // ########################### Inventory Reports ########################
@@ -1879,6 +1903,7 @@ export async function getRostersByQuery(
   try {
     const data = await prisma.rosters.findMany(query);
     const count = await prisma.rosters.count(countQuery);
+    // console.log(data, query.where.OR[5].permissions?.some.OR)
     return { data: data, count: count };
   } catch (error) {
     console.log(error);

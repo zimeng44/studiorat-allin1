@@ -71,7 +71,7 @@ export default async function RosterPage({
   // if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No Inventory data</p>;
 
-  // console.log(meta);
+  // console.log(searchParams?.query);
 
   return (
     <div className="p-2 md:p-5">

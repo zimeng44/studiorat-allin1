@@ -40,13 +40,6 @@ const BookingAddItemForm = ({
   // const bookingItems = bookingData.inventory_items;
   // console.log(bookingData.inventory_items);
   const handleBackToBooking = () => {
-    // setCookie(
-    //   `tempBookingItems${bookingId}`,
-    //   JSON.stringify(itemObjArr),
-    //   config,
-    // );
-    // deleteCookie(`tempBooking${bookingId}`);
-
     localStorage.setItem(
       `tempBookingItems${bookingId}`,
       JSON.stringify(itemObjArr),

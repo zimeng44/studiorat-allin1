@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { SquarePen } from "lucide-react";
+import { Info, SquarePen } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,11 @@ import {
   TableColumnStatus,
 } from "@/app/dashboard/master-inventory/inventoryColumns";
 import { toast } from "sonner";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const MAX_TEXT_LEN = 20;
 
@@ -259,9 +264,20 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key] && row[key].length >= MAX_TEXT_LEN
-                        ? `${row[key].substring(0, MAX_TEXT_LEN)}...`
-                        : row[key]}
+                      {row[key] && row[key].length >= MAX_TEXT_LEN ? (
+                        <HoverCard>
+                          <HoverCardTrigger className="m-0 p-0" asChild>
+                            <Button variant="link">
+                              {`${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                            </Button>
+                          </HoverCardTrigger>
+                          <HoverCardContent>{row[key]}</HoverCardContent>
+                        </HoverCard>
+                      ) : (
+                        <Button className="m-0 p-0" variant="link">
+                          {row[key]}
+                        </Button>
+                      )}
                     </TableCell>
                   ) : (
                     ``

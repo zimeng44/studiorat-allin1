@@ -2,15 +2,35 @@ import { getAuthToken } from "@/data/services/get-token";
 import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes } from "@/lib/utils";
 import { getStrapiURL } from "@/lib/utils";
+import { join } from "path";
+import { promises as fs } from "fs";
+import prisma from "@/lib/prisma";
 
 export async function fileDeleteService(imageId: string) {
-  const authToken = await getAuthToken();
-  if (!authToken) throw new Error("No auth token found");
+  //
+  try {
+    const image = await prisma.image.findUnique({
+      where: { id: parseInt(imageId) },
+    });
+    if (!image) throw Error("Image not found");
 
-  const data = await mutateData("DELETE", `/api/upload/files/${imageId}`);
-  const flattenedData = flattenAttributes(data);
+    const filePath = join(process.cwd(), "public", image.url);
 
-  return flattenedData;
+    // Check if the file exists
+    await fs.access(filePath);
+
+    // Delete the image file
+    await fs.unlink(filePath);
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    const res = await prisma.image.delete({
+      where: { id: parseInt(imageId) },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function fileUploadService(image: any) {
@@ -21,16 +41,17 @@ export async function fileUploadService(image: any) {
   const url = new URL("/api/upload", baseUrl);
 
   const formData = new FormData();
-  formData.append("files", image, image.name);
+  formData.append("file", image, image.name);
 
   try {
     const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${authToken}` },
+      // headers: { Authorization: `Bearer ${authToken}` },
       method: "POST",
       body: formData,
     });
 
     const dataResponse = await response.json();
+
 
     return dataResponse;
   } catch (error) {
