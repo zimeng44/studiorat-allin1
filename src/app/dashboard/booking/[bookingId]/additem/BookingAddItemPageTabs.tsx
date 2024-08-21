@@ -18,6 +18,7 @@ interface TableFieldStatus {
   visible: boolean;
 }
 interface TableColumnStatus {
+  image: TableFieldStatus;
   m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;

@@ -64,7 +64,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 // import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
-import { InventoryItem } from "@/data/definitions";
+import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";
 
@@ -88,7 +88,7 @@ interface TableColumnStatus {
 interface InventoryTableProps {
   data: any[];
   columnsStatus: TableColumnStatus;
-  itemObjArr: InventoryItem[];
+  itemObjArr: InventoryItemWithImage[];
   addToBooking: Function;
 }
 

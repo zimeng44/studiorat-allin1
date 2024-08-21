@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
-import { InventoryItem } from "@/data/definitions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import BookingAddItemPageTabs from "./BookingAddItemPageTabs";
