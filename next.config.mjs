@@ -17,6 +17,12 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "zimeng.dev",
+        // port: "",
+        pathname: "/api/uploads/**/*",
+      },
+      {
+        protocol: "https",
         hostname: "api.zimeng.dev",
         port: "",
         pathname: "/uploads/**/*",
