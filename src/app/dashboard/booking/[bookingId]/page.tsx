@@ -12,7 +12,7 @@ import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
 // import { getCookie } from "cookies-next";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import prisma from "@/lib/prisma";
+// import prisma from "@/lib/prisma";
 
 interface ParamsProps {
   params: {

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { geLocalMedia, getStrapiMedia } from "@/lib/utils";
 
 interface StrapiImageProps {
-  src: string;
+  src: string | null;
   alt?: string;
   height?: number;
   width?: number;
@@ -23,9 +23,9 @@ export function StrapiImage({
   return (
     <Image
       src={imageUrl ?? imageFallback}
-      alt={alt ?? "user image"}
-      height={height ?? 50}
-      width={width ?? 50}
+      alt={alt ?? "studio rat image"}
+      height={height ?? 100}
+      width={width ?? 100}
       className={className}
     />
   );

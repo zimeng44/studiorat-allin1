@@ -66,6 +66,7 @@ import { Badge } from "@/components/ui/badge";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
 import { InventoryItem } from "@/data/definitions";
 import { toast } from "sonner";
+import { StrapiImage } from "@/components/custom/StrapiImage";
 
 const MAX_TEXT_LEN = 20;
 
@@ -210,6 +211,27 @@ const BookingInventoryTable = ({
                 // data-state={row.getIsSelected() && "selected"}
               >
                 {Object.entries(columnsStatus).map(([key, value]) => {
+                  if (key === "image") {
+                    return value.visible ? (
+                      <TableCell
+                        className="relative flex h-20 w-20 items-center overflow-hidden rounded-md"
+                        key={key}
+                      >
+                        {row[key] ? (
+                          <StrapiImage
+                            className="h-full w-full rounded-lg object-contain"
+                            src={row[key].url}
+                            height={100}
+                            width={100}
+                          />
+                        ) : (
+                          ``
+                        )}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
                   if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>

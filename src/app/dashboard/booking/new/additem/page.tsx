@@ -33,7 +33,7 @@ interface ParamsProps {
 const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
   const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "";
+  const sort = searchParams?.sort ?? "make:asc";
 
   const filter = {};
 
@@ -76,7 +76,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Edit</BreadcrumbPage>
+            <BreadcrumbPage>New</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

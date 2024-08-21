@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import PaginationControls from "@/components/custom/PaginationControls";
-import { InventoryItem } from "@/data/definitions";
+// import PaginationControls from "@/components/custom/PaginationControls";
+import { InventoryItemWithImage } from "@/data/definitions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
@@ -11,6 +11,7 @@ import BookingInventoryTable from "./BookingInventoryTable";
 import { CirclePlus, Grid, List } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { StrapiImage } from "@/components/custom/StrapiImage";
 
 interface TableFieldStatus {
   header: string;
@@ -31,7 +32,7 @@ interface ViewTabsProps {
   data: any[];
   // meta: { pagination: { pageCount: number; total: number } };
   filter: {};
-  itemObjArr: InventoryItem[];
+  itemObjArr: InventoryItemWithImage[];
   addToBooking: Function;
 }
 
@@ -40,8 +41,8 @@ function LinkCard({
   itemObjArr,
   setItemObjArr,
 }: {
-  item: Readonly<InventoryItem>;
-  itemObjArr: Readonly<InventoryItem>[];
+  item: Readonly<InventoryItemWithImage>;
+  itemObjArr: Readonly<InventoryItemWithImage>[];
   setItemObjArr: Function;
 }) {
   // console.log(item);
@@ -63,14 +64,21 @@ function LinkCard({
       }}
     >
       <CardHeader>
-        <CardTitle className="leading-8 text-pink-500">
-          {item.make + " " + item.model || "Brand Model"}
-          {/* {item.model || "Model"} */}
+        <div className="relative h-40 w-40 items-center overflow-hidden rounded-md">
+          <StrapiImage
+            className="h-full w-full rounded-lg object-contain"
+            src={item.image?.url ?? null}
+            height={50}
+            width={50}
+          />
+        </div>
+        <CardTitle className="text-md w-full leading-7 text-pink-500">
+          {(item.model ?? "") || "Model Blank"}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mb-2 flex w-full items-center leading-7">
-          {item.description?.slice(0, 50)}
+        <p className="w-full text-sm leading-6">
+          {item.make}
           <CirclePlus className="ml-2 h-5 w-5 content-end" />
         </p>
       </CardContent>
@@ -95,10 +103,12 @@ const BookingAddItemPageTabs = ({
   const addView = searchParams.get("addView") ?? "list";
   const params = new URLSearchParams(searchParams);
   const [defaultTab, setDefaultTab] = useState(addView);
+  const [mobileView, setMobileView] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
+      setMobileView(isMobile);
 
       params.set("addView", isMobile ? "cards" : addView);
       setDefaultTab(isMobile ? "cards" : addView);
@@ -123,7 +133,7 @@ const BookingAddItemPageTabs = ({
           <h1 className="left-content font-bold">Available Items</h1>
           <div className="right-content">
             <TabsList>
-              {defaultTab === "cards" ? (
+              {mobileView ? (
                 ``
               ) : (
                 <TabsTrigger value="list">
@@ -152,7 +162,7 @@ const BookingAddItemPageTabs = ({
         </TabsContent>
         <TabsContent value="cards">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data.map((item: InventoryItem) => (
+            {data.map((item: InventoryItemWithImage) => (
               <LinkCard
                 key={item.id}
                 // {...item}

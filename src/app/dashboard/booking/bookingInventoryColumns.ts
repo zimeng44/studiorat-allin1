@@ -69,6 +69,10 @@ export const inventoryColumns = [
 ];
 
 export const inventoryColumnsDefault = {
+  image: {
+    header: "",
+    visible: true,
+  },
   m_tech_barcode: {
     header: "MTech Barcode",
     visible: true,

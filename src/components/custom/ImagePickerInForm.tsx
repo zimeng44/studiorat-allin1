@@ -28,7 +28,7 @@ function ImagePreview({ dataUrl }: { readonly dataUrl: string }) {
       alt="preview"
       height={100}
       width={100}
-      className="w-full rounded-lg object-cover"
+      className="h-full w-full rounded-lg object-contain"
     />
   );
 }
@@ -47,8 +47,8 @@ function ImageCard({
   );
 
   return (
-    <div className="relative w-full">
-      <div className=" flex items-center space-x-4 rounded-md border p-4">
+    <div className="relative">
+      <div className="relative flex h-40 w-40 items-center space-x-4 overflow-hidden rounded-md border p-4">
         {imagePreview}
       </div>
       <button

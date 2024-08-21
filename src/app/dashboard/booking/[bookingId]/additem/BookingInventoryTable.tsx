@@ -8,25 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  CirclePlus,
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  SquarePen,
-  Users2,
-} from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -41,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
 import { InventoryItem } from "@/data/definitions";
 import { toast } from "sonner";
+import { StrapiImage } from "@/components/custom/StrapiImage";
 
 const MAX_TEXT_LEN = 20;
 
@@ -49,6 +32,7 @@ interface TableFieldStatus {
   visible: boolean;
 }
 interface TableColumnStatus {
+  image: TableFieldStatus;
   m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
@@ -72,35 +56,19 @@ const BookingInventoryTable = ({
   itemObjArr,
   addToBooking,
 }: InventoryTableProps) => {
-  // console.log(data);
-  const pathParams = useParams<{ bookingId: string }>();
-  // const editable = pathParams.bookingId ? false : true;
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
 
   const sort = searchParams.get("sort") ?? "";
-  // console.log(sort);
 
-  // let filterOpen = searchParams.get("filterOpen") === "true";
   const pageIndex = searchParams.get("page") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
-  const isAllSelected = searchParams.get("isAllSelected") === "true";
-  const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
   const [currentPageSize, setCurrentPageSize] = useState("10");
-
-  // const [numRowsSelected, setNumRowsSelected] = useState(0);
-
-  // store columns visibility
-  // const [columnsVisible, setColumnsVisible] = useState(
-  //   Array(columns.length)
-  //     .fill(true)
-  //     .map((item, index) => columns[index].visible),
-  // );
 
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
@@ -124,66 +92,7 @@ const BookingInventoryTable = ({
     setCurrentPage(pageIndex);
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
-    // const params = new URLSearchParams(searchParams);
-    // params.delete("numRowsSelected");
-    // params.delete("isBatchOpOpen");
-    // params.delete("isAllSelected");
-    // router.replace(`${pathname}?${params.toString()}`);
   }
-
-  // store keys of columns
-  // const header = Array(columns.length)
-  //   .fill("")
-  //   .map((item, index) => columns[index].accessorKey);
-
-  // console.log(data.length);
-
-  const handleAllSelected = (checked: boolean) => {
-    setRowsSelected(Array(data.length).fill(checked));
-
-    params.set("isAllSelected", checked ? "true" : "false");
-    params.set("isBatchOpOpen", checked ? "true" : "false");
-    params.set("numRowsSelected", data.length.toString());
-    router.replace(`${pathname}?${params.toString()}`);
-    // console.log("All Selected is ", allSelected);
-  };
-
-  const handleRowSelection = (
-    matchedIndex: number,
-    checked: boolean | undefined,
-  ) => {
-    setRowsSelected((rowsSelected) =>
-      rowsSelected.map((rowChecked, index) =>
-        index === matchedIndex ? checked : rowChecked,
-      ),
-    );
-  };
-
-  const handleResetSelection = () => {
-    setRowsSelected(Array(data.length).fill(false));
-    params.set("isAllSelected", "false");
-    params.set("isBatchOpOpen", "false");
-    params.set("numRowsSelected", "0");
-    router.replace(`${pathname}?${params.toString()}`);
-  };
-
-  const handleBatchDelete = () => {
-    const counter = rowsSelected.filter((item) => item === true).length;
-    // console.log("Size of rowSelected is ", rowsSelected.length);
-
-    const confirm = window.confirm(
-      `Are you sure you want to delete ${counter} item(s)?`,
-    );
-
-    if (!confirm) return;
-
-    rowsSelected.map((row, index) => {
-      if (row) {
-        deleteItemAction(data[index].id);
-      }
-    });
-    setRowsSelected(Array(data.length).fill(false));
-  };
 
   const handleSort = (field: string) => {
     const order = sort.split(":")[1] === "asc" ? "desc" : "asc";
@@ -201,14 +110,6 @@ const BookingInventoryTable = ({
     }
     addToBooking([...newArr, row]);
     toast.success("Item Added.");
-
-    // addToBooking((prev: InventoryItem[]) => {
-    //   if (prev.filter((item) => item.id === row.id).length > 0) {
-    //     window.alert("Item Added Already.");
-    //     return [...prev];
-    //   }
-    //   return [...prev, row];
-    // });
   };
 
   return (
@@ -251,6 +152,28 @@ const BookingInventoryTable = ({
                 // data-state={row.getIsSelected() && "selected"}
               >
                 {Object.entries(columnsStatus).map(([key, value]) => {
+                  if (key === "image") {
+                    return value.visible ? (
+                      <TableCell
+                        className="relative flex h-20 w-20 items-center overflow-hidden rounded-md"
+                        key={key}
+                      >
+                        {row[key] ? (
+                          <StrapiImage
+                            className="h-full w-full rounded-lg object-contain"
+                            src={row[key].url}
+                            height={100}
+                            width={100}
+                          />
+                        ) : (
+                          ``
+                        )}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+
                   if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
@@ -280,10 +203,9 @@ const BookingInventoryTable = ({
 
                   return value.visible ? (
                     <TableCell className="" key={key}>
-                      {row[key]}
-                      {/* {row[key].length <= MAX_TEXT_LEN
+                      {row[key].length <= MAX_TEXT_LEN
                         ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`} */}
+                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
                     </TableCell>
                   ) : (
                     ``

@@ -42,8 +42,11 @@ export function ProfileImageForm({
   );
 
   return (
-    <form className={cn("max-w-60 space-y-4", className)} action={formAction}>
-      <div className="">
+    <form
+      className={cn("max-h-60 max-w-60 space-y-4", className)}
+      action={formAction}
+    >
+      <div>
         <ImagePicker
           id="image"
           name="image"

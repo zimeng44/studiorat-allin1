@@ -284,32 +284,6 @@ const EditBookingForm = ({
       router.push("/dashboard/booking");
       router.refresh();
     }
-
-    // itemConflictCheck(formValue).then(({ data, meta }) => {
-    //   // console.log(data);
-    //   if (data.length !== 0) {
-    //     window.alert("Item Conflict Found.");
-    //     return;
-    //   }
-    //   if (formValue.use_location === "Outside") {
-    //     updateBookingAction(formValue, bookingId).then(() => {
-    //       toast.success("Booking Saved Successfully.");
-    //       router.push(`/dashboard/booking?view=${view}`);
-    //     });
-    //   } else {
-    //     locationConflictCheck(formValue).then(({ data, meta }) => {
-    //       // console.log(data);
-    //       if (data.length !== 0) {
-    //         window.alert("Location Conflict Found.");
-    //         return;
-    //       }
-    //       updateBookingAction(formValue, bookingId).then(() => {
-    //         toast.success("Booking Saved Successfully.");
-    //         router.push(`/dashboard/booking?view=${view}`);
-    //       });
-    //     });
-    //   }
-    // });
   }
 
   return (

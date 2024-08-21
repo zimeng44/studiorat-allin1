@@ -33,7 +33,7 @@ interface ParamsProps {
 const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
   const pageIndex = searchParams?.page ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "";
+  const sort = searchParams?.sort ?? "make:asc";
 
   const filter = {
     // mTechBarcode: searchParams?.mTechBarcode ?? "",

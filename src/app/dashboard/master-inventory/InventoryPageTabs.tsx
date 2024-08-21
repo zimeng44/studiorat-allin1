@@ -2,7 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
-import { InventoryItem } from "@/data/definitions";
+import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,7 @@ import InventoryTable from "./InventoryTable";
 import TabHeader from "./TabHeader";
 import { Grid, List } from "lucide-react";
 import { inventory_items } from "@prisma/client";
+import { StrapiImage } from "@/components/custom/StrapiImage";
 
 interface ViewTabsProps {
   data: any[];
@@ -23,18 +24,27 @@ interface ViewTabsProps {
   userRole: string;
 }
 
-function LinkCard(item: Readonly<inventory_items>) {
+export function InventoryItemCard(item: Readonly<InventoryItemWithImage>) {
+  // console.log(item.image?.url);
   return (
     <Link href={`/dashboard/master-inventory/${item.id}`}>
       <Card className="relative">
         <CardHeader>
-          <CardTitle className="leading-8 text-pink-500">
-            {item.make + " " + item.model || "Brand Model"}
-            {/* {item.model || "Model"} */}
+          <div className="relative h-40 w-40 items-center overflow-hidden rounded-md">
+            <StrapiImage
+              className="h-full w-full rounded-lg object-contain"
+              src={item.image?.url ?? null}
+              height={50}
+              width={50}
+            />
+          </div>
+
+          <CardTitle className="text-md w-full leading-7 text-pink-500">
+            {(item.model ?? "") || "Model Blank"}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 w-full leading-7">{item.category}</p>
+          <p className="w-full text-sm leading-6">{item.make}</p>
         </CardContent>
       </Card>
     </Link>
@@ -81,8 +91,8 @@ const InventoryPageTabs = ({
         <TabsContent value="grid">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data[0] ? (
-              data.map((item: inventory_items) => (
-                <LinkCard key={item.id} {...item} />
+              data.map((item: InventoryItemWithImage) => (
+                <InventoryItemCard key={item.id} {...item} />
               ))
             ) : (
               <p>No data</p>
