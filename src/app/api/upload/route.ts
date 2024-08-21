@@ -1,25 +1,24 @@
-// import { getUserByIdentifier } from "@/data/services/auth-services";
-// import { getAuthToken } from "@/data/services/get-token";
-// import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-// import multer, { StorageEngine } from "multer";
 import path from "path";
 import { promises as fs } from "fs";
 import { Prisma } from "@prisma/client";
-
-// export async function GET(req: NextRequest) {
-//   console.log("hello");
-//   const reqContent = req.url;
-
-//   console.log(reqContent);
-// }
+import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { getAuthToken } from "@/data/services/get-token";
 
 export async function POST(req: NextRequest) {
+  const reqAuthToken = req.headers.get("Authorization")?.split(" ")[1];
+  const user = await getUserMeLoader(reqAuthToken);
+
+  if (!user.ok)
+    return new Response(
+      JSON.stringify({ data: null, error: "Not authorized" }),
+      {
+        status: 401,
+      },
+    );
+
   try {
-    // console.log("Request received");
-    // console.log("Incoming Request Headers:", req.headers);
-    // const { file } = await parseForm(req);
     const formData = await req.formData();
     const file = formData.get("file");
 
@@ -83,9 +82,3 @@ export async function POST(req: NextRequest) {
     }
   }
 }
-export const config = {
-  api: {
-    // bodyParser: true,
-    externalResolver: true,
-  },
-};

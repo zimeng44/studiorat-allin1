@@ -65,6 +65,7 @@ import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { bookings, inventory_items, Prisma, User } from "@prisma/client";
+import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -154,6 +155,7 @@ const NewBookingForm = ({
   const [user, setUser] = useState<UserWithRole | null>(booking.user);
   const [bookingType, setBookingType] = useState(booking.type);
   const [error, setError] = useState("");
+  const [userLoading, setUserLoading] = useState(false);
 
   let localItemsObj = undefined;
   // let tempBookingObj = undefined;
@@ -326,6 +328,7 @@ const NewBookingForm = ({
 
   const handleGetUser = useDebouncedCallback((term: string) => {
     // console.log(term);
+    setUserLoading(true);
     if (term.length > 1) {
       getUserByUsername(term)
         // .then((res) => console.log(res))
@@ -345,7 +348,7 @@ const NewBookingForm = ({
           }
         });
     }
-
+    setUserLoading(false);
     // console.log(params.toString());
   }, 1000);
 
@@ -462,12 +465,18 @@ const NewBookingForm = ({
                       disabled
                       // onChange={(e) => setUserId(e.target.value)}
                     ></Input> */}
-                    <Label
+                    {/* <Label
                       {...field}
                       className="flex p-2 font-sans italic text-slate-400"
                     >
                       {field.value === "" ? "NetID needed" : field.value}
-                    </Label>
+                    </Label> */}
+                    <InputWithLoading
+                      placeholder="Type in a NetID"
+                      field={field}
+                      isLoading={userLoading}
+                      disabled
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

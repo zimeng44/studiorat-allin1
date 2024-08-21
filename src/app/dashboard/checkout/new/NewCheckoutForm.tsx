@@ -45,6 +45,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { checkout_sessions, User } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
 interface StrapiErrorsProps {
   message?: string | null;
@@ -100,6 +101,8 @@ const NewCheckoutForm = ({
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
+  const [userLoading, setUserLoading] = useState(false);
+  const [itemLoading, setItemLoading] = useState(false);
 
   // console.log(rowId);
 
@@ -153,6 +156,7 @@ const NewCheckoutForm = ({
   }
 
   const handleStuIdInput = useDebouncedCallback(async (term: string) => {
+    setUserLoading(true);
     if (term.length > 15) {
       const { data: user } = await getStudioUserByStuId(term);
       // console.log(user);
@@ -172,6 +176,7 @@ const NewCheckoutForm = ({
       form.setValue("stuIDCheckout", "");
       form.setFocus("stuIDCheckout");
     }
+    setUserLoading(false);
     // console.log(params.toString());
   }, 50);
 
@@ -185,6 +190,7 @@ const NewCheckoutForm = ({
   }
 
   const handleScan = useDebouncedCallback(async (term: string) => {
+    setItemLoading(true);
     if (term.length > 9) {
       const { data: item } = await getItemByBarcode(term);
       if (item[0]) {
@@ -220,7 +226,7 @@ const NewCheckoutForm = ({
     }
     form.setValue("scan", "");
     form.setFocus("scan");
-
+    setItemLoading(false);
     // console.log(params.toString());
   }, 50);
 
@@ -350,12 +356,18 @@ const NewCheckoutForm = ({
               <FormItem className="col-span-1">
                 <FormLabel>User Name</FormLabel>
                 <FormControl>
-                  <Input
+                  {/* <Input
                     {...field}
                     disabled
                     placeholder="Waiting for ID scan"
                     // onChange={(e) => setUserId(e.target.value)}
-                  ></Input>
+                  ></Input> */}
+                  <InputWithLoading
+                    placeholder="Waiting for ID scan"
+                    field={field}
+                    isLoading={userLoading}
+                    disabled
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -454,7 +466,12 @@ const NewCheckoutForm = ({
             name="scan"
             render={({ field }) => (
               <FormItem className="col-span-1">
-                <FormLabel className="ml-1">Barcode Scan</FormLabel>
+                <FormLabel className="ml-1 flex gap-3">
+                  Barcode Scan
+                  <div
+                    className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
+                  />
+                </FormLabel>
                 <FormControl
                   onChange={(e) =>
                     handleScan((e.target as HTMLInputElement).value)

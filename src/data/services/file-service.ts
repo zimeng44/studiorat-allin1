@@ -1,6 +1,6 @@
 import { getAuthToken } from "@/data/services/get-token";
-import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
+// import { mutateData } from "@/data/services/mutate-data";
+// import { flattenAttributes } from "@/lib/utils";
 import { getStrapiURL } from "@/lib/utils";
 import { join } from "path";
 import { promises as fs } from "fs";
@@ -35,6 +35,7 @@ export async function fileDeleteService(imageId: string) {
 
 export async function fileUploadService(image: any) {
   const authToken = await getAuthToken();
+  // console.log(authToken);
   if (!authToken) throw new Error("No auth token found");
 
   const baseUrl = getStrapiURL();
@@ -45,13 +46,13 @@ export async function fileUploadService(image: any) {
 
   try {
     const response = await fetch(url, {
-      // headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `Bearer ${authToken}` },
       method: "POST",
       body: formData,
+      // credentials: "include",
     });
 
     const dataResponse = await response.json();
-
 
     return dataResponse;
   } catch (error) {

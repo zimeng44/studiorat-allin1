@@ -53,6 +53,7 @@ import {
   Prisma,
   User,
 } from "@prisma/client";
+import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
 // import { useRouter } from "next/navigation";
 
@@ -117,6 +118,7 @@ const EditCheckoutSessionForm = ({
   const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
     session.inventory_items ?? undefined,
   );
+  const [itemLoading, setItemLoading] = useState(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -180,6 +182,7 @@ const EditCheckoutSessionForm = ({
 
   const handleScan = useDebouncedCallback((term: string) => {
     // window.alert("you did it!!");
+    setItemLoading(true);
     if (term.length > 9) {
       getItemByBarcode(term).then(({ data, error }) => {
         if (data) {
@@ -209,6 +212,7 @@ const EditCheckoutSessionForm = ({
 
     form.setValue("scan", "");
     form.setFocus("scan");
+    setItemLoading(false);
   }, 50);
 
   // 2. Define a submit handler.
@@ -254,19 +258,8 @@ const EditCheckoutSessionForm = ({
       }
     } catch (error) {
       toast.error("Error Updating Checkout Session");
-      // setError({
-      //   ...INITIAL_STATE,
-      //   message: "Error Creating Summary",
-      //   name: "Summary Error",
-      // });
-      // setLoading(false);
       return;
     }
-
-    // toast.success("Session Saved.");
-    // router.push("/dashboard/checkout");
-    // router.refresh();
-    // router.refresh();
   }
 
   function handleFinish() {
@@ -545,12 +538,16 @@ const EditCheckoutSessionForm = ({
               name="scan"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full">
-                  <FormLabel className="ml-1">Barcode Scan</FormLabel>
+                  <FormLabel className="ml-1 flex gap-3">
+                    Barcode Scan
+                    <div
+                      className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
+                    />
+                  </FormLabel>
                   <FormControl
                     onChange={(e) =>
                       handleScan((e.target as HTMLInputElement).value)
                     }
-                    // onChange={(e) => handleScan(e.target.value)}
                   >
                     <Input
                       className="bg-indigo-100"
@@ -558,6 +555,14 @@ const EditCheckoutSessionForm = ({
                       {...field}
                       disabled={session.finished ?? false}
                     ></Input>
+
+                    {/* <InputWithLoading
+                      className="bg-indigo-100"
+                      placeholder="Item Barcode Scan"
+                      field={field}
+                      isLoading={itemLoading}
+                      disabled={session.finished ?? false}
+                    /> */}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
