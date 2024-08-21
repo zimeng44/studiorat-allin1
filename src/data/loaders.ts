@@ -209,6 +209,7 @@ export async function getInventoryItems(
     orderBy: order_by,
     skip: skipValue,
     take: pageSizeNumber,
+    include: { image: true },
     where: {
       AND: [...filterArr],
     },
@@ -227,6 +228,7 @@ export async function getInventoryItemById(itemId: string) {
   try {
     const data = await prisma.inventory_items.findUnique({
       where: { id: parseInt(itemId) },
+      include: { image: true },
     });
     return { data: data, error: null };
   } catch (error) {
@@ -264,6 +266,7 @@ export async function getItemsByQuery(
     orderBy: order_by,
     skip: skipValue,
     take: pageSizeNumber,
+    include: { image: true },
     where: {
       OR: [
         {

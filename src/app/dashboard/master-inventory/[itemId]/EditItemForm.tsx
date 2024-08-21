@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,12 +26,19 @@ import {
   deleteItemAction,
   updateItemAction,
 } from "@/data/actions/inventory-actions";
-import { InventoryItem } from "@/data/definitions";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  InventoryItem,
+  InventoryItemWithImage,
+  MAX_FILE_SIZE,
+} from "@/data/definitions";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
 import { inventory_items } from "@prisma/client";
+import ImagePickerInForm from "@/components/custom/ImagePickerInForm";
+import { getStrapiURL } from "@/lib/utils";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -51,6 +58,24 @@ const formSchema = z.object({
   comments: z.string().optional(),
   out: z.boolean(),
   broken: z.boolean(),
+  image: z.string().optional(),
+});
+
+const imageSchema = z.object({
+  // username: z.string().min(2).max(50),
+  image: z
+    .any()
+    .refine((file) => {
+      if (file.size === 0 || file.name === undefined) return false;
+      else return true;
+    }, "Please update or add new image.")
+
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      ".jpg, .jpeg, .png and .webp files are accepted.",
+    )
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .optional(),
 });
 
 const EditItemForm = ({
@@ -58,11 +83,12 @@ const EditItemForm = ({
   item,
 }: {
   itemId: string;
-  item: inventory_items;
+  item: InventoryItemWithImage;
 }) => {
   // console.log("Item Details Render!!");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [imageFile, setImageFile] = useState<File>();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,7 +104,15 @@ const EditItemForm = ({
       comments: item.comments ?? undefined,
       out: item.out ?? false,
       broken: item.broken ?? false,
+      image: item.image?.url,
     },
+  });
+
+  const imageForm = useForm<z.infer<typeof imageSchema>>({
+    resolver: zodResolver(imageSchema),
+    // defaultValues: {
+    //   image: item.image ?? null,
+    // },
   });
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
@@ -90,17 +124,51 @@ const EditItemForm = ({
 
     // updateAction(updatedData);
 
-    const { res, error } = await updateItemAction(values, itemId);
+    let imgId = null;
+    try {
+      if (imageForm.getValues("image")) {
+        const baseUrl = getStrapiURL();
+        const url = new URL("/api/upload", baseUrl);
 
-    if (!error) {
-      router.push("/dashboard/master-inventory");
-      router.refresh();
-      toast.success("Item Saved.");
+        const formData = new FormData();
+        formData.append(
+          "file",
+          imageForm.getValues("image"),
+          imageForm.getValues("image").name,
+        );
+
+        const uploadResponse = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+
+        const { res: imageResponse, error: uploadError } =
+          await uploadResponse.json();
+        // console.log(imageResponse);
+
+        if (uploadError) throw Error(uploadError);
+        imgId = imageResponse.id;
+      }
+
+      // return;
+      const updateValues = {
+        ...values,
+        image: imgId ? { connect: { id: imgId } } : undefined,
+        updated_at: new Date(),
+      };
+
+      const { res, error } = await updateItemAction(updateValues, itemId);
+
+      if (!error) {
+        router.push("/dashboard/master-inventory");
+        router.refresh();
+        toast.success("Item Saved.");
+      } else {
+        toast.error("Update failed");
+      }
+    } catch (error) {
+      toast.error("Update failed");
     }
-
-    // closeDetail();
-    // console.log("Form Submitted!!");
-    // setDialogOpen(false);
   }
 
   async function handleDelete(e: any) {
@@ -123,6 +191,30 @@ const EditItemForm = ({
 
   return (
     <div>
+      <Form {...imageForm}>
+        <form className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0">
+          <FormField
+            control={imageForm.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem className=" col-span-1 size-fit max-w-xs md:col-span-2">
+                <FormLabel>Image</FormLabel>
+                <FormControl>
+                  <ImagePickerInForm
+                    id="image"
+                    name="image"
+                    label="Item Image"
+                    defaultValue={form.getValues("image")}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

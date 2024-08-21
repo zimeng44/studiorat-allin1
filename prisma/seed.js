@@ -1,18 +1,36 @@
 // Import Prisma Client
 import { PrismaClient } from "@prisma/client";
-
+import bcrypt from "bcrypt";
 // Initialize Prisma Client
 const prisma = new PrismaClient();
 
 // Define the main function that will handle database operations
 async function main() {
   // Create a new user in the database using Prisma Client
+  const role1 = await prisma.user_role.createMany({
+    data: [
+      {
+        name: "Admin",
+      },
+      {
+        name: "Authenticated",
+      },
+      {
+        name: "Monitor",
+      },
+      {
+        name: "InventoryManager",
+      },
+    ],
+  });
+
   const user1 = await prisma.user.create({
     data: {
-      email: "alice@example.com",
-      first_name: "Alice",
-      password: "securepassword123",
-      user_role: { connect: { id: 2 } }, // Note: In a real application, ensure passwords are hashed!
+      email: "admin@admin.com",
+      net_id: "first_admin",
+      first_name: "Admin",
+      password: await bcrypt.hash("first_admin", 10),
+      user_role: { connect: { id: 1 } }, // Note: In a real application, ensure passwords are hashed!
     },
   });
 

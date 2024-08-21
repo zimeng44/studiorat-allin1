@@ -32,6 +32,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import Image from "next/image";
+import { StrapiImage } from "@/components/custom/StrapiImage";
 
 const MAX_TEXT_LEN = 20;
 
@@ -41,7 +43,7 @@ interface InventoryTableProps {
 }
 
 const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
-  // console.log(data);
+  console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -235,6 +237,15 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                   />
                 </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
+                  if (key === "image") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        {row[key] ? <StrapiImage src={row[key].url} /> : ``}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
                   if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>

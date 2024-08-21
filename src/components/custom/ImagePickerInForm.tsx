@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { StrapiImage } from "./StrapiImage";
 
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ interface ImagePickerProps {
   label: string;
   showCard?: boolean;
   defaultValue?: string;
+  value?: File;
+  onChange: (file: File) => void;
 }
 
 function generateDataUrl(file: File, callback: (imageUrl: string) => void) {
@@ -58,11 +60,13 @@ function ImageCard({
   );
 }
 
-export default function ImagePicker({
+export default function ImagePickerInForm({
   id,
   name,
   label,
   defaultValue,
+  value,
+  onChange,
 }: Readonly<ImagePickerProps>) {
   // console.log(defaultValue);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -70,8 +74,18 @@ export default function ImagePicker({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) generateDataUrl(file, setDataUrl);
+    if (file) {
+      generateDataUrl(file, setDataUrl);
+      onChange(file);
+    }
   };
+
+  useEffect(() => {
+    // Update preview if the file changes
+    if (value && value instanceof File) {
+      generateDataUrl(value, setDataUrl);
+    }
+  }, [value]);
 
   return (
     <React.Fragment>

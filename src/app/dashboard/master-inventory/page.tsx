@@ -51,7 +51,7 @@ export default async function MasterInventory({
 
   const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "";
+  const sort = searchParams?.sort ?? "updated_at:desc";
 
   const filter = {
     m_tech_barcode: searchParams?.m_tech_barcode ?? "",

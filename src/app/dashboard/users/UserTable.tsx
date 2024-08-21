@@ -244,7 +244,7 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                   if (key === "full_name") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
-                        {`${row.first_name} ${row.last_name}`}
+                        {`${row.first_name ?? ""} ${row.last_name ?? ""}`}
                       </TableCell>
                     ) : (
                       ``

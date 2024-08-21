@@ -9,6 +9,7 @@ import {
 import EditItemForm from "./EditItemForm";
 import { getInventoryItemById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
+import { InventoryImageForm } from "@/components/forms/InventoryImageForm";
 
 interface ParamsProps {
   params: {
@@ -27,6 +28,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
   }
   // console.log(params);
   const { data, error } = await getInventoryItemById(params.itemId);
+  const itemImage = data?.image ?? null;
 
   if (error) {
     return <p>Error Fetching Data</p>;
@@ -58,7 +60,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">Edit Item</h1>
-      <div className="flex items-center md:px-2">
+      <div className="flex items-start gap-3 md:px-2">
         <EditItemForm item={data} itemId={params.itemId} />
       </div>
     </div>

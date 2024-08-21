@@ -24,11 +24,14 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { InventoryItem } from "@/data/definitions";
 import { createInventoryItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
-import { inventory_items } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/data/definitions";
+import ImagePicker from "@/components/custom/ImagePicker";
+import ImagePickerInForm from "@/components/custom/ImagePickerInForm";
+import { fileUploadService } from "@/data/services/file-service";
+import { getStrapiURL } from "@/lib/utils";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -39,13 +42,6 @@ const INITIAL_STATE = {
   message: null,
   name: "",
 };
-
-const mTechBarcodeType = z.union([
-  z.string().min(12).and(z.string().max(13)),
-  z.string().length(0),
-]);
-// .optional();
-// .transform((e) => (e === "" ? undefined : e));
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -62,6 +58,19 @@ const formSchema = z.object({
   comments: z.string().optional(),
   out: z.boolean(),
   broken: z.boolean(),
+  image: z
+    .any()
+    .refine((file) => {
+      if (file.size === 0 || file.name === undefined) return false;
+      else return true;
+    }, "Please update or add new image.")
+
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      ".jpg, .jpeg, .png and .webp files are accepted.",
+    )
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .optional(),
 });
 
 const AddItem = ({ rowData }: { rowData: any }) => {
@@ -86,11 +95,11 @@ const AddItem = ({ rowData }: { rowData: any }) => {
       out: rowData.out ?? false,
       broken: rowData.broken ?? false,
     },
+    mode: "onChange",
   });
 
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
@@ -99,12 +108,38 @@ const AddItem = ({ rowData }: { rowData: any }) => {
     //   data: values,
     // };
 
+    // console.log(values.image);
+    // return;
     try {
-      const { res, error } = await createInventoryItemAction(values);
+      const baseUrl = getStrapiURL();
+      const url = new URL("/api/upload", baseUrl);
+
+      const formData = new FormData();
+      formData.append("file", values.image, values.image.name);
+
+      const uploadResponse = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+
+      const { res: imageResponse, error: uploadError } =
+        await uploadResponse.json();
+      // console.log(imageResponse);
+
+      if (uploadError) throw Error(uploadError);
+
+      const createValues = {
+        ...values,
+        image: { connect: { id: imageResponse.id } },
+      };
+
+      const { res, error } = await createInventoryItemAction(createValues);
+      if (error) throw Error(error);
       router.push("/dashboard/master-inventory");
       router.refresh();
       toast.success("New Item Added");
     } catch (error) {
+      console.log(error);
       toast.error("Error Creating Summary");
       // setError({
       //   ...INITIAL_STATE,
@@ -126,6 +161,27 @@ const AddItem = ({ rowData }: { rowData: any }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex-col gap-2 space-y-1 md:grid md:grid-cols-2"
         >
+          {/* <div className="max-w-25 max-h-25 col-span-1 md:col-span-2"></div> */}
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem className=" col-span-1 size-fit max-w-xs md:col-span-2">
+                <FormLabel>Image</FormLabel>
+                <FormControl>
+                  <ImagePickerInForm
+                    id="image"
+                    name="image"
+                    label="Item Image"
+                    defaultValue={field.value}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="m_tech_barcode"
@@ -245,51 +301,6 @@ const AddItem = ({ rowData }: { rowData: any }) => {
               </FormItem>
             )}
           />
-          {/* <div className="col-span-1 flex gap-12 bg-slate-300">
-            <FormField
-              control={form.control}
-              name="out"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="ml-2 align-bottom">Out</FormLabel>
-                  <FormControl>
-                    <Checkbox
-                      className="ml-2 align-middle"
-                      disabled
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="broken"
-              render={({ field }) => (
-                <FormItem className="mb-1">
-                  <FormLabel className="ml-1">Broken</FormLabel>
-                  <FormControl>
-                    
-                    <Checkbox
-                      className="ml-2"
-                      disabled
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
-
-          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
-
-          {/* <Button className="align-right" type="submit">
-            Add
-          </Button> */}
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
               className="flex-1"

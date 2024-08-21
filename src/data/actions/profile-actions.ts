@@ -167,15 +167,6 @@ export async function uploadProfileImageAction(
   const updatedImageId = fileUploadResponse.id;
   const payload = { image: { connect: { id: updatedImageId } } };
 
-  // console.log(fileUploadResponse);
-
-  // UPDATE USER PROFILE WITH NEW IMAGE
-  // const updateImageResponse = await mutateData(
-  //   "PUT",
-  //   `/api/users/${userId}`,
-  //   payload,
-  // );
-
   const updateImageResponse = await prisma.user.update({
     where: { id: userId },
     data: payload,

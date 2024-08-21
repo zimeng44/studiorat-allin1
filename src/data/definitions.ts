@@ -1,5 +1,14 @@
 import { Prisma } from "@prisma/client";
 
+export const MAX_FILE_SIZE = 5000000;
+
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
 export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
   include: {
     user: { include: { user_role: true } };
@@ -34,6 +43,12 @@ export type InventoryReportWithCreatorAndItems =
       // user_role: true;
     };
   }>;
+
+export type InventoryItemWithImage = Prisma.inventory_itemsGetPayload<{
+  include: {
+    image: true;
+  };
+}>;
 
 export type InventoryItem = {
   id?: number;

@@ -57,7 +57,7 @@ const AddItem = async () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">Add Item</h1>
-      <div className="flex items-center px-4">
+      <div className="flex items-start gap-3 md:px-2">
         <AddItemForm rowData={INITIAL_STATE} />
       </div>
     </div>

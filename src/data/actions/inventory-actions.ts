@@ -1,16 +1,22 @@
 "use server";
-
+import { z } from "zod";
 import { getAuthToken } from "@/data/services/get-token";
 // import { mutateData } from "@/data/services/mutate-data";
 // import { redirect } from "next/navigation";
+import {
+  fileDeleteService,
+  fileUploadService,
+} from "@/data/services/file-service";
 import { revalidatePath } from "next/cache";
 import { InventoryItem } from "../definitions";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getUserMeLoader } from "../services/get-user-me-loader";
+import { connect } from "http2";
 
-export async function createInventoryItemAction(newItem: InventoryItem) {
-  const authToken = await getAuthToken();
-  if (!authToken) throw new Error("No auth token found");
+export async function createInventoryItemAction(newItem: any) {
+  const { ok } = await getUserMeLoader();
+  if (!ok) throw new Error("Not authenticated");
 
   const payload = {
     data: newItem,
@@ -133,4 +139,124 @@ export async function deleteItemAction(id: string) {
       return { res: null, error: "Error Unknown from Database" };
     }
   }
+}
+
+const MAX_FILE_SIZE = 5000000;
+
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+// VALIDATE IMAGE WITH ZOD
+const imageSchema = z.object({
+  image: z
+    .any()
+    .refine((file) => {
+      if (file.size === 0 || file.name === undefined) return false;
+      else return true;
+    }, "Please update or add new image.")
+
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      ".jpg, .jpeg, .png and .webp files are accepted.",
+    )
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`),
+});
+
+export async function uploadInventoryImageAction(
+  imageId: number | null,
+  inventoryId: number,
+  prevState: any,
+  formData: FormData,
+) {
+  // GET THE LOGGED IN USER
+  const user = await getUserMeLoader();
+  if (!user.ok)
+    throw new Error("You are not authorized to perform this action.");
+
+  const userId = user?.data?.id;
+
+  // CONVERT FORM DATA TO OBJECT
+  const data = Object.fromEntries(formData);
+
+  // VALIDATE THE IMAGE
+  const validatedFields = imageSchema.safeParse({
+    image: data.image,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: null,
+      data: null,
+      message: "Invalid Image",
+    };
+  }
+
+  // DELETE PREVIOUS IMAGE IF EXISTS
+  if (imageId) {
+    try {
+      await fileDeleteService(imageId.toString());
+    } catch (error) {
+      return {
+        ...prevState,
+        strapiErrors: null,
+        zodErrors: null,
+        message: "Failed to Delete Previous Image.",
+      };
+    }
+  }
+
+  // UPLOAD NEW IMAGE TO MEDIA LIBRARY
+  const { res: fileUploadResponse, error: fileUploadError } =
+    await fileUploadService(data.image);
+
+  if (!fileUploadResponse) {
+    return {
+      ...prevState,
+      strapiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again.",
+    };
+  }
+
+  if (fileUploadError) {
+    return {
+      ...prevState,
+      strapiErrors: fileUploadResponse.error,
+      zodErrors: null,
+      message: "Failed to Upload File.",
+    };
+  }
+  const updatedImageId = fileUploadResponse.id;
+  const payload = { image: { connect: { id: updatedImageId } } };
+
+  // console.log(fileUploadResponse);
+
+  // UPDATE USER PROFILE WITH NEW IMAGE
+  // const updateImageResponse = await mutateData(
+  //   "PUT",
+  //   `/api/users/${userId}`,
+  //   payload,
+  // );
+
+  const updateImageResponse = await prisma.inventory_items.update({
+    where: { id: inventoryId },
+    data: payload,
+  });
+
+  // const flattenedData = flattenAttributes(updateImageResponse);
+  revalidatePath("/dashboard/master-inventory");
+
+  return {
+    ...prevState,
+    data: updateImageResponse,
+    zodErrors: null,
+    strapiErrors: null,
+    message: "Image Uploaded",
+  };
 }

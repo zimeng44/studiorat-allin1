@@ -7,7 +7,9 @@ import { promises as fs } from "fs";
 import prisma from "@/lib/prisma";
 
 export async function fileDeleteService(imageId: string) {
-  //
+  const authToken = await getAuthToken();
+  // console.log(authToken);
+  if (!authToken) throw new Error("No auth token found");
   try {
     const image = await prisma.image.findUnique({
       where: { id: parseInt(imageId) },

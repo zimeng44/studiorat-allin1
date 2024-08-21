@@ -1,7 +1,5 @@
 "use client";
-
 import Link from "next/link";
-
 import {
   CardTitle,
   CardDescription,
@@ -10,7 +8,6 @@ import {
   CardFooter,
   Card,
 } from "@/components/ui/card";
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormState } from "react-dom";
