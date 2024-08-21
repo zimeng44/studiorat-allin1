@@ -42,7 +42,8 @@ const NewInventoryReportPage = async () => {
   );
 
   if (
-    !(data[0]?.is_finished) &&
+    data.length > 0 &&
+    !data[0]?.is_finished &&
     thisUser?.user_role.name === "Monitor"
   ) {
     redirect(`/dashboard/inventory-reports/${data[0].id}?draft=yes`);
