@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       // return NextResponse.json({ Message: "Failed", status: 500 });
     }
 
-    const filePath = `/uploads/${filename}`;
+    const filePath = `${filename}`;
 
     // create the image in the database
     const res = await prisma.image.create({

@@ -56,6 +56,13 @@ export function getStrapiMedia(url: string | null) {
   return `${getStrapiURL()}${url}`;
 }
 
+export function geLocalMedia(filename: string | null) {
+  if (filename == null) return null;
+  if (filename.startsWith("data:")) return filename;
+  if (filename.startsWith("http") || filename.startsWith("//")) return filename;
+  return `${getStrapiURL()}/api/image?filename=${filename}`;
+}
+
 export function extractYouTubeID(urlOrID: string): string | null {
   // Regular expression for YouTube ID format
   const regExpID = /^[a-zA-Z0-9_-]{11}$/;
