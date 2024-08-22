@@ -16,7 +16,7 @@ export interface TableFieldStatus {
   visible: boolean;
 }
 export interface TableColumnStatus {
-  image: TableFieldStatus;
+  // image: TableFieldStatus;
   m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
@@ -90,10 +90,10 @@ export const inventoryColumns = [
 ];
 
 export const inventoryColumnsDefault = {
-  image: {
-    header: "",
-    visible: true,
-  },
+  // image: {
+  //   header: "Image",
+  //   visible: false,
+  // },
   m_tech_barcode: {
     header: "MTech Barcode",
     visible: true,

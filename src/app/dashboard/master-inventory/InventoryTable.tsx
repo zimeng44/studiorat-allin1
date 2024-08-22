@@ -205,6 +205,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                 </PopoverContent>
               </Popover>
             </TableHead>
+            <TableHead className="text-center" key={"image"}></TableHead>
             {Object.entries(columnsStatus).map(([key, value]) => {
               return value.visible ? (
                 <TableHead className="whitespace-nowrap p-3" key={key}>
@@ -250,28 +251,22 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                     aria-label="Select Row"
                   />
                 </TableCell>
+                <TableCell
+                  className="relative flex h-20 w-20 items-center overflow-hidden rounded-md"
+                  key={"image"}
+                >
+                  {row.image ? (
+                    <StrapiImage
+                      className="h-full w-full rounded-lg object-contain"
+                      src={row.image.url}
+                      height={100}
+                      width={100}
+                    />
+                  ) : (
+                    ``
+                  )}
+                </TableCell>
                 {Object.entries(columnsStatus).map(([key, value]) => {
-                  if (key === "image") {
-                    return value.visible ? (
-                      <TableCell
-                        className="relative flex h-20 w-20 items-center overflow-hidden rounded-md"
-                        key={key}
-                      >
-                        {row[key] ? (
-                          <StrapiImage
-                            className="h-full w-full rounded-lg object-contain"
-                            src={row[key].url}
-                            height={100}
-                            width={100}
-                          />
-                        ) : (
-                          ``
-                        )}
-                      </TableCell>
-                    ) : (
-                      ``
-                    );
-                  }
                   if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
