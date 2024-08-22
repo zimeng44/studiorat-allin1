@@ -400,6 +400,7 @@ const EditCheckoutSessionForm = ({
                   <Input
                     {...field}
                     disabled={session.finished ?? false}
+                    placeholder="Scan an ID Here"
                   ></Input>
                 </FormControl>
                 <FormMessage />
