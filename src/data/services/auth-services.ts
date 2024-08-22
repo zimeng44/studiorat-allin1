@@ -118,7 +118,7 @@ export async function verifyUserService(jwt: string) {
     if (userInDb) {
       return {
         ok: true,
-        data: { ...userInDb, password: undefined },
+        data: { ...userInDb, password: null },
         error: null,
       };
     } else {

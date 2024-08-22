@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (passwordMatches) {
     return new Response(
       JSON.stringify({
-        data: { ...user, password: undefined },
+        data: { ...user, password: null },
         error: null,
       }),
     );

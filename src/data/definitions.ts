@@ -11,20 +11,21 @@ export const ACCEPTED_IMAGE_TYPES = [
 
 export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
   include: {
-    user: { include: { user_role: true } };
-    created_by: { include: { user_role: true } };
+    user: { include: { user_role: true }; omit: { password: true } };
+    created_by: { include: { user_role: true }; omit: { password: true } };
     inventory_items: true;
   };
 }>;
 
 export type UserWithRole = Prisma.UserGetPayload<{
   include: { user_role: true; image: true };
+  omit: { password: true };
 }>;
 
 export type CheckoutWithUserAndItems = Prisma.checkout_sessionsGetPayload<{
   include: {
-    user: { include: { user_role: true } };
-    created_by: true;
+    user: { include: { user_role: true }; omit: { password: true } };
+    created_by: { omit: { password: true } };
     inventory_items: true;
     // user_role: true;
   };
@@ -38,7 +39,7 @@ export type InventoryReportWithCreatorAndItems =
   Prisma.inventory_reportsGetPayload<{
     include: {
       // user: { include: { user_role: true } };
-      created_by: true;
+      created_by: { omit: { password: true } };
       inventory_items: true;
       // user_role: true;
     };
