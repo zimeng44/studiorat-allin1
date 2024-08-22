@@ -14,9 +14,12 @@ export async function middleware(request: NextRequest) {
   // console.log(await decrypt(authToken));
 
   // if (!authToken) return NextResponse.redirect(new URL("/signin", request.url));
-  const { data: user, EXPIRE } = await decrypt(authToken);
+  const { data: user, EXPIRE: currentExpire } = await decrypt(authToken);
 
-  if (currentPath.startsWith("/dashboard") && !user?.net_id) {
+  const jwtExpired =
+    new Date(currentExpire).toISOString() <= new Date().toISOString();
+
+  if (currentPath.startsWith("/dashboard") && jwtExpired) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 

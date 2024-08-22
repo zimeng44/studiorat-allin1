@@ -60,7 +60,8 @@ export function ProfileForm({
     return imageResponse.id;
   };
 
-  const handleFormSubmit = async (initialState: any, formData: FormData) => {
+  const handleFormSubmit = async (initialState: any, formData: any) => {
+    setIsLoading(true);
     try {
       // Step 1: Upload the image and get the imageId
 
@@ -74,10 +75,15 @@ export function ProfileForm({
       );
 
       // Step 3: Execute the bound function to update the profile
-      return await updateProfileWithId(null, formData);
+      const res = await updateProfileWithId(null, formData);
+
+      // console.log(res);
+      setIsLoading(false);
+      return await res;
 
       // console.log("Profile updated successfully");
     } catch (error) {
+      setIsLoading(false);
       console.error("Error updating profile:", error);
       return {
         message: "Error updateing profile",
@@ -91,6 +97,7 @@ export function ProfileForm({
   //   null,
   //   data.id,
   // );
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formState, formAction] = useFormState(handleFormSubmit, INITIAL_STATE);
   // console.log(formState.message);
@@ -164,10 +171,16 @@ export function ProfileForm({
         </div>
       </div>
       <div className="grid-col-2 flex justify-end md:grid md:grid-cols-3">
-        <SubmitButton text="Update Profile" loadingText="Saving Profile" />
+        <SubmitButton
+          text="Update Profile"
+          loadingText="Saving Profile"
+          loading={isLoading}
+        />
       </div>
       <StrapiErrors error={formState?.strapiErrors} />
-      <p>{formState.message}</p>
+      <p className="bold text-sm italic text-muted-foreground">
+        {formState.message}
+      </p>
     </form>
   );
 }

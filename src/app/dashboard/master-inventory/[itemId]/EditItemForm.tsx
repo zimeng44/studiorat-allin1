@@ -427,7 +427,11 @@ const EditItemForm = ({
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    <p className="text-xs text-muted-foreground">
+                      (Click on the picture to change)
+                    </p>
+                  </FormMessage>
                 </FormItem>
               )}
             />

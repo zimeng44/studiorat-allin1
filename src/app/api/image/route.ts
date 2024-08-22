@@ -9,6 +9,8 @@ export async function GET(req: NextRequest) {
   // const reqAuthToken = req.headers.get("Authorization")?.split(" ")[1];
   // const user = await getUserMeLoader(reqAuthToken);
 
+  // console.log(await getAuthToken());
+
   // if (!user.ok)
   //   return new Response(
   //     JSON.stringify({ data: null, error: "Not authorized" }),
