@@ -299,7 +299,7 @@ const EditBookingForm = ({
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem className="size-fitl">
+                <FormItem className="size-fit">
                   <FormLabel>Type</FormLabel>
                   <Select
                     // onValueChange={field.onChange}

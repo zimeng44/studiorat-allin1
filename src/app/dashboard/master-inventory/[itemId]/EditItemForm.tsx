@@ -190,219 +190,199 @@ const EditItemForm = ({
   }
 
   return (
-    <div>
-      <Form {...imageForm}>
-        <form className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0">
-          <FormField
-            control={imageForm.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem className=" col-span-1 size-fit max-w-xs md:col-span-2">
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <ImagePickerInForm
-                    id="image"
-                    name="image"
-                    label="Item Image"
-                    defaultValue={form.getValues("image")}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
-        >
-          <FormField
-            control={form.control}
-            name="m_tech_barcode"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>MTech Barcode</FormLabel>
-                <FormControl>
-                  <Input placeholder={"MTech Barcode Here"} {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="make"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Make</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="model"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Model</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="accessories"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Accessories</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="storage_location"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Storage Location</FormLabel>
-                {/* <FormControl>
+    <div className="grid-col-2 flex max-w-2xl flex-col-reverse gap-4 md:grid md:grid-cols-3 md:flex-row">
+      <div className="col-span-2 flex space-y-4">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
+          >
+            <FormField
+              control={form.control}
+              name="m_tech_barcode"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>MTech Barcode</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={"MTech Barcode Here"}
+                      {...field}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="make"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Make</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Model</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="accessories"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Accessories</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="storage_location"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Storage Location</FormLabel>
+                  {/* <FormControl>
                 <Input {...field}></Input>
               </FormControl> */}
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select A Storage Location" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Floor 8">Floor 8</SelectItem>
+                      <SelectItem value="Floor 6">Floor 6</SelectItem>
+                      <SelectItem value="Studio G">Studio G</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="comments"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Comments</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select A Storage Location" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Floor 8">Floor 8</SelectItem>
-                    <SelectItem value="Floor 6">Floor 6</SelectItem>
-                    <SelectItem value="Studio G">Studio G</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Comments</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="col-span-1 flex h-10 items-center justify-evenly bg-slate-300">
-            <FormField
-              control={form.control}
-              name="out"
-              render={({ field }) => (
-                <FormItem className="flex content-center items-center">
-                  <FormLabel>Out</FormLabel>
-                  <FormControl className="pl-2">
-                    <div className="flex">
-                      <Checkbox
-                        className="mb-2"
-                        disabled
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
+                    <Input {...field}></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="broken"
-              render={({ field }) => (
-                <FormItem className="flex content-center items-center">
-                  <FormLabel>Broken</FormLabel>
-                  <FormControl className="pl-2">
-                    <div className="flex">
-                      <Checkbox
-                        className="mb-2"
-                        disabled
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1"></div>
+            <div className="col-span-1 flex h-10 items-center justify-evenly bg-slate-300">
+              <FormField
+                control={form.control}
+                name="out"
+                render={({ field }) => (
+                  <FormItem className="flex content-center items-center">
+                    <FormLabel>Out</FormLabel>
+                    <FormControl className="pl-2">
+                      <div className="flex">
+                        <Checkbox
+                          className="mb-2"
+                          disabled
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="broken"
+                render={({ field }) => (
+                  <FormItem className="flex content-center items-center">
+                    <FormLabel>Broken</FormLabel>
+                    <FormControl className="pl-2">
+                      <div className="flex">
+                        <Checkbox
+                          className="mb-2"
+                          disabled
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-1"></div>
 
-          {/* <Button className="align-right" type="submit">
+            {/* <Button className="align-right" type="submit">
             Save
           </Button> */}
 
-          <div className="col-span-1 flex gap-1 md:col-span-2">
-            <SubmitButton
-              className="flex-1"
-              text="Save"
-              loadingText="Saving"
-              loading={form.formState.isSubmitting}
-            />
-            <Button
-              className="flex-1"
-              type="button"
-              variant="destructive"
-              onClick={(e) => handleDelete(e)}
-            >
-              Delete
-            </Button>
-            {/* <Link href="/dashboard/master-inventory">
+            <div className="col-span-1 flex gap-1 md:col-span-2">
+              <SubmitButton
+                className="flex-1"
+                text="Save"
+                loadingText="Saving"
+                loading={form.formState.isSubmitting}
+              />
+              <Button
+                className="flex-1"
+                type="button"
+                variant="destructive"
+                onClick={(e) => handleDelete(e)}
+              >
+                Delete
+              </Button>
+              {/* <Link href="/dashboard/master-inventory">
               <Button
                 className="flex-1 hover:bg-slate-200 active:bg-slate-300"
                 type="button"
@@ -411,22 +391,49 @@ const EditItemForm = ({
                 Cancel
               </Button>
             </Link> */}
-            <Button
-              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
-              type="button"
-              variant="secondary"
-              onClick={(e) => {
-                // const params = new URLSearchParams(searchParams);
-                router.push(
-                  `/dashboard/master-inventory?${searchParams.toString()}`,
-                );
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Form>
+              <Button
+                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+                type="button"
+                variant="secondary"
+                onClick={(e) => {
+                  // const params = new URLSearchParams(searchParams);
+                  router.push(
+                    `/dashboard/master-inventory?${searchParams.toString()}`,
+                  );
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+      <div className="col-span-2 flex size-fit md:col-span-1">
+        <Form {...imageForm}>
+          <form className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0">
+            <FormField
+              control={imageForm.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className=" col-span-1 size-fit max-w-xs md:col-span-2">
+                  <FormLabel></FormLabel>
+                  <FormControl>
+                    <ImagePickerInForm
+                      id="image"
+                      name="image"
+                      label="Item Image"
+                      defaultValue={form.getValues("image")}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

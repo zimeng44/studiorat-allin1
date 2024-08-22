@@ -43,12 +43,12 @@ function ImageCard({
   const imagePreview = dataUrl ? (
     <ImagePreview dataUrl={dataUrl} />
   ) : (
-    <p>Click Here to Add Image</p>
+    <p className="text-xs text-muted-foreground">Click Here to Add Image</p>
   );
 
   return (
     <div className="relative">
-      <div className="relative flex h-40 w-40 items-center space-x-4 overflow-hidden rounded-md border p-4">
+      <div className="relative flex h-52 w-52 items-center space-x-4 overflow-hidden rounded-md border p-4">
         {imagePreview}
       </div>
       <button

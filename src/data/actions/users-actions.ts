@@ -46,18 +46,28 @@ export const updateUserAction = async (
     revalidatePath("/dashboard/users");
     return { res: res, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: error as string };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
   // console.log(updatedUser);
 };
 
 export async function deleteUserAction(id: string) {
-
   try {
     const responseData = await prisma.user.delete({ where: { id: id } });
     return { res: responseData, error: null };
   } catch (error) {
-    return { res: null, error: error };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }

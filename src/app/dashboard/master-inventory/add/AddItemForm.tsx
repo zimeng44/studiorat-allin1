@@ -159,15 +159,156 @@ const AddItem = ({ rowData }: { rowData: any }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-2"
+          className="flex flex-col-reverse gap-2 space-y-1 md:grid md:grid-cols-3"
         >
           {/* <div className="max-w-25 max-h-25 col-span-1 md:col-span-2"></div> */}
+          <div className="flex-col gap-2 space-y-1 md:col-span-2 md:grid md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="m_tech_barcode"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>MTech Barcode</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={"MTech Barcode Here"}
+                      {...field}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="make"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Make</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Model</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="accessories"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Accessories</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="storage_location"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Storage Location</FormLabel>
+                  {/* <FormControl>
+                <Input {...field}></Input>
+              </FormControl> */}
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select A Storage Location" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Floor 8">Floor 8</SelectItem>
+                      <SelectItem value="Floor 6">Floor 6</SelectItem>
+                      <SelectItem value="Studio G">Studio G</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="comments"
+              render={({ field }) => (
+                <FormItem className="col-span-1 ">
+                  <FormLabel>Comments</FormLabel>
+                  <FormControl>
+                    <Input {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="col-span-1 flex gap-1 md:col-span-2">
+              <SubmitButton
+                className="flex-1"
+                text="Save"
+                loadingText="Saving"
+                loading={form.formState.isSubmitting}
+              />
+              <Link className="flex-1" href="/dashboard/master-inventory">
+                <Button
+                  className="size-full hover:bg-slate-200 active:bg-slate-300"
+                  type="button"
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+              </Link>
+            </div>
+          </div>
           <FormField
             control={form.control}
             name="image"
             render={({ field }) => (
-              <FormItem className=" col-span-1 size-fit max-w-xs md:col-span-2">
-                <FormLabel>Image</FormLabel>
+              <FormItem className="size-fit max-w-xs md:col-span-1">
+                <FormLabel></FormLabel>
                 <FormControl>
                   <ImagePickerInForm
                     id="image"
@@ -182,142 +323,6 @@ const AddItem = ({ rowData }: { rowData: any }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="m_tech_barcode"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>MTech Barcode</FormLabel>
-                <FormControl>
-                  <Input placeholder={"MTech Barcode Here"} {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="make"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Make</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="model"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Model</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="accessories"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Accessories</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="storage_location"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Storage Location</FormLabel>
-                {/* <FormControl>
-                <Input {...field}></Input>
-              </FormControl> */}
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select A Storage Location" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Floor 8">Floor 8</SelectItem>
-                    <SelectItem value="Floor 6">Floor 6</SelectItem>
-                    <SelectItem value="Studio G">Studio G</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem className="col-span-1 ">
-                <FormLabel>Comments</FormLabel>
-                <FormControl>
-                  <Input {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="col-span-1 flex gap-1 md:col-span-2">
-            <SubmitButton
-              className="flex-1"
-              text="Save"
-              loadingText="Saving"
-              loading={form.formState.isSubmitting}
-            />
-            <Link className="flex-1" href="/dashboard/master-inventory">
-              <Button
-                className="size-full hover:bg-slate-200 active:bg-slate-300"
-                type="button"
-                variant="secondary"
-              >
-                Cancel
-              </Button>
-            </Link>
-          </div>
         </form>
       </Form>
     </div>

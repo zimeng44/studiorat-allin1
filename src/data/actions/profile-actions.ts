@@ -3,7 +3,7 @@ import { z } from "zod";
 // import qs from "qs";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
+import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 
 import {
   fileDeleteService,
@@ -15,14 +15,15 @@ import prisma from "@/lib/prisma";
 
 export async function updateProfileAction(
   userId: string,
+  imageId: number | null,
   prevState: any,
   formData: FormData,
 ) {
   const rawFormData = Object.fromEntries(formData);
 
-  const { data } = await getUserMeLoader();
+  const { ok, data } = await getUserMeLoader();
 
-  if (data?.id !== userId) {
+  if (!ok || data?.id !== userId) {
     return {
       ...prevState,
       strapiErrors: null,
@@ -33,11 +34,16 @@ export async function updateProfileAction(
   //   populate: "*",
   // });
 
+  // console.log(imageId);
+
+  // return;
+
   const payload = {
     first_name: rawFormData.first_name.toString(),
     last_name: rawFormData.last_name.toString(),
     bio: rawFormData.bio.toString(),
     password: rawFormData.password.toString(),
+    image: imageId ? { connect: { id: imageId } } : undefined,
   };
 
   // const responseData = await mutateData(
@@ -45,21 +51,21 @@ export async function updateProfileAction(
   //   `/api/users/${userId}?${query}`,
   //   payload,
   // );
-  const responseData = await updateUserAction(payload, userId);
+  const { res: responseData, error } = await updateUserAction(payload, userId);
 
-  if (!responseData) {
+  // if (!responseData) {
+  //   return {
+  //     ...prevState,
+  //     strapiErrors: null,
+  //     message: "Ops! Something went wrong. Please try again.",
+  //   };
+  // }
+
+  if (error) {
     return {
       ...prevState,
-      strapiErrors: null,
-      message: "Ops! Something went wrong. Please try again.",
-    };
-  }
-
-  if (responseData.error) {
-    return {
-      ...prevState,
-      strapiErrors: responseData.error,
-      message: "Failed to Register.",
+      strapiErrors: { name: "Database Error", message: error },
+      message: "Failed to Update User.",
     };
   }
 

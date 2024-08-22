@@ -36,12 +36,15 @@ export default async function AccountRoute() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="grid grid-cols-1 content-center gap-4 px-5 py-2 md:grid-cols-5 lg:grid-cols-5">
-        <ProfileForm data={userData} className="col-span-1 md:col-span-3" />
-        <ProfileImageForm
+      <div className="flex content-center gap-4 px-5 py-2 md:grid-cols-3">
+        <ProfileForm
+          data={userData}
+          className="flex flex-col md:col-span-3 md:grid-cols-3"
+        />
+        {/* <ProfileImageForm
           data={userImage}
           className="col-span-1 md:col-span-2"
-        />
+        /> */}
       </div>
     </>
   );
