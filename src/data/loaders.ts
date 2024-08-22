@@ -454,12 +454,12 @@ export async function getCheckoutSessionsByQuery(
             mode: Prisma.QueryMode.insensitive,
           },
         },
-        {
-          notes: {
-            contains: queryString,
-            mode: Prisma.QueryMode.insensitive,
-          },
-        },
+        // {
+        //   notes: {
+        //     contains: queryString,
+        //     mode: Prisma.QueryMode.insensitive,
+        //   },
+        // },
         {
           user: {
             OR: queryString.includes(" ")
@@ -635,206 +635,7 @@ export async function getCheckoutSessionsByQuery(
     },
   };
   const countQuery = {
-    where: {
-      OR: [
-        {
-          studio: {
-            contains: queryString,
-            mode: Prisma.QueryMode.insensitive,
-          },
-        },
-        {
-          other_location: {
-            contains: queryString,
-            mode: Prisma.QueryMode.insensitive,
-          },
-        },
-        // { creation: { in:queryList,mode:Prisma.QueryMode.insensitive } },
-        {
-          finished_by: {
-            contains: queryString,
-            mode: Prisma.QueryMode.insensitive,
-          },
-        },
-        {
-          notes: {
-            contains: queryString,
-            mode: Prisma.QueryMode.insensitive,
-          },
-        },
-        {
-          user: {
-            OR: queryString.includes(" ")
-              ? [
-                  {
-                    net_id: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    AND: [
-                      {
-                        first_name: {
-                          in: queryList,
-                          mode: Prisma.QueryMode.insensitive,
-                        },
-                      },
-                      {
-                        last_name: {
-                          in: queryList,
-                          mode: Prisma.QueryMode.insensitive,
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    stu_id: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    email: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                ]
-              : [
-                  {
-                    net_id: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    first_name: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    last_name: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    stu_id: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    email: {
-                      contains: queryString,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                ],
-          },
-        },
-
-        {
-          created_by: {
-            OR: [
-              {
-                net_id: {
-                  contains: queryString,
-                  mode: Prisma.QueryMode.insensitive,
-                },
-              },
-              {
-                AND: [
-                  {
-                    first_name: {
-                      in: queryList,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                  {
-                    last_name: {
-                      in: queryList,
-                      mode: Prisma.QueryMode.insensitive,
-                    },
-                  },
-                ],
-              },
-              {
-                stu_id: {
-                  contains: queryString,
-                  mode: Prisma.QueryMode.insensitive,
-                },
-              },
-              {
-                email: {
-                  contains: queryString,
-                  mode: Prisma.QueryMode.insensitive,
-                },
-              },
-            ],
-          },
-        },
-
-        {
-          inventory_items: {
-            some: {
-              OR: [
-                {
-                  m_tech_barcode: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  make: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  model: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  category: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  description: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  accessories: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  storage_location: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  comments: {
-                    contains: queryString,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-              ],
-            },
-          },
-        },
-      ],
-    },
+    where: query.where,
   };
 
   // console.log("query data", query)
@@ -1737,11 +1538,11 @@ export async function getRosterPermissionsByQuery(
             mode: Prisma.QueryMode.insensitive,
           },
         },
-        {
-          permitted_studios: {
-            has: queryString,
-          },
-        },
+        // {
+        //   permitted_studios: {
+        //     has: queryString,
+        //   },
+        // },
       ],
     },
   };
@@ -1889,11 +1690,11 @@ export async function getRostersByQuery(
                     mode: Prisma.QueryMode.insensitive,
                   },
                 },
-                {
-                  permitted_studios: {
-                    has: queryString,
-                  },
-                },
+                // {
+                //   permitted_studios: {
+                //     has: queryString,
+                //   },
+                // },
               ],
             },
           },

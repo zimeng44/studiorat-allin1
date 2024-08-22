@@ -1,11 +1,11 @@
 "use server";
 
 import { getAuthToken } from "@/data/services/get-token";
-import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
-import { redirect } from "next/navigation";
+// import { mutateData } from "@/data/services/mutate-data";
+// import { flattenAttributes } from "@/lib/utils";
+// import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { RosterRecordType, RosterRecordTypePost } from "@/data/definitions";
+import { RosterRecordTypePost } from "@/data/definitions";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
@@ -37,11 +37,18 @@ export async function createRosterAction(
 
   try {
     const data = await prisma.rosters.create(payload);
+
     revalidatePath("/dashboard/roster");
+
     return { res: data, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: error as string };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }
 
@@ -81,7 +88,13 @@ export const updateRosterAction = async (
     revalidatePath("/dashboard/roster");
     return { res: res, error: null };
   } catch (error) {
-    return { res: null, error: JSON.stringify(error) };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 };
 
@@ -91,7 +104,30 @@ export async function deleteRosterAction(id: string) {
     revalidatePath("/dashboard/roster");
     return { res: res, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: error as string };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
+  }
+}
+
+export async function deleteManyRosterAction(idArray: number[]) {
+  try {
+    const res = await prisma.rosters.deleteMany({
+      where: { id: { in: idArray } },
+    });
+    revalidatePath("/dashboard/roster");
+    return { res: res, error: null };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }

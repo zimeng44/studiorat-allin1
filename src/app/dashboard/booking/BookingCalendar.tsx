@@ -72,8 +72,8 @@ export default function BookingCalendar({
 
   const handleSelectSlot = useCallback(
     ({ start, end }: { start: Date; end: Date }) => {
-      if (compareAsc(addDays(new Date(), 1), start) > 0) {
-        window.alert("No booking allowed within 24 hours or in the past.");
+      if (compareAsc(addDays(startOfDay(new Date()), 1), start) > 0) {
+        window.alert("No booking allowed on the same day or in the past");
         return;
       }
 

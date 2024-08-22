@@ -33,7 +33,10 @@ import {
 import { TagsInput } from "react-tag-input-component";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { deleteRosterPermissionAction } from "@/data/actions/rosterPermission-actions";
+import {
+  deleteManyRosterPermissionsAction,
+  deleteRosterPermissionAction,
+} from "@/data/actions/rosterPermission-actions";
 
 const MAX_TEXT_LEN = 20;
 
@@ -131,16 +134,35 @@ const RosterTable = ({
 
     if (!confirm) return;
 
-    await Promise.all(
-      rowsSelected.map(async (row, index) => {
-        if (row) {
-          await deleteRosterPermissionAction(data[index].id);
-        }
-      }),
-    );
+    // await Promise.all(
+    //   rowsSelected.map(async (row, index) => {
+    //     if (row) {
+    //       await deleteRosterPermissionAction(data[index].id);
+    //     }
+    //   }),
+    // );
 
-    setRowsSelected(Array(data.length).fill(false));
-    toast.success("Entries Deleted");
+    // setRowsSelected(Array(data.length).fill(false));
+    // toast.success("Entries Deleted");
+    const deleteList = rowsSelected.map((row, index) => {
+      if (row) return data[index].id;
+    });
+
+    if (deleteList.filter((item) => item !== undefined).length === 0) {
+      toast.error("No item selected");
+    } else {
+      const { res, error } = await deleteManyRosterPermissionsAction(
+        deleteList.filter((item): item is number => item !== undefined),
+      );
+
+      if (!error) {
+        setRowsSelected(Array(data.length).fill(false));
+        toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
+        router.refresh();
+      } else {
+        toast.error("Error deleting entries");
+      }
+    }
   };
 
   const handleSort = (field: string) => {

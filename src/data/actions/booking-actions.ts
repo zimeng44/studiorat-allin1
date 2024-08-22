@@ -217,7 +217,35 @@ export async function deleteBookingAction(id: string) {
     // revalidatePath("/dashboard/booking");
     return { res: res, error: null };
   } catch (error: any) {
-    // console.log(error);
-    return { res: null, error: error.toString() };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
+  }
+}
+
+export async function deleteManyBookingAction(idArray: number[]) {
+  try {
+    const authToken = await getAuthToken();
+    if (!authToken) throw new Error("No auth token found");
+
+    const res = await prisma.bookings.deleteMany({
+      where: { id: { in: idArray } },
+    });
+
+    // console.log(res);
+    revalidatePath("/dashboard/booking");
+    return { res: res, error: null };
+  } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }

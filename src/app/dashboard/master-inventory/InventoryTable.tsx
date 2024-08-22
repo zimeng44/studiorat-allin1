@@ -19,7 +19,10 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteItemAction } from "@/data/actions/inventory-actions";
+import {
+  deleteItemAction,
+  deleteManyItemAction,
+} from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "../../../components/ui/badge";
 import {
@@ -32,18 +35,18 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import Image from "next/image";
+// import Image from "next/image";
 import { StrapiImage } from "@/components/custom/StrapiImage";
+import { InventoryItemWithImage } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 20;
 
 interface InventoryTableProps {
-  data: any[];
+  data: InventoryItemWithImage[];
   columnsStatus: TableColumnStatus;
 }
 
 const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
-  console.log(data);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -126,21 +129,32 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
     if (!confirm) return;
 
-    await Promise.all(
-      rowsSelected.map(async (row, index) => {
-        if (row) {
-          await deleteItemAction(data[index].id);
-        }
-      }),
-    );
+    // await Promise.all(
+    //   rowsSelected.map(async (row, index) => {
+    //     if (row) {
+    //       await deleteItemAction(data[index].id);
+    //     }
+    //   }),
+    // );
+    const deleteList = rowsSelected.map((row, index) => {
+      if (row) return data[index].id;
+    });
 
-    // rowsSelected.map((row, index) => {
-    //   if (row) {
-    //     deleteItemAction(data[index].id);
-    //   }
-    // });
-    setRowsSelected(Array(data.length).fill(false));
-    toast.success("Entries Deleted");
+    if (deleteList.filter((item) => item !== undefined).length === 0) {
+      toast.error("No item selected");
+    } else {
+      const { res, error } = await deleteManyItemAction(
+        deleteList.filter((item): item is number => item !== undefined),
+      );
+
+      if (!error) {
+        setRowsSelected(Array(data.length).fill(false));
+        toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
+        router.refresh();
+      } else {
+        toast.error("Error deleting entries");
+      }
+    }
   };
 
   const handleSort = (field: string) => {

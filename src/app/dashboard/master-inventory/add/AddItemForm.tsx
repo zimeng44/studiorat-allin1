@@ -111,26 +111,32 @@ const AddItem = ({ rowData }: { rowData: any }) => {
     // console.log(values.image);
     // return;
     try {
-      const baseUrl = getStrapiURL();
-      const url = new URL("/api/upload", baseUrl);
+      // console.log(form.getValues("image"));
+      let imageId = null;
+      if (form.getValues("image")) {
+        const baseUrl = getStrapiURL();
+        const url = new URL("/api/upload", baseUrl);
 
-      const formData = new FormData();
-      formData.append("file", values.image, values.image.name);
+        const formData = new FormData();
+        formData.append("file", values.image, values.image.name);
 
-      const uploadResponse = await fetch(url, {
-        method: "POST",
-        body: formData,
-      });
+        const uploadResponse = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
 
-      const { res: imageResponse, error: uploadError } =
-        await uploadResponse.json();
-      // console.log(imageResponse);
+        const { res: imageResponse, error: uploadError } =
+          await uploadResponse.json();
+        // console.log(imageResponse);
 
-      if (uploadError) throw Error(uploadError);
+        if (uploadError) throw Error(uploadError);
+
+        imageId = imageResponse.id;
+      }
 
       const createValues = {
         ...values,
-        image: { connect: { id: imageResponse.id } },
+        image: imageId ? { connect: { id: imageId } } : undefined,
       };
 
       const { res, error } = await createInventoryItemAction(createValues);

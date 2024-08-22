@@ -141,6 +141,25 @@ export async function deleteItemAction(id: string) {
   }
 }
 
+export async function deleteManyItemAction(idArray: number[]) {
+  try {
+    const responseData = await prisma.inventory_items.deleteMany({
+      where: { id: { in: idArray } },
+    });
+
+    revalidatePath("/dashboard/master-inventory");
+    return { res: responseData, error: null };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
+  }
+}
+
 const MAX_FILE_SIZE = 5000000;
 
 const ACCEPTED_IMAGE_TYPES = [

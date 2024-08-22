@@ -23,7 +23,10 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { bookingColumnsDefault } from "./bookingColumns";
 import { format } from "date-fns";
-import { deleteBookingAction } from "@/data/actions/booking-actions";
+import {
+  deleteBookingAction,
+  deleteManyBookingAction,
+} from "@/data/actions/booking-actions";
 import { toast } from "sonner";
 
 const MAX_TEXT_LEN = 8;
@@ -137,19 +140,39 @@ const BookingsTable = ({ data, columnsStatus }: BookingsTableProps) => {
 
     if (!confirm) return;
 
-    console.log(data);
+    // console.log(data);
     // return;
 
-    await Promise.all(
-      rowsSelected.map(async (row, index) => {
-        if (row) {
-          await deleteBookingAction(data[index].id);
-        }
-      }),
-    );
+    // await Promise.all(
+    //   rowsSelected.map(async (row, index) => {
+    //     if (row) {
+    //       await deleteBookingAction(data[index].id);
+    //     }
+    //   }),
+    // );
 
-    setRowsSelected(Array(data.length).fill(false));
-    toast.success("Entries Deleted");
+    // setRowsSelected(Array(data.length).fill(false));
+    // toast.success("Entries Deleted");
+
+    const deleteList = rowsSelected.map((row, index) => {
+      if (row) return data[index].id;
+    });
+
+    if (deleteList.filter((item) => item !== undefined).length === 0) {
+      toast.error("No item selected");
+    } else {
+      const { res, error } = await deleteManyBookingAction(
+        deleteList.filter((item): item is number => item !== undefined),
+      );
+
+      if (!error) {
+        setRowsSelected(Array(data.length).fill(false));
+        toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
+        router.refresh();
+      } else {
+        toast.error("Error deleting entries");
+      }
+    }
   };
 
   return (

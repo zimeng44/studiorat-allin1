@@ -39,7 +39,13 @@ export async function createRosterPermissionAction(
     revalidatePath("/dashboard/roster/permissions");
     return data;
   } catch (error) {
-    console.log(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }
 
@@ -75,7 +81,30 @@ export async function deleteRosterPermissionAction(id: string) {
     revalidatePath("/dashboard/roster");
     return { res: res, error: null };
   } catch (error) {
-    console.log(error);
-    return { res: null, error: error as string };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
+  }
+}
+
+export async function deleteManyRosterPermissionsAction(idArray: number[]) {
+  try {
+    const res = await prisma.roster_permissions.deleteMany({
+      where: { id: { in: idArray } },
+    });
+    revalidatePath("/dashboard/roster/permissions");
+    return { res: res, error: null };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      return { res: null, error: error.message };
+    } else {
+      console.log(error);
+      return { res: null, error: "Error Unknown from Database" };
+    }
   }
 }

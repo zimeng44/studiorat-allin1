@@ -19,7 +19,10 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteRosterAction } from "@/data/actions/roster-actions";
+import {
+  deleteManyRosterAction,
+  deleteRosterAction,
+} from "@/data/actions/roster-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "../../../components/ui/badge";
 import { rosterColumnsDefault, TableColumnStatus } from "./rosterColumns";
@@ -117,21 +120,43 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
 
     if (!confirm) return;
 
-    await Promise.all(
-      rowsSelected.map(async (row, index) => {
-        if (row) {
-          await deleteRosterAction(data[index].id);
-        }
-      }),
-    );
+    // await Promise.all(
+    //   rowsSelected.map(async (row, index) => {
+    //     if (row) {
+    //       await deleteRosterAction(data[index].id);
+    //     }
+    //   }),
+    // );
     // router.refresh();
     // rowsSelected.map((row, index) => {
     //   if (row) {
     //     deleteRosterAction(data[index].id);
     //   }
     // });
-    setRowsSelected(Array(data.length).fill(false));
-    toast.success("Entries Deleted");
+    // setRowsSelected(Array(data.length).fill(false));
+    // toast.success("Entries Deleted");
+
+    const deleteList = rowsSelected.map((row, index) => {
+      if (row) return data[index].id;
+    });
+
+    if (deleteList.filter((item) => item !== undefined).length === 0) {
+      toast.error("No item selected");
+    } else {
+      // console.log(deleteList);
+      // return;
+      const { res, error } = await deleteManyRosterAction(
+        deleteList.filter((item): item is number => item !== undefined),
+      );
+
+      if (!error) {
+        setRowsSelected(Array(data.length).fill(false));
+        toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
+        router.refresh();
+      } else {
+        toast.error("Error deleting entries");
+      }
+    }
   };
 
   const handleSort = (field: string) => {
