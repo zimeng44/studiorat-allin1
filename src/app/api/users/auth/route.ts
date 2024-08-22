@@ -5,7 +5,6 @@ import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { getUserByIdentifier } from "@/data/loaders";
 
-
 export async function POST(req: NextRequest) {
   const userData = await req.json(); // Parse the ReadableStream to JSON
 
@@ -30,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (passwordMatches) {
     return new Response(
       JSON.stringify({
-        data: user,
+        data: { ...user, password: undefined },
         error: null,
       }),
     );

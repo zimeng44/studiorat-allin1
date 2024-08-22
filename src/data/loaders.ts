@@ -1394,13 +1394,16 @@ export async function getUsersByQuery(
 export async function getUserByIdentifier(identifier: string) {
   try {
     const user = await prisma.user.findMany({
+      omit: {
+        password: false, // The password field is now selected.
+      },
+      include: { user_role: true, image: true },
       where: {
         OR: [
           { email: { equals: identifier } },
           { net_id: { equals: identifier } },
         ],
       },
-      include: { user_role: true, image: true },
     });
     // console.log(user);
     return { data: user[0], error: null };

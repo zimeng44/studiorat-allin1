@@ -30,13 +30,6 @@ export async function updateProfileAction(
       message: "You're not authorized to update this record",
     };
   }
-  // const query = qs.stringify({
-  //   populate: "*",
-  // });
-
-  // console.log(imageId);
-
-  // return;
 
   const payload = {
     first_name: rawFormData.first_name.toString(),
@@ -46,11 +39,6 @@ export async function updateProfileAction(
     image: imageId ? { connect: { id: imageId } } : undefined,
   };
 
-  // const responseData = await mutateData(
-  //   "PUT",
-  //   `/api/users/${userId}?${query}`,
-  //   payload,
-  // );
   const { res: responseData, error } = await updateUserAction(payload, userId);
 
   // if (!responseData) {

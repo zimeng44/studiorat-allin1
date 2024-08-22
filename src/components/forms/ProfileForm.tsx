@@ -60,7 +60,7 @@ export function ProfileForm({
     return imageResponse.id;
   };
 
-  const handleFormSubmit = async (INITIAL_STATE: any, formData: FormData) => {
+  const handleFormSubmit = async (initialState: any, formData: FormData) => {
     try {
       // Step 1: Upload the image and get the imageId
 
@@ -79,6 +79,11 @@ export function ProfileForm({
       // console.log("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
+      return {
+        message: "Error updateing profile",
+        data: null,
+        StrapiErrors: null,
+      };
     }
   };
 
@@ -87,7 +92,8 @@ export function ProfileForm({
   //   data.id,
   // );
 
-  const [formState, formAction] = useFormState(handleFormSubmit, null);
+  const [formState, formAction] = useFormState(handleFormSubmit, INITIAL_STATE);
+  // console.log(formState.message);
 
   return (
     <form action={formAction} className={cn("space-y-4", className)}>
@@ -152,13 +158,16 @@ export function ProfileForm({
             value={imageFile}
             onChange={setImageFile}
           />
-          <p className="text-xs text-muted-foreground">(Click on the picture to change)</p>
+          <p className="text-xs text-muted-foreground">
+            (Click on the picture to change)
+          </p>
         </div>
       </div>
       <div className="grid-col-2 flex justify-end md:grid md:grid-cols-3">
         <SubmitButton text="Update Profile" loadingText="Saving Profile" />
       </div>
       <StrapiErrors error={formState?.strapiErrors} />
+      <p>{formState.message}</p>
     </form>
   );
 }

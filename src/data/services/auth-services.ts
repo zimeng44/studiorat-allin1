@@ -2,6 +2,7 @@
 import { getStrapiURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
+import bcrypt from "bcrypt";
 // import prisma from "@/lib/prisma";
 // import bcrypt from "bcrypt";
 // import { Prisma } from "@prisma/client";
@@ -87,6 +88,7 @@ export async function loginUserService(userData: LoginUserProps) {
     // return response.json();
   } catch (error) {
     console.error("Login User Service Error:", error);
+    return { user: null, jwt: null, error: "Error at Login" };
   }
 }
 
@@ -105,15 +107,24 @@ export async function verifyUserService(jwt: string) {
 
     const { data: userInDb, error } = await getUserByIdentifier(user.net_id);
 
+    // const passwordMatches = await bcrypt.compare(
+    //   user.password,
+    //   userInDb?.password ?? "",
+    // );
+
     // const expires = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7);
     // const jwtDb = await encrypt({ userInDb, EXPIRE });
 
     if (userInDb) {
-      return { ok: true, data: userInDb, error: null };
+      return {
+        ok: true,
+        data: { ...userInDb, password: undefined },
+        error: null,
+      };
     } else {
-      return { ok: false, data: null, error: error };
+      return { ok: false, data: null, error: "Error verifying user" };
     }
   } catch (error) {
-    return { ok: false, data: null, error: error };
+    return { ok: false, data: null, error: "Error verifying user" };
   }
 }
