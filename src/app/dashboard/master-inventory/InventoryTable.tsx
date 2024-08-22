@@ -301,18 +301,23 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
                   return value.visible ? (
                     <TableCell className="whitespace-nowrap" key={key}>
-                      {row[key] && row[key].length >= MAX_TEXT_LEN ? (
+                      {typeof row[key as keyof InventoryItemWithImage] ===
+                        "string" &&
+                      (row[key as keyof InventoryItemWithImage] as string)
+                        ?.length >= MAX_TEXT_LEN ? (
                         <HoverCard>
                           <HoverCardTrigger className="m-0 p-0" asChild>
                             <Button variant="link">
-                              {`${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                              {`${(row[key as keyof InventoryItemWithImage] as string).substring(0, MAX_TEXT_LEN)}...`}
                             </Button>
                           </HoverCardTrigger>
-                          <HoverCardContent>{row[key]}</HoverCardContent>
+                          <HoverCardContent>
+                            {`${row[key as keyof InventoryItemWithImage]}`}
+                          </HoverCardContent>
                         </HoverCard>
                       ) : (
                         <Button className="m-0 p-0" variant="link">
-                          {row[key]}
+                          {`${row[key as keyof InventoryItemWithImage]}`}
                         </Button>
                       )}
                     </TableCell>
