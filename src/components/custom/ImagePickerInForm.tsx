@@ -48,7 +48,7 @@ function ImageCard({
 
   return (
     <div className="relative">
-      <div className="relative flex h-52 w-52 items-center space-x-4 overflow-hidden rounded-md border p-4">
+      <div className="relative flex h-60 w-60 items-center space-x-4 overflow-hidden rounded-md border p-4">
         {imagePreview}
       </div>
       <button
