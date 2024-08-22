@@ -16,7 +16,7 @@ export function Search() {
   const handleSearch = useDebouncedCallback((term: string) => {
     // console.log(`Searching... ${term}`);
     const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
+    params.set("pageIndex", "1");
 
     if (term) {
       params.set("query", term);
@@ -60,7 +60,6 @@ export function Search() {
         }}
         // {...props}
       >
-        
         <XIcon className="h-4 w-4" />
         <span className="sr-only">Clear</span>
       </Button>
@@ -68,7 +67,7 @@ export function Search() {
   );
 }
 
-function XIcon(props:any) {
+function XIcon(props: any) {
   return (
     <svg
       {...props}
