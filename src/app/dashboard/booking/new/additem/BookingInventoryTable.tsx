@@ -202,12 +202,13 @@ const BookingInventoryTable = ({
                   }
 
                   return value.visible ? (
-                    <TableCell className="" key={key}>
-                      {row[key]
+                    <TableCell className="w-40" key={key}>
+                      {row[key] ? row[key] : ``}
+                      {/* {row[key]
                         ? row[key].length <= MAX_TEXT_LEN
                           ? row[key]
                           : `${row[key].substring(0, MAX_TEXT_LEN)}...`
-                        : ``}
+                        : ``} */}
                     </TableCell>
                   ) : (
                     ``

@@ -602,9 +602,8 @@ const EditBookingForm = ({
             <div className="col-span-2"></div>
           </div>
 
-          <div className="flex-col gap-2 md:col-span-4 xl:col-span-4">
-            <div className="col-span-2 flex justify-evenly md:col-span-4">
-              {/* <div className="text-center align-baseline font-normal"> */}
+          <div className="flex-col gap-2 md:col-span-4 xl:col-span-4 xl:max-w-md">
+            <div className="col-span-2 flex justify-evenly p-1 md:col-span-4">
               <h1 className="flex-1 content-center text-center">
                 Booking Items
               </h1>

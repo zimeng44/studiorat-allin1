@@ -92,30 +92,21 @@ const BookingEmbededTable = ({
               ``
             )}
             {columnsVisible[1] ? (
-              <TableHead
-                className="whitespace-nowrap border-x-0 p-1 md:p-4"
-                key={header[1]}
-              >
+              <TableHead className="border-x-0 p-1 md:p-4" key={header[1]}>
                 Make
               </TableHead>
             ) : (
               ``
             )}
             {columnsVisible[2] ? (
-              <TableHead
-                className="whitespace-nowrap border-x-0 p-1 md:p-4"
-                key={header[2]}
-              >
+              <TableHead className="border-x-0 p-1 md:p-4" key={header[2]}>
                 Model
               </TableHead>
             ) : (
               ``
             )}
             {columnsVisible[3] ? (
-              <TableHead
-                className="whitespace-nowrap border-x-0"
-                key={header[3]}
-              >
+              <TableHead className="border-x-0" key={header[3]}>
                 Category
               </TableHead>
             ) : (
@@ -159,18 +150,20 @@ const BookingEmbededTable = ({
                 )}
                 {columnsVisible[1] ? (
                   <TableCell className="p-1 md:p-4" key={header[1]}>
-                    {row.make.length > MAX_TEXT_LEN
+                    {row.make}
+                    {/* {row.make.length > MAX_TEXT_LEN
                       ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
-                      : `${row.make}`}
+                      : `${row.make}`} */}
                   </TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[2] ? (
                   <TableCell className="p-1 md:p-4" key={header[2]}>
-                    {row.model.length > MAX_TEXT_LEN
+                    {row.model}
+                    {/* {row.model.length > MAX_TEXT_LEN
                       ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
-                      : `${row.model}`}
+                      : `${row.model}`} */}
                   </TableCell>
                 ) : (
                   ``
