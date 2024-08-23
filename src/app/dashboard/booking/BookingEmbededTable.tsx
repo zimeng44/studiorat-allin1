@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -9,19 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
-import {
-  deleteItemAction,
-  updateItemAction,
-} from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { InventoryItem } from "@/data/definitions";
 import { CircleMinus } from "lucide-react";
 
-const MAX_TEXT_LEN = 25;
+const MAX_TEXT_LEN = 20;
 
 interface InventoryTableProps {
   data: any[];
@@ -149,22 +141,7 @@ const BookingEmbededTable = ({
             ) : (
               ``
             )}
-            {/* {columnsVisible[8] ? (
-                <TableHead className="text-center" key={header[8]}>
-                  Out
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[9] ? (
-                <TableHead className="text-center" key={header[9]}>
-                  Broken
-                </TableHead>
-              ) : (
-                ``
-              )} */}
-            {/* <TableHead className="text-center" key="delete">
-              </TableHead> */}
+
             <TableHead className="text-center" key="deleteButton"></TableHead>
           </TableRow>
         </TableHeader>
@@ -199,7 +176,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[3] ? (
-                  <TableCell className="whitespace-nowrap" key={header[3]}>
+                  <TableCell className="" key={header[3]}>
                     {row.category.length > MAX_TEXT_LEN
                       ? `${row.category.substring(0, MAX_TEXT_LEN)}...`
                       : `${row.category}`}
@@ -208,7 +185,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[4] ? (
-                  <TableCell className="whitespace-nowrap" key={header[4]}>
+                  <TableCell className="" key={header[4]}>
                     {row.description.length > MAX_TEXT_LEN
                       ? `${row.description.substring(0, MAX_TEXT_LEN)}...`
                       : `${row.description}`}
@@ -233,7 +210,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[7] ? (
-                  <TableCell className="whitespace-nowrap" key={header[7]}>
+                  <TableCell className="" key={header[7]}>
                     {row.comments.length > MAX_TEXT_LEN
                       ? `${row.comments.substring(0, MAX_TEXT_LEN)}...`
                       : `${row.comments}`}
@@ -241,25 +218,7 @@ const BookingEmbededTable = ({
                 ) : (
                   ``
                 )}
-                {/* {columnsVisible[8] ? (
-                    <TableCell className="p-1 text-center" key={header[8]}>
-                      <Checkbox disabled checked={row.out} />
-                    </TableCell>
-                  ) : (
-                    ``
-                  )} */}
-                {/* {columnsVisible[9] ? (
-                    <TableCell className="text-center" key={header[9]}>
-                      <Checkbox
-                        checked={row.broken}
-                        onCheckedChange={(checked) => {
-                          updateItemAction({ broken: !row.broken }, row.id);
-                        }}
-                      />
-                    </TableCell>
-                  ) : (
-                    ``
-                  )} */}
+
                 <TableCell className="text-center" key="deleteButton">
                   <Button
                     type="button"

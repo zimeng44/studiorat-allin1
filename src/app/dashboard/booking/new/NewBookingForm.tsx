@@ -3,14 +3,10 @@ import React from "react";
 import qs from "qs";
 import { cn } from "@/lib/utils";
 import {
-  BookingType,
   InventoryItem,
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
-  UserType,
-  RetrievedItems,
-  BookingTypePost,
   UserWithRole,
 } from "@/data/definitions";
 import { z } from "zod";
@@ -48,8 +44,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/booking/bookingInventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import BookingEmbededTable from "../BookingEmbededTable";
@@ -62,9 +57,8 @@ import { CalendarIcon, PlusCircle } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { createBookingAction } from "@/data/actions/booking-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { bookings, inventory_items, Prisma, User } from "@prisma/client";
+import { inventory_items } from "@prisma/client";
 import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
 const formSchema = z.object({

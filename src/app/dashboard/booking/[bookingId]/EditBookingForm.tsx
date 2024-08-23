@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/booking/bookingInventoryColumns";
 import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
@@ -629,11 +629,7 @@ const EditBookingForm = ({
               />
             </div>
           </div>
-          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          {/* <Button className="align-right col-span-2" type="submit">
-            Save
-          </Button> */}
           <div className="col-span-2 flex gap-1 py-2 md:col-span-4">
             <SubmitButton
               className="flex-1"

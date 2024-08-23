@@ -12,12 +12,14 @@ import { CirclePlus, Grid, List } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";
+import PaginationControls from "@/components/custom/PaginationControls";
 
 interface TableFieldStatus {
   header: string;
   visible: boolean;
 }
 interface TableColumnStatus {
+  image: TableFieldStatus;
   m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
@@ -31,6 +33,7 @@ interface TableColumnStatus {
 interface ViewTabsProps {
   data: any[];
   // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
   filter: {};
   itemObjArr: InventoryItemWithImage[];
   addToBooking: Function;
@@ -89,6 +92,7 @@ function LinkCard({
 const BookingAddItemPageTabs = ({
   data,
   // meta,
+  totalEntries,
   filter,
   itemObjArr,
   addToBooking,
@@ -103,12 +107,10 @@ const BookingAddItemPageTabs = ({
   const addView = searchParams.get("addView") ?? "list";
   const params = new URLSearchParams(searchParams);
   const [defaultTab, setDefaultTab] = useState(addView);
-  const [mobileView, setMobileView] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
-      setMobileView(isMobile);
 
       params.set("addView", isMobile ? "cards" : addView);
       setDefaultTab(isMobile ? "cards" : addView);
@@ -133,7 +135,7 @@ const BookingAddItemPageTabs = ({
           <h1 className="left-content font-bold">Available Items</h1>
           <div className="right-content">
             <TabsList>
-              {mobileView ? (
+              {defaultTab === "cards" ? (
                 ``
               ) : (
                 <TabsTrigger value="list">
@@ -174,12 +176,9 @@ const BookingAddItemPageTabs = ({
           </div>
         </TabsContent>
       </Tabs>
-      {/* <div className="flex items-center justify-end space-x-2 py-2">
-        <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
-        />
-      </div> */}
+      <div className="flex items-center justify-end space-x-2 py-2">
+        <PaginationControls totalEntries={totalEntries} />
+      </div>
     </div>
   );
 };

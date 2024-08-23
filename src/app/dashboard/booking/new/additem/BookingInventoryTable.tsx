@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -9,49 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  CirclePlus,
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  SquarePen,
-  Users2,
-} from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { deleteItemAction } from "@/data/actions/inventory-actions";
@@ -62,19 +20,19 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-// import { inventoryColumnsDefault } from "@/data/inventoryColumns";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
 import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";
 
-const MAX_TEXT_LEN = 20;
+const MAX_TEXT_LEN = 25;
 
 interface TableFieldStatus {
   header: string;
   visible: boolean;
 }
 interface TableColumnStatus {
+  image: TableFieldStatus;
   m_tech_barcode: TableFieldStatus;
   make: TableFieldStatus;
   model: TableFieldStatus;
@@ -98,22 +56,15 @@ const BookingInventoryTable = ({
   itemObjArr,
   addToBooking,
 }: InventoryTableProps) => {
-  // console.log(data);
-  const pathParams = useParams<{ bookingId: string }>();
-  // const editable = pathParams.bookingId ? false : true;
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
 
   const sort = searchParams.get("sort") ?? "";
-  // console.log(sort);
 
-  // let filterOpen = searchParams.get("filterOpen") === "true";
   const pageIndex = searchParams.get("page") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
-  const isAllSelected = searchParams.get("isAllSelected") === "true";
-  const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
 
   // remember the current page and page size to tell if navigated to a new page or set a new page size
   const [currentPage, setCurrentPage] = useState("1");
@@ -142,16 +93,6 @@ const BookingInventoryTable = ({
     setCurrentPageSize(pageSize);
     setRowsSelected(Array(data.length).fill(false));
   }
-
-  const handleAllSelected = (checked: boolean) => {
-    setRowsSelected(Array(data.length).fill(checked));
-
-    params.set("isAllSelected", checked ? "true" : "false");
-    params.set("isBatchOpOpen", checked ? "true" : "false");
-    params.set("numRowsSelected", data.length.toString());
-    router.replace(`${pathname}?${params.toString()}`);
-    // console.log("All Selected is ", allSelected);
-  };
 
   const handleSort = (field: string) => {
     const order = sort.split(":")[1] === "asc" ? "desc" : "asc";
@@ -232,6 +173,7 @@ const BookingInventoryTable = ({
                       ``
                     );
                   }
+
                   if (key === "out") {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
@@ -261,9 +203,11 @@ const BookingInventoryTable = ({
 
                   return value.visible ? (
                     <TableCell className="" key={key}>
-                      {row[key]?.length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key]?.substring(0, MAX_TEXT_LEN)}...`}
+                      {row[key]
+                        ? row[key].length <= MAX_TEXT_LEN
+                          ? row[key]
+                          : `${row[key].substring(0, MAX_TEXT_LEN)}...`
+                        : ``}
                     </TableCell>
                   ) : (
                     ``

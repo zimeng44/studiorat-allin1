@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { inventoryColumns } from "@/app/dashboard/booking/bookingInventoryColumns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import BookingAddItemPageTabs from "./BookingAddItemPageTabs";
@@ -12,12 +12,14 @@ const BookingAddItemForm = ({
   bookingId,
   // bookingData,
   inventoryData,
+  totalEntries,
   // inventoryMeta,
   filter,
 }: {
   bookingId: string;
   // bookingData: BookingType;
   inventoryData: inventory_items[];
+  totalEntries: number;
   // inventoryMeta: { pagination: { pageCount: number; total: number } };
   filter: {};
 }) => {
@@ -75,6 +77,7 @@ const BookingAddItemForm = ({
       <BookingAddItemPageTabs
         data={inventoryData}
         // meta={inventoryMeta}
+        totalEntries={totalEntries}
         filter={filter}
         itemObjArr={itemObjArr}
         addToBooking={setItemObjArr}

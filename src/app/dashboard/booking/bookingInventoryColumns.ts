@@ -87,7 +87,7 @@ export const inventoryColumnsDefault = {
   },
   category: {
     header: "Category",
-    visible: true,
+    visible: false,
   },
   description: {
     header: "Description",

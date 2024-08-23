@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CircleMinus } from "lucide-react";
-import { InventoryItem } from "@/data/definitions";
+import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 
 const MAX_TEXT_LEN = 25;
 
@@ -75,7 +76,7 @@ const BookingAddItemEmbededTable = ({
     .fill("")
     .map((item, index) => columns[index].accessorKey);
 
-  const handleRemoveFromBooking = (row: InventoryItem) => {
+  const handleRemoveFromBooking = (row: InventoryItemWithImage) => {
     let newArr = itemObjArr.filter((item) => item.id !== row.id);
     setItemObjArr(newArr);
   };
@@ -148,25 +149,11 @@ const BookingAddItemEmbededTable = ({
               ) : (
                 ``
               )}
-              {/* {columnsVisible[8] ? (
-                <TableHead className="text-center" key={header[8]}>
-                  Out
-                </TableHead>
-              ) : (
-                ``
-              )}
-              {columnsVisible[9] ? (
-                <TableHead className="text-center" key={header[9]}>
-                  Broken
-                </TableHead>
-              ) : (
-                ``
-              )} */}
               <TableHead className="text-center" key="deleteButton"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data ? (
+            {data.length ? (
               data.map((row, index) => (
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (
@@ -238,25 +225,6 @@ const BookingAddItemEmbededTable = ({
                   ) : (
                     ``
                   )}
-                  {/* {columnsVisible[8] ? (
-                    <TableCell className="p-1 text-center" key={header[8]}>
-                      <Checkbox disabled checked={row.out} />
-                    </TableCell>
-                  ) : (
-                    ``
-                  )} */}
-                  {/* {columnsVisible[9] ? (
-                    <TableCell className="text-center" key={header[9]}>
-                      <Checkbox
-                        checked={row.broken}
-                        onCheckedChange={(checked) => {
-                          updateItemAction({ broken: !row.broken }, row.id);
-                        }}
-                      />
-                    </TableCell>
-                  ) : (
-                    ``
-                  )} */}
                   <TableCell className="text-center" key="deleteButton">
                     <Button
                       type="button"

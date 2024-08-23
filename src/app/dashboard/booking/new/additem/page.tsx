@@ -35,7 +35,18 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "make:asc";
 
-  const filter = {};
+  const filter = {
+    // mTechBarcode: searchParams?.mTechBarcode ?? "",
+    // make: searchParams?.make ?? "",
+    // model: searchParams?.model ?? "",
+    // category: searchParams?.category ?? "",
+    // description: searchParams?.description ?? "",
+    // accessories: searchParams?.accessories ?? "",
+    storage_location: searchParams?.storage_location ?? "Floor 8",
+    // comments: searchParams?.comments ?? "",
+    // out: searchParams?.out === "true" ? true : false,
+    // broken: searchParams?.broken === "true" ? true : false,
+  };
 
   const { data, count } = searchParams?.query
     ? await getItemsByQuery(
@@ -76,14 +87,15 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>New</BreadcrumbPage>
+            <BreadcrumbPage>Edit</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex items-center md:px-2">
         <BookingAddItemForm
-          // bookingId={searchParams.bookingId}
+          bookingId={searchParams.bookingId}
           // bookingData={bookingData}
+          totalEntries={count}
           inventoryData={data}
           // inventoryMeta={meta}
           filter={filter}

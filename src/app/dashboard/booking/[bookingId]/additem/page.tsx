@@ -13,7 +13,7 @@ interface ParamsProps {
   searchParams: {
     bookingId: string;
     itemId: string;
-    page: string;
+    pageIndex: string;
     pageSize: string;
     sort: string;
     m_tech_barcode: string;
@@ -31,7 +31,7 @@ interface ParamsProps {
 }
 
 const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
-  const pageIndex = searchParams?.page ?? "1";
+  const pageIndex = searchParams?.pageIndex ?? "1";
   const pageSize = searchParams?.pageSize ?? "10";
   const sort = searchParams?.sort ?? "make:asc";
 
@@ -42,7 +42,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
     // category: searchParams?.category ?? "",
     // description: searchParams?.description ?? "",
     // accessories: searchParams?.accessories ?? "",
-    // storageLocation: searchParams?.storageLocation ?? "All",
+    storage_location: searchParams?.storage_location ?? "Floor 8",
     // comments: searchParams?.comments ?? "",
     // out: searchParams?.out === "true" ? true : false,
     // broken: searchParams?.broken === "true" ? true : false,
@@ -95,6 +95,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
         <BookingAddItemForm
           bookingId={searchParams.bookingId}
           // bookingData={bookingData}
+          totalEntries={count}
           inventoryData={data}
           // inventoryMeta={meta}
           filter={filter}

@@ -1,14 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -19,24 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  EllipsisVertical,
-  File,
-  Filter,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
-  SquarePen,
-  PlusCircle,
-  // Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react";
+import { Settings } from "lucide-react";
 import { Search } from "@/components/custom/Search";
 import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
 
@@ -93,6 +69,27 @@ const TabHeader = ({
 
   return (
     <div className="flex items-center py-1">
+      {/* <Sheet
+        open={filterOpen}
+        onOpenChange={(open) => {
+          filterOpen = open;
+          const params = new URLSearchParams(searchParams);
+          params.set("filterOpen", filterOpen ? "true" : "false");
+          router.replace(`${pathname}?${params.toString()}`);
+        }}
+      >
+        <SheetTrigger asChild>
+          <Button variant="outline">
+            <Filter className="mr-2 h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle>Filter</SheetTitle>
+          </SheetHeader>
+          <InventoryFilterForm filter={filter} />
+        </SheetContent>
+      </Sheet> */}
       <div className="px-2">
         <Search />
       </div>

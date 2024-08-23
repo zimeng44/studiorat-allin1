@@ -25,7 +25,7 @@ import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";
 
-const MAX_TEXT_LEN = 20;
+const MAX_TEXT_LEN = 25;
 
 interface TableFieldStatus {
   header: string;
@@ -203,9 +203,11 @@ const BookingInventoryTable = ({
 
                   return value.visible ? (
                     <TableCell className="" key={key}>
-                      {row[key].length <= MAX_TEXT_LEN
-                        ? row[key]
-                        : `${row[key].substring(0, MAX_TEXT_LEN)}...`}
+                      {row[key]
+                        ? row[key].length <= MAX_TEXT_LEN
+                          ? row[key]
+                          : `${row[key].substring(0, MAX_TEXT_LEN)}...`
+                        : ``}
                     </TableCell>
                   ) : (
                     ``

@@ -12,6 +12,7 @@ import { CirclePlus, Grid, List } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";
+import PaginationControls from "@/components/custom/PaginationControls";
 
 interface TableFieldStatus {
   header: string;
@@ -32,6 +33,7 @@ interface TableColumnStatus {
 interface ViewTabsProps {
   data: any[];
   // meta: { pagination: { pageCount: number; total: number } };
+  totalEntries: number;
   filter: {};
   itemObjArr: InventoryItemWithImage[];
   addToBooking: Function;
@@ -90,6 +92,7 @@ function LinkCard({
 const BookingAddItemPageTabs = ({
   data,
   // meta,
+  totalEntries,
   filter,
   itemObjArr,
   addToBooking,
@@ -173,12 +176,9 @@ const BookingAddItemPageTabs = ({
           </div>
         </TabsContent>
       </Tabs>
-      {/* <div className="flex items-center justify-end space-x-2 py-2">
-        <PaginationControls
-          pageCount={meta.pagination.pageCount}
-          totalEntries={meta.pagination.total}
-        />
-      </div> */}
+      <div className="flex items-center justify-end space-x-2 py-2">
+        <PaginationControls totalEntries={totalEntries} />
+      </div>
     </div>
   );
 };
