@@ -279,7 +279,7 @@ const BookingEmbededTable = ({
           ) : (
             <TableRow>
               <TableCell colSpan={header.length} className="h-24 text-center">
-                No results.
+                No item added.
               </TableCell>
             </TableRow>
           )}

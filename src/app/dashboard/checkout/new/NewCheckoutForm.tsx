@@ -25,12 +25,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
-import {
-  CheckoutSessionTypePost,
-  InventoryItem,
-  studioList,
-  UserType,
-} from "@/data/definitions";
+import { InventoryItem, studioList } from "@/data/definitions";
 import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
 import { createCheckoutSessionAction } from "@/data/actions/checkout-actions";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
@@ -43,8 +38,8 @@ import { useRouter } from "next/navigation";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { checkout_sessions, User } from "@prisma/client";
-import prisma from "@/lib/prisma";
+import { User } from "@prisma/client";
+// import prisma from "@/lib/prisma";
 import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
 interface StrapiErrorsProps {
@@ -301,204 +296,196 @@ const NewCheckoutForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-2 md:px-0 xl:max-w-screen-lg xl:grid-cols-4 xl:flex-row"
         >
-          <FormField
-            control={form.control}
-            name="creationTime"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Creation Time</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled
-                    placeholder={"This is the time"}
-                    {...field}
-                    value={format(field.value, "MM/dd/yyyy hh:mm a")}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="col-span-1"></div>
-
-          <FormField
-            control={form.control}
-            name="stuIDCheckout"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Checkout ID</FormLabel>
-                <FormControl
-                  // onChange={(e) => {
-                  //   handleStuIdInput(e.target.value);
-                  // }}
-                  onChange={(e) =>
-                    handleStuIdInput((e.target as HTMLInputElement).value)
-                  }
-                >
-                  <Input
-                    className="bg-indigo-100"
-                    placeholder="Scan an ID barcode"
-                    {...field}
-                    // onChange={(e) => setUserId(e.target.value)}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="userName"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>User Name</FormLabel>
-                <FormControl>
-                  {/* <Input
-                    {...field}
-                    disabled
-                    placeholder="Waiting for ID scan"
-                    // onChange={(e) => setUserId(e.target.value)}
-                  ></Input> */}
-                  <InputWithLoading
-                    placeholder="Waiting for ID scan"
-                    field={field}
-                    isLoading={userLoading}
-                    disabled
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="studio"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Studio</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  // defaultValue={field.value}
-                  value={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="">
-                      <SelectValue placeholder="Select a stuido" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {studioList.map((studio, index) => (
-                      <SelectItem
-                        key={index}
-                        value={`${studio}`}
-                      >{`${studio}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {form.getValues("studio") === "Other" ? (
+          <div className="flex-1 gap-2 md:col-span-2 md:grid md:max-w-xl md:grid-cols-2 md:px-0">
             <FormField
               control={form.control}
-              name="other_location"
+              name="creationTime"
               render={({ field }) => (
-                <FormItem className="col-span-1">
-                  <FormLabel>Other Location</FormLabel>
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Creation Time</FormLabel>
                   <FormControl>
                     <Input
+                      disabled
+                      placeholder={"This is the time"}
                       {...field}
-                      disabled={form.getValues("studio") !== "Other"}
+                      value={format(field.value, "MM/dd/yyyy hh:mm a")}
                     ></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          ) : (
             <div className="col-span-1"></div>
-          )}
 
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel className="align-bottom">Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    className="min-h-32 whitespace-normal"
-                    placeholder="Leave a note"
-                  ></Textarea>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            <FormField
+              control={form.control}
+              name="stuIDCheckout"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Checkout ID</FormLabel>
+                  <FormControl
+                    onChange={(e) =>
+                      handleStuIdInput((e.target as HTMLInputElement).value)
+                    }
+                  >
+                    <Input
+                      className="bg-indigo-100"
+                      placeholder="Scan an ID barcode"
+                      {...field}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>User Name</FormLabel>
+                  <FormControl>
+                    <InputWithLoading
+                      placeholder="Waiting for ID scan"
+                      field={field}
+                      isLoading={userLoading}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="studio"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Studio</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    // defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="">
+                        <SelectValue placeholder="Select a stuido" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {studioList.map((studio, index) => (
+                        <SelectItem
+                          key={index}
+                          value={`${studio}`}
+                        >{`${studio}`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.getValues("studio") === "Other" ? (
+              <FormField
+                control={form.control}
+                name="other_location"
+                render={({ field }) => (
+                  <FormItem className="col-span-1">
+                    <FormLabel>Other Location</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={form.getValues("studio") !== "Other"}
+                      ></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <div className="col-span-1"></div>
             )}
-          />
-          <FormField
-            control={form.control}
-            name="noTagItems"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Untagged Items</FormLabel>
-                <FormControl>
-                  <TagsInput
-                    value={noTagItems}
-                    onChange={setNoTagItems}
-                    name="item"
-                    placeHolder="Enter a item"
-                  />
-                </FormControl>
-                <FormMessage className="text-slate-400">
-                  press enter or comma to add new item. take 'unreturned' off
-                  when items return'
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="scan"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel className="ml-1 flex gap-3">
-                  Barcode Scan
-                  <div
-                    className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
-                  />
-                </FormLabel>
-                <FormControl
-                  onChange={(e) =>
-                    handleScan((e.target as HTMLInputElement).value)
-                  }
-                >
-                  <Input
-                    className="bg-indigo-100"
-                    placeholder={"Scan an item barcode"}
-                    {...field}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-            <EmbededTable
-              data={itemObjArr}
-              setItemObjArr={setItemObjArr}
-              columns={inventoryColumns}
-              disabled={false}
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel className="align-bottom">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      className="min-h-32 whitespace-normal"
+                      placeholder="Leave a note"
+                    ></Textarea>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="noTagItems"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Untagged Items</FormLabel>
+                  <FormControl>
+                    <TagsInput
+                      value={noTagItems}
+                      onChange={setNoTagItems}
+                      name="item"
+                      placeHolder="Enter a item"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-slate-400">
+                    press enter or comma to add new item. take 'unreturned' off
+                    when items return'
+                  </FormMessage>
+                </FormItem>
+              )}
             />
           </div>
 
-          {/* <Button className="align-right" type="submit">
-            Add
-          </Button> */}
+          <div className="flex-col gap-2 md:col-span-2">
+            <FormField
+              control={form.control}
+              name="scan"
+              render={({ field }) => (
+                <FormItem className="col-span-1 mb-2 w-60">
+                  <FormLabel className="ml-1 flex gap-3">
+                    Scan to Add Item(s)
+                    <div
+                      className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
+                    />
+                  </FormLabel>
+                  <FormControl
+                    onChange={(e) =>
+                      handleScan((e.target as HTMLInputElement).value)
+                    }
+                  >
+                    <Input
+                      className="bg-indigo-100"
+                      placeholder={"Scan an item barcode"}
+                      {...field}
+                    ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
+              <EmbededTable
+                data={itemObjArr}
+                setItemObjArr={setItemObjArr}
+                columns={inventoryColumns}
+                disabled={false}
+              />
+            </div>
+          </div>
+
           <div className="col-span-1 flex items-center gap-1 space-y-1 md:col-span-2">
             <SubmitButton
               className="flex-1 items-center"

@@ -307,40 +307,19 @@ const EditCheckoutSessionForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-2 md:px-0 xl:max-w-screen-lg xl:grid-cols-4 xl:flex-row"
         >
-          <FormField
-            control={form.control}
-            name="creation_time"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Creation Time</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled
-                    placeholder={"This is the time"}
-                    {...field}
-                    value={
-                      field.value === null || field.value === undefined
-                        ? ``
-                        : format(field.value, "MM/dd/yyyy hh:mm a")
-                    }
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {session.finished ? (
+          <div className="flex-1 gap-2 md:col-span-2 md:grid md:max-w-xl md:grid-cols-2 md:px-0">
             <FormField
               control={form.control}
-              name="finish_time"
+              name="creation_time"
               render={({ field }) => (
-                <FormItem className="col-span-1">
-                  <FormLabel>Finish Time</FormLabel>
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Creation Time</FormLabel>
                   <FormControl>
                     <Input
                       disabled
+                      placeholder={"This is the time"}
                       {...field}
                       value={
                         field.value === null || field.value === undefined
@@ -353,241 +332,262 @@ const EditCheckoutSessionForm = ({
                 </FormItem>
               )}
             />
-          ) : (
-            ``
-          )}
-          <FormField
-            control={form.control}
-            name="stuIDCheckout"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Checkout ID</FormLabel>
-                <FormControl>
-                  <Input disabled {...field}></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            {session.finished ? (
+              <FormField
+                control={form.control}
+                name="finish_time"
+                render={({ field }) => (
+                  <FormItem className="col-span-1">
+                    <FormLabel>Finish Time</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        {...field}
+                        value={
+                          field.value === null || field.value === undefined
+                            ? ``
+                            : format(field.value, "MM/dd/yyyy hh:mm a")
+                        }
+                      ></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              ``
             )}
-          />
-          <FormField
-            control={form.control}
-            name="userName"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>User Name</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled
-                    // onChange={(e) => setUserId(e.target.value)}
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="return_id"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Return ID</FormLabel>
-                <FormControl
-                  onChange={(e) =>
-                    handleReturnId((e.target as HTMLInputElement).value)
-                  }
-                >
-                  <Input
-                    {...field}
-                    disabled={session.finished ?? false}
-                    placeholder="Scan an ID Here"
-                  ></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="studio"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Studio</FormLabel>
-                <Select
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    if (value !== "Other") form.setValue("otherLocation", "");
-                  }}
-                  value={field.value}
-                  disabled={session.finished ?? false}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a stuido" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {studioList.map((studio, index) => (
-                      <SelectItem
-                        key={index}
-                        value={`${studio}`}
-                      >{`${studio}`}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {form.getValues("studio") === "Other" ? (
             <FormField
               control={form.control}
-              name="otherLocation"
+              name="stuIDCheckout"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full">
-                  <FormLabel>Other Location</FormLabel>
+                  <FormLabel>Checkout ID</FormLabel>
+                  <FormControl>
+                    <Input disabled {...field}></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>User Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={
-                        form.getValues("studio") !== "Other" ||
-                        (session.finished ?? false)
-                      }
+                      disabled
+                      // onChange={(e) => setUserId(e.target.value)}
                     ></Input>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          ) : (
-            <div className="col-span-1"></div>
-          )}
-          {session.finished ? <div className="col-span-1"></div> : ``}
-          <FormField
-            control={form.control}
-            name="creationMonitor"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Creation Monitor</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="finishMonitor"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel>Finish Monitor</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled></Input>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem className="col-span-1 size-full">
-                <FormLabel className="align-bottom">Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    className="min-h-32 whitespace-normal"
-                    placeholder="Leave a note"
-                  ></Textarea>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="noTagItems"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel>Untagged Items</FormLabel>
-                <FormControl>
-                  <TagsInput
-                    value={noTagItems}
-                    onChange={setNoTagItems}
-                    name="item"
-                    placeHolder="Enter a item"
-                    disabled={session.finished ?? false}
-                  />
-                </FormControl>
-                <FormMessage className="text-slate-400">
-                  press enter or comma to add new item. take 'unreturned' off
-                  when items return'
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-
-          {session.finished ? (
-            ``
-          ) : (
             <FormField
               control={form.control}
-              name="scan"
+              name="return_id"
               render={({ field }) => (
                 <FormItem className="col-span-1 size-full">
-                  <FormLabel className="ml-1 flex gap-3">
-                    Barcode Scan
-                    <div
-                      className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
-                    />
-                  </FormLabel>
+                  <FormLabel>Return ID</FormLabel>
                   <FormControl
                     onChange={(e) =>
-                      handleScan((e.target as HTMLInputElement).value)
+                      handleReturnId((e.target as HTMLInputElement).value)
                     }
                   >
                     <Input
-                      className="bg-indigo-100"
-                      placeholder={"Scan a barcode"}
                       {...field}
                       disabled={session.finished ?? false}
+                      placeholder="Scan an ID Here"
                     ></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="studio"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Studio</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      if (value !== "Other") form.setValue("otherLocation", "");
+                    }}
+                    value={field.value}
+                    disabled={session.finished ?? false}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a stuido" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {studioList.map((studio, index) => (
+                        <SelectItem
+                          key={index}
+                          value={`${studio}`}
+                        >{`${studio}`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.getValues("studio") === "Other" ? (
+              <FormField
+                control={form.control}
+                name="otherLocation"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 size-full">
+                    <FormLabel>Other Location</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={
+                          form.getValues("studio") !== "Other" ||
+                          (session.finished ?? false)
+                        }
+                      ></Input>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <div className="col-span-1"></div>
+            )}
+            {session.finished ? <div className="col-span-1"></div> : ``}
+            <FormField
+              control={form.control}
+              name="creationMonitor"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Creation Monitor</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="finishMonitor"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel>Finish Monitor</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled></Input>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                    {/* <InputWithLoading
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem className="col-span-1 size-full">
+                  <FormLabel className="align-bottom">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      className="min-h-32 whitespace-normal"
+                      placeholder="Leave a note"
+                    ></Textarea>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="noTagItems"
+              render={({ field }) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Untagged Items</FormLabel>
+                  <FormControl>
+                    <TagsInput
+                      value={noTagItems}
+                      onChange={setNoTagItems}
+                      name="item"
+                      placeHolder="Enter a item"
+                      disabled={session.finished ?? false}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-slate-400">
+                    press enter or comma to add new item. take 'unreturned' off
+                    when items return'
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex-col gap-2 md:col-span-2">
+            {session.finished ? (
+              ``
+            ) : (
+              <FormField
+                control={form.control}
+                name="scan"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 mb-2 w-60">
+                    <FormLabel className="ml-1 flex gap-3">
+                      Scan to Add Item(s)
+                      <div
+                        className={`${itemLoading ? "visible" : "invisible"} h-5 w-5 animate-spin rounded-full border-t-4 border-indigo-600`}
+                      />
+                    </FormLabel>
+                    <FormControl
+                      onChange={(e) =>
+                        handleScan((e.target as HTMLInputElement).value)
+                      }
+                    >
+                      <Input
+                        className="bg-indigo-100"
+                        placeholder={"Scan a barcode"}
+                        {...field}
+                        disabled={session.finished ?? false}
+                      ></Input>
+
+                      {/* <InputWithLoading
                       className="bg-indigo-100"
                       placeholder="Item Barcode Scan"
                       field={field}
                       isLoading={itemLoading}
                       disabled={session.finished ?? false}
                     /> */}
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
-          <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-            <EmbededTable
-              data={itemObjArr}
-              setItemObjArr={setItemObjArr}
-              columns={
-                session.finished ?? false
-                  ? inventoryColumnsFinished
-                  : inventoryColumns
-              }
-              disabled={session.finished ?? false}
-            />
+            <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
+              <EmbededTable
+                data={itemObjArr}
+                setItemObjArr={setItemObjArr}
+                columns={
+                  session.finished ?? false
+                    ? inventoryColumnsFinished
+                    : inventoryColumns
+                }
+                disabled={session.finished ?? false}
+              />
+            </div>
           </div>
-          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
 
-          {/* <Button className="align-right" type="submit">
-            Save
-          </Button> */}
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
               className="flex-1"

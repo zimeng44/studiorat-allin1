@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   //   return <p>User Access Forbidden</p>;
   // }
   return (
-    <div className="grid h-screen md:grid-cols-[240px_1fr]">
+    <div className="grid h-screen flex-1 md:grid-cols-[240px_1fr]">
       <nav className="hidden border-r bg-gray-100/40 dark:bg-gray-800/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-[60px] items-center border-b px-6">
@@ -140,7 +140,7 @@ export default async function DashboardLayout({
           </div>
         </div>
       </nav>
-      <main className="overflow-x-hide flex flex-col">{children}</main>
+      <main className="overflow-visible">{children}</main>
     </div>
   );
 }

@@ -416,372 +416,354 @@ const NewBookingForm = ({
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           // className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
-          className="w-screen shrink flex-col gap-2 space-y-1 px-2 md:grid md:max-w-lg md:grid-cols-4 md:px-0"
+          className="w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-4 md:px-0 xl:max-w-screen-lg xl:grid-cols-8 xl:flex-row"
         >
-          <div className="col-span-2 max-w-sm md:col-span-4">
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem className="size-fit">
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      handleTypeSelect(value);
-                    }}
-                    value={field.value}
-                  >
+          <div className="flex-1 gap-2 md:col-span-4 md:grid md:max-w-xl md:grid-cols-4 md:px-0 xl:col-span-4">
+            <div className="col-span-2 max-w-sm md:col-span-4">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="size-fit">
+                    <FormLabel>Type</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        handleTypeSelect(value);
+                      }}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bookingTypeList.map((type, index) => (
+                          <SelectItem
+                            key={index}
+                            value={`${type}`}
+                          >{`${type}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-1 flex-col md:col-span-2">
+              <FormField
+                control={form.control}
+                name="userName"
+                render={({ field }) => (
+                  <FormItem className="size-fit flex-1 md:size-full">
+                    <FormLabel>User Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {bookingTypeList.map((type, index) => (
-                        <SelectItem
-                          key={index}
-                          value={`${type}`}
-                        >{`${type}`}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1 flex-col md:col-span-2">
-            <FormField
-              control={form.control}
-              name="userName"
-              render={({ field }) => (
-                <FormItem className="size-fit flex-1 md:size-full">
-                  <FormLabel>User Name</FormLabel>
-                  <FormControl>
-                    {/* <Input
+                      {/* <Input
                       placeholder="Waiting for a NetID"
                       {...field}
                       disabled
                       // onChange={(e) => setUserId(e.target.value)}
                     ></Input> */}
-                    {/* <Label
+                      {/* <Label
                       {...field}
                       className="flex p-2 font-sans italic text-slate-400"
                     >
                       {field.value === "" ? "NetID needed" : field.value}
                     </Label> */}
-                    <InputWithLoading
-                      placeholder="Type in a NetID"
-                      field={field}
-                      isLoading={userLoading}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1 flex-col md:col-span-2">
-            {booking.user?.user_role?.name !== "Authenticated" ? (
-              <FormField
-                control={form.control}
-                name="netId"
-                render={({ field }) => (
-                  <FormItem className="size-auto flex-1 md:size-full">
-                    <FormLabel>NetID</FormLabel>
-                    <FormControl
-                      onChange={(e) =>
-                        handleGetUser((e.target as HTMLInputElement).value)
-                      }
-                    >
-                      <Input
-                        placeholder="Type in a NetID Here"
-                        {...field}
-                        autoCapitalize="none"
-                        // onChange={(e) => setUserId(e.target.value)}
-                      ></Input>
+                      <InputWithLoading
+                        placeholder="Type in a NetID"
+                        field={field}
+                        isLoading={userLoading}
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ) : (
-              ``
-            )}
-          </div>
-
-          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
-            <FormField
-              control={form.control}
-              name="start_date"
-              render={({ field }) => (
-                <FormItem className="col-span-1 size-full min-w-[120px]">
-                  <FormLabel>Start Date</FormLabel>
-                  <Popover modal={true}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "LL/dd/y")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="bottom"
-                      className="w-auto flex-1 p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value ?? undefined}
-                        onSelect={(value: Date | undefined) => {
-                          if (value) {
-                            field.onChange(value);
-                            handleStartDateSelect(value);
-                          }
-                        }}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="start_time"
-              render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    "col-span-1 size-full min-w-[125px]",
-                    " pl-2 text-left font-normal",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  <FormLabel>Start Time</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    // defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a time" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="w-auto p-0">
-                      {bookingTimeList.map((time, index) => (
-                        <SelectItem
-                          key={index}
-                          value={`${time}`}
-                        >{`${time}`}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
-            <FormField
-              control={form.control}
-              name="end_date"
-              render={({ field }) => (
-                <FormItem className="col-span-1 size-full min-w-[120px]">
-                  <FormLabel>End Date</FormLabel>
-                  <Popover modal={true}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
-                            !field.value && "text-muted-foreground",
-                          )}
-                          disabled={form.getValues("type") !== "Exception"}
-                        >
-                          {field.value ? (
-                            format(field.value, "LL/dd/y")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="bottom"
-                      className="w-auto p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value ?? undefined}
-                        onSelect={field.onChange}
-                        // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
-                        disabled={(date) =>
-                          date < new Date(form.getValues("start_date") ?? "")
+            </div>
+            <div className="col-span-1 flex-col md:col-span-2">
+              {booking.user?.user_role?.name !== "Authenticated" ? (
+                <FormField
+                  control={form.control}
+                  name="netId"
+                  render={({ field }) => (
+                    <FormItem className="size-auto flex-1 md:size-full">
+                      <FormLabel>NetID</FormLabel>
+                      <FormControl
+                        onChange={(e) =>
+                          handleGetUser((e.target as HTMLInputElement).value)
                         }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="end_time"
-              render={({ field }) => (
-                <FormItem
-                  className={cn(
-                    "col-span-1 size-full min-w-[125px]",
-                    " pl-2 text-left font-normal",
-                    !field.value && "text-muted-foreground",
+                      >
+                        <Input
+                          placeholder="Type in a NetID Here"
+                          {...field}
+                          autoCapitalize="none"
+                          // onChange={(e) => setUserId(e.target.value)}
+                        ></Input>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                >
-                  <FormLabel>End Time</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    // defaultValue={field.value}
-                    value={field.value}
-                    disabled={
-                      form.getValues("type") === "Overnight" ||
-                      form.getValues("type") === "Weekend"
-                    }
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a time" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {bookingTimeList.map((time, index) => (
-                        <SelectItem
-                          key={index}
-                          value={`${time}`}
-                        >{`${time}`}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
+                />
+              ) : (
+                ``
               )}
-            />
-          </div>
+            </div>
 
-          <div className="col-span-2 flex size-auto flex-1 flex-row justify-start gap-2 md:col-span-4">
-            <FormField
-              control={form.control}
-              name="use_location"
-              render={({ field }) => (
-                <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
-                  <FormLabel>Use Location</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    // defaultValue={field.value}
-                    value={field.value}
+            <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
+              <FormField
+                control={form.control}
+                name="start_date"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 size-full min-w-[120px]">
+                    <FormLabel>Start Date</FormLabel>
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "LL/dd/y")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="bottom"
+                        className="w-auto flex-1 p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={field.value ?? undefined}
+                          onSelect={(value: Date | undefined) => {
+                            if (value) {
+                              field.onChange(value);
+                              handleStartDateSelect(value);
+                            }
+                          }}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="start_time"
+                render={({ field }) => (
+                  <FormItem
+                    className={cn(
+                      "col-span-1 size-full min-w-[125px]",
+                      " pl-2 text-left font-normal",
+                      !field.value && "text-muted-foreground",
+                    )}
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {bookingLocationList.map((location, index) => (
-                        <SelectItem
-                          key={`${index}${location}`}
-                          value={`${location}`}
-                        >{`${location}`}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* <FormField
-              control={form.control}
-              name="bookingCreatorName"
-              render={({ field }) => (
-                <FormItem className="col-span-1 size-full pl-2 md:col-span-2">
-                  <FormLabel>Created by</FormLabel>
-                  <FormControl>
-                    <Label
-                      {...field}
-                      className="flex p-2 font-sans italic text-slate-400"
+                    <FormLabel>Start Time</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      // defaultValue={field.value}
+                      value={field.value}
                     >
-                      {field.value}
-                    </Label>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
-                  <FormLabel className="align-bottom">Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      value={field.value ?? ""}
-                      // {...field}
-                      placeholder="Leave a note"
-                    ></Textarea>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a time" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="w-auto p-0">
+                        {bookingTimeList.map((time, index) => (
+                          <SelectItem
+                            key={index}
+                            value={`${time}`}
+                          >{`${time}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="col-span-1 flex size-auto flex-1 flex-row justify-start md:col-span-2">
+              <FormField
+                control={form.control}
+                name="end_date"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 size-full min-w-[120px]">
+                    <FormLabel>End Date</FormLabel>
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "flex size-full justify-between pl-2 text-left font-normal md:size-auto",
+                              !field.value && "text-muted-foreground",
+                            )}
+                            disabled={form.getValues("type") !== "Exception"}
+                          >
+                            {field.value ? (
+                              format(field.value, "LL/dd/y")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-1 h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="bottom"
+                        className="w-auto p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={field.value ?? undefined}
+                          onSelect={field.onChange}
+                          // onSelect={(day) => console.log("Calendar output is ", `${day?.toLocaleDateString()}`)}
+                          disabled={(date) =>
+                            date < new Date(form.getValues("start_date") ?? "")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="end_time"
+                render={({ field }) => (
+                  <FormItem
+                    className={cn(
+                      "col-span-1 size-full min-w-[125px]",
+                      " pl-2 text-left font-normal",
+                      !field.value && "text-muted-foreground",
+                    )}
+                  >
+                    <FormLabel>End Time</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      // defaultValue={field.value}
+                      value={field.value}
+                      disabled={
+                        form.getValues("type") === "Overnight" ||
+                        form.getValues("type") === "Weekend"
+                      }
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a time" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bookingTimeList.map((time, index) => (
+                          <SelectItem
+                            key={index}
+                            value={`${time}`}
+                          >{`${time}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="col-span-2 flex size-auto flex-1 flex-row justify-start gap-2 md:col-span-4">
+              <FormField
+                control={form.control}
+                name="use_location"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
+                    <FormLabel>Use Location</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      // defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bookingLocationList.map((location, index) => (
+                          <SelectItem
+                            key={`${index}${location}`}
+                            value={`${location}`}
+                          >{`${location}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
+                    <FormLabel className="align-bottom">Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        value={field.value ?? ""}
+                        // {...field}
+                        placeholder="Leave a note"
+                      ></Textarea>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="col-span-2"></div>
           </div>
+          <div className="flex-col gap-2 md:col-span-4 xl:col-span-4">
+            <div className="col-span-2 flex flex-1 justify-evenly md:col-span-4">
+              <h1 className="flex-1 content-center text-center">
+                Booking Items
+              </h1>
+              <Button
+                className="flex-1 hover:bg-slate-200 active:bg-slate-300"
+                type="button"
+                onClick={(e) => handleAddItem()}
+                variant="secondary"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            </div>
 
-          <div className="col-span-2"></div>
-
-          <div className="col-span-2 flex justify-evenly md:col-span-4">
-            <h1 className="flex-1 content-center text-center">Booking Items</h1>
-            <Button
-              className="flex-1 hover:bg-slate-200 active:bg-slate-300"
-              type="button"
-              onClick={(e) => handleAddItem()}
-              variant="secondary"
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Item
-            </Button>
+            <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
+              <BookingEmbededTable
+                data={itemObjArr}
+                columns={inventoryColumns}
+                handleRemoveFromBooking={handleRemoveFromBooking}
+                isPast={false}
+              />
+            </div>
           </div>
-
-          <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
-            <BookingEmbededTable
-              data={itemObjArr}
-              columns={inventoryColumns}
-              handleRemoveFromBooking={handleRemoveFromBooking}
-              isPast={false}
-            />
-          </div>
-          {/* <div className="col-span-1 grid grid-cols-subgrid gap-4"></div> */}
-
-          {/* <Button className="align-right col-span-2" type="submit">
-            Save
-          </Button> */}
           <div className="col-span-2 flex gap-1 py-2 md:col-span-4">
             <SubmitButton
               className="flex-1"

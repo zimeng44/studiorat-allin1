@@ -126,7 +126,7 @@ const EmbededInventoryTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data ? (
+            {data?.length ? (
               data.map((row, index) => (
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (
@@ -240,7 +240,7 @@ const EmbededInventoryTable = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={header.length} className="h-24 text-center">
-                  No results.
+                  No item added.
                 </TableCell>
               </TableRow>
             )}

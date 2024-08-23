@@ -69,7 +69,6 @@ const InventoryPageTabs = ({
             <TabsList>
               <TabsTrigger value="list">
                 <List className="mr-1 h-4 w-4" />
-                {/* List */}
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
@@ -84,7 +83,6 @@ const InventoryPageTabs = ({
           setColumnsStatus={setColumnsStatus}
           userRole={userRole}
         />
-
         <TabsContent value="list">
           <InventoryTable data={data} columnsStatus={columnsStatus} />
         </TabsContent>
