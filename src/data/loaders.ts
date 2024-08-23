@@ -217,9 +217,15 @@ export async function getInventoryItems(
   const countQuery = {
     where: query.where,
   };
-  const data = await prisma.inventory_items.findMany(query);
-  const count = await prisma.inventory_items.count(countQuery);
-  return { data: data, count: count };
+
+  try {
+    const data = await prisma.inventory_items.findMany(query);
+    const count = await prisma.inventory_items.count(countQuery);
+    return { data: data, count: count };
+  } catch (error) {
+    console.log(error);
+    return { data: null, count: null };
+  }
 }
 
 export async function getInventoryItemById(itemId: string) {

@@ -99,10 +99,7 @@ const RosterPageTabs = ({
       />
 
       <div className="flex items-center justify-end space-x-2 py-2">
-        <PaginationControls
-          // pageCount={meta.pagination.pageCount}
-          totalEntries={totalEntries}
-        />
+        <PaginationControls totalEntries={totalEntries} />
       </div>
     </div>
   );

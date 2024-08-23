@@ -167,7 +167,6 @@ const AddItem = ({ rowData }: { rowData: any }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col-reverse gap-2 space-y-1 md:grid md:grid-cols-3"
         >
-          {/* <div className="max-w-25 max-h-25 col-span-1 md:col-span-2"></div> */}
           <div className="flex-col gap-2 space-y-1 md:col-span-2 md:grid md:grid-cols-2">
             <FormField
               control={form.control}
@@ -291,7 +290,7 @@ const AddItem = ({ rowData }: { rowData: any }) => {
                 </FormItem>
               )}
             />
-            <div className="col-span-1 flex gap-1 md:col-span-2">
+            <div className="col-span-1 flex gap-1 pt-1 md:col-span-2">
               <SubmitButton
                 className="flex-1"
                 text="Save"
