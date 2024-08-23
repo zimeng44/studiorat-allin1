@@ -93,7 +93,7 @@ export default async function DashboardRoute() {
         upcomingBookingsNum={bookingCount ?? 0}
         checkoutUnfinished={checkoutUnfinished}
         checkoutUnfinishedNum={checkoutCount ?? 0}
-        inventorySizeTagged={inventoryCount}
+        inventorySizeTagged={inventoryCount ?? 0}
         inventoryReportsInADay={
           inventoryReportsItems?.length ? inventoryReportsCount : 0
         }

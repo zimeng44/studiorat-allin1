@@ -95,7 +95,7 @@ const NewInventoryReportPage = async () => {
         <NewInventoryReportForm
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}
-          inventory_size={totalEntries}
+          inventory_size={totalEntries ?? 0}
         />
       </div>
     </div>
