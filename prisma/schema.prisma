@@ -71,7 +71,7 @@ model bookings {
   notes           String?
   type            String?           @db.VarChar(255)
   created_at      DateTime?         @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @updatedAt
   created_by      User?             @relation(name: "created_by", fields: [created_by_id], references: [id])
   created_by_id   String?
   updated_by      User?             @relation(name: "updated_by", fields: [updated_by_id], references: [id])
@@ -95,7 +95,7 @@ model checkout_sessions {
   finished        Boolean?          @default(false)
   return_id       String?           @db.VarChar(255)
   created_at      DateTime?         @default(now()) @map("createdAt") @db.Timestamp(6)
-  updated_at      DateTime?         @default(now()) @map("updatedAt") @db.Timestamp(6)
+  updated_at      DateTime?         @updatedAt
   updated_by_id   Int?
   user            User?             @relation(name: "user", fields: [userId], references: [id])
   userId          String?
@@ -125,7 +125,7 @@ model files {
   provider_metadata Json?
   folder_path       String?   @db.VarChar(255)
   created_at        DateTime? @db.Timestamp(6)
-  updated_at        DateTime? @db.Timestamp(6)
+  updated_at        DateTime? @updatedAt
   created_by_id     Int?
   updated_by_id     Int?
 
@@ -144,7 +144,7 @@ model globals {
   title              String?              @db.VarChar(255)
   description        String?
   created_at         DateTime?            @db.Timestamp(6)
-  updated_at         DateTime?            @db.Timestamp(6)
+  updated_at         DateTime?            @updatedAt
   published_at       DateTime?            @db.Timestamp(6)
   created_by_id      Int?
   updated_by_id      Int?
@@ -174,7 +174,7 @@ model home_pages {
   title                 String?                 @db.VarChar(255)
   description           String?
   created_at            DateTime?               @db.Timestamp(6)
-  updated_at            DateTime?               @db.Timestamp(6)
+  updated_at            DateTime?               @updatedAt
   published_at          DateTime?               @db.Timestamp(6)
   created_by_id         Int?
   updated_by_id         Int?
@@ -214,7 +214,7 @@ model inventory_items {
   out               Boolean?            @default(false)
   broken            Boolean?            @default(false)
   created_at        DateTime?           @default(now()) @db.Timestamp(6)
-  updated_at        DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?           @updatedAt
   created_by_id     Int?
   updated_by_id     Int?
   checkout_sessions checkout_sessions[]
@@ -231,7 +231,7 @@ model inventory_reports {
   notes           String?
   inventory_size  Int?
   created_at      DateTime?         @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @updatedAt
   updated_by_id   Int?
   created_by      User              @relation(fields: [created_by_id], references: [id])
   created_by_id   String
@@ -251,7 +251,7 @@ model roster_permissions {
   start_date         DateTime? @db.Timestamp(6)
   end_date           DateTime? @db.Timestamp(6)
   created_at         DateTime? @default(now()) @db.Timestamp(6)
-  updated_at         DateTime? @default(now()) @db.Timestamp(6)
+  updated_at         DateTime? @updatedAt
   rosters            rosters[]
 
   @@index([permission_code], map: "roster_permission_code_fk")
@@ -272,7 +272,7 @@ model rosters {
   unexcused_late   Int?                 @default(0)
   late_return      Int?                 @default(0)
   created_at       DateTime?            @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?            @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?            @updatedAt
   permissions      roster_permissions[]
 
   @@index([stu_name], map: "rosters_stu_name_fk")
@@ -298,7 +298,7 @@ model User {
   // Optional for WebAuthn support
   Authenticator             Authenticator[]
   created_at                DateTime?           @default(now()) @map("createdAt") @db.Timestamp(6)
-  updated_at                DateTime?           @default(now()) @map("updatedAt") @db.Timestamp(6)
+  updated_at                DateTime?           @updatedAt
   user_role                 user_role           @relation(fields: [user_roleId], references: [id])
   created_by_id             Int?
   updated_by_id             Int?
