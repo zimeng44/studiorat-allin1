@@ -1,7 +1,11 @@
 "use client";
 import React from "react";
 import qs from "qs";
-import { CheckoutWithUserAndItems, DEV_MODE, studioList } from "@/data/definitions";
+import {
+  CheckoutWithUserAndItems,
+  DEV_MODE,
+  studioList,
+} from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -400,6 +404,7 @@ const EditCheckoutSessionForm = ({
                       {...field}
                       disabled={session.finished ?? false}
                       placeholder="Scan an ID Here"
+                      autoComplete="off"
                     ></Input>
                   </FormControl>
                   <FormMessage />
@@ -557,6 +562,7 @@ const EditCheckoutSessionForm = ({
                       <Input
                         className="bg-indigo-100"
                         placeholder={"Scan a barcode"}
+                        autoComplete="off"
                         {...field}
                         disabled={session.finished ?? false}
                       ></Input>

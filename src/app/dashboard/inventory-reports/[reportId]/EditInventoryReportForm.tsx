@@ -389,6 +389,7 @@ const EditInventoryReportForm = ({
                       disabled={report.is_finished ?? false}
                       className="bg-indigo-100"
                       placeholder={"Scan a barcode"}
+                      autoComplete="off"
                       {...field}
                     ></Input>
                   </FormControl>

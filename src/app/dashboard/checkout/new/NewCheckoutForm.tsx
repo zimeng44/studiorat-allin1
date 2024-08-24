@@ -335,6 +335,7 @@ const NewCheckoutForm = ({
                     <Input
                       className="bg-indigo-100"
                       placeholder="Scan an ID barcode"
+                      autoComplete="off"
                       {...field}
                     ></Input>
                   </FormControl>
@@ -474,6 +475,7 @@ const NewCheckoutForm = ({
                     <Input
                       className="bg-indigo-100"
                       placeholder={"Scan an item barcode"}
+                      autoComplete="off"
                       {...field}
                     ></Input>
                   </FormControl>

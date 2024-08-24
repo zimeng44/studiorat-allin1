@@ -351,6 +351,7 @@ const NewInventoryReportForm = ({
                   <Input
                     className="bg-indigo-100"
                     placeholder={"Scan a barcode"}
+                    autoComplete="off"
                     {...field}
                   ></Input>
                 </FormControl>
