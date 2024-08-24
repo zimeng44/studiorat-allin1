@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { TableColumnStatus, userColumnsDefault } from "./userColumns";
+import { format } from "date-fns";
 
 const MAX_TEXT_LEN = 20;
 interface UserTableProps {
@@ -245,6 +246,17 @@ const UserTable = ({ data, columnsStatus }: UserTableProps) => {
                     return value.visible ? (
                       <TableCell className="whitespace-nowrap" key={key}>
                         {`${row.first_name ?? ""} ${row.last_name ?? ""}`}
+                      </TableCell>
+                    ) : (
+                      ``
+                    );
+                  }
+                  if (key === "last_login") {
+                    return value.visible ? (
+                      <TableCell className="whitespace-nowrap" key={key}>
+                        {!row[key]
+                          ? ``
+                          : format(row[key], "MM/dd/yyyy hh:mm a")}
                       </TableCell>
                     ) : (
                       ``

@@ -28,8 +28,8 @@ export const updateUserAction = async (
   };
 
   try {
-    const authToken = await getAuthToken();
-    if (!authToken) throw new Error("No auth token found");
+    // const authToken = await getAuthToken();
+    // if (!authToken) throw new Error("No auth token found");
 
     const payload = {
       where: { id: id },

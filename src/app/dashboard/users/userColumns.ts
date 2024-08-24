@@ -51,6 +51,11 @@ export const userColumns = [
     visible: false,
   },
   {
+    accessorKey: "last_login",
+    header: "Last Login",
+    visible: false,
+  },
+  {
     accessorKey: "bio",
     header: "User Bio",
     visible: false,
@@ -81,6 +86,10 @@ export const userColumnsDefault = {
   },
   email: {
     header: "Email",
+    visible: false,
+  },
+  last_login: {
+    header: "Last Login",
     visible: false,
   },
   bio: {

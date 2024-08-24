@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   // console.log(passwordMatches);
 
   if (passwordMatches) {
-    const updateValuesWithLastLogin = { ...user, last_login: new Date() };
+    const updateValuesWithLastLogin = { last_login: new Date() };
     const { res, error } = await updateUserAction(
       updateValuesWithLastLogin,
       user.id,
