@@ -83,7 +83,7 @@ const BookingEmbededTable = ({
           <TableRow>
             {columnsVisible[0] ? (
               <TableHead
-                className="whitespace-nowrap p-1 md:p-4"
+                className="whitespace-nowrap p-1 md:p-3"
                 key={header[0]}
               >
                 MTech Barcode
@@ -92,14 +92,14 @@ const BookingEmbededTable = ({
               ``
             )}
             {columnsVisible[1] ? (
-              <TableHead className="border-x-0 p-1 md:p-4" key={header[1]}>
+              <TableHead className="border-x-0 p-1 md:p-3" key={header[1]}>
                 Make
               </TableHead>
             ) : (
               ``
             )}
             {columnsVisible[2] ? (
-              <TableHead className="border-x-0 p-1 md:p-4" key={header[2]}>
+              <TableHead className="border-x-0 p-1 md:p-3" key={header[2]}>
                 Model
               </TableHead>
             ) : (
@@ -142,14 +142,14 @@ const BookingEmbededTable = ({
               <TableRow key={row.id}>
                 {columnsVisible[0] ? (
                   <TableCell
-                    className="whitespace-nowrap p-1 md:p-4"
+                    className="whitespace-nowrap p-1 md:p-3"
                     key={header[0]}
                   >{`${row.m_tech_barcode}`}</TableCell>
                 ) : (
                   ``
                 )}
                 {columnsVisible[1] ? (
-                  <TableCell className="p-1 md:p-4" key={header[1]}>
+                  <TableCell className="p-1 md:p-3" key={header[1]}>
                     {row.make}
                     {/* {row.make.length > MAX_TEXT_LEN
                       ? `${row.make.substring(0, MAX_TEXT_LEN)}...`
@@ -159,7 +159,7 @@ const BookingEmbededTable = ({
                   ``
                 )}
                 {columnsVisible[2] ? (
-                  <TableCell className="p-1 md:p-4" key={header[2]}>
+                  <TableCell className="p-1 md:p-3" key={header[2]}>
                     {row.model}
                     {/* {row.model.length > MAX_TEXT_LEN
                       ? `${row.model.substring(0, MAX_TEXT_LEN)}...`
