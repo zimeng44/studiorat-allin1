@@ -1,15 +1,7 @@
 "use client";
 import React from "react";
 import qs from "qs";
-import {
-  CheckoutSessionType,
-  CheckoutSessionTypePost,
-  CheckoutWithUserAndItems,
-  InventoryItem,
-  RetrievedItems,
-  studioList,
-  UserType,
-} from "@/data/definitions";
+import { CheckoutWithUserAndItems, DEV_MODE, studioList } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -38,7 +30,7 @@ import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-ac
 import {
   inventoryColumns,
   inventoryColumnsFinished,
-} from "@/app/dashboard/checkout/embeddedInventoryColumns";
+} from "./embeddedInventoryColumns";
 import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
@@ -140,7 +132,7 @@ const EditCheckoutSessionForm = ({
       notes: session.notes ?? "",
       finished: session.finished ?? false,
       noTagItems: session.no_tag_items ?? [""],
-      scan: undefined,
+      scan: "",
     },
     mode: "onChange",
   });
@@ -164,7 +156,7 @@ const EditCheckoutSessionForm = ({
       const response = await fetch(url, authToken ? headers : {});
       const data = await response.json();
       // console.log(data);
-      return flattenAttributes(data);
+      return data;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error; // or return null;
@@ -180,32 +172,35 @@ const EditCheckoutSessionForm = ({
     return fetchData(url.href);
   }
 
-  const handleScan = useDebouncedCallback((term: string) => {
+  const handleScan = useDebouncedCallback(async (term: string) => {
     // window.alert("you did it!!");
     setItemLoading(true);
     if (term.length > 9) {
-      getItemByBarcode(term).then(({ data, error }) => {
-        if (data) {
-          if (data.length > 1) {
-            window.alert(
-              "Inventpory warning: multiple items found with the same barcode, the first item found will be added",
-            );
-          }
-          if (itemObjArr.map((item) => item.id).includes(data[0].id)) {
-            let newItemObjArr = structuredClone(itemObjArr);
-            newItemObjArr.map((item: any) => {
-              if (item.id === data[0].id) item.out = !item.out;
-            });
-            setItemObjArr(newItemObjArr);
+      const { data, error } = await getItemByBarcode(term);
+
+      // console.log("Eidt Checkout sacn result: ", data);
+
+      if (data) {
+        if (itemObjArr.map((item) => item.id).includes(data.id)) {
+          let newItemObjArr = structuredClone(itemObjArr);
+          newItemObjArr.map((item: any) => {
+            if (item.id === data.id) item.out = !item.out;
+          });
+          setItemObjArr(newItemObjArr);
+        } else {
+          // if the scanned item is already out
+          if (data.out) {
+            window.alert("Item is marked as being used in a other session");
+            // return;
           } else {
-            let newItem: inventory_items = data[0];
+            let newItem: inventory_items = data;
             newItem.out = true;
             setItemObjArr([...itemObjArr, newItem]);
           }
-        } else {
-          window.alert(error);
         }
-      });
+      } else {
+        window.alert("Item not found");
+      }
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
     }
@@ -397,6 +392,9 @@ const EditCheckoutSessionForm = ({
                     onChange={(e) =>
                       handleReturnId((e.target as HTMLInputElement).value)
                     }
+                    onPaste={(e) => {
+                      if (!DEV_MODE) e.preventDefault();
+                    }}
                   >
                     <Input
                       {...field}
@@ -552,6 +550,9 @@ const EditCheckoutSessionForm = ({
                       onChange={(e) =>
                         handleScan((e.target as HTMLInputElement).value)
                       }
+                      onPaste={(e) => {
+                        if (!DEV_MODE) e.preventDefault();
+                      }}
                     >
                       <Input
                         className="bg-indigo-100"
@@ -559,14 +560,6 @@ const EditCheckoutSessionForm = ({
                         {...field}
                         disabled={session.finished ?? false}
                       ></Input>
-
-                      {/* <InputWithLoading
-                      className="bg-indigo-100"
-                      placeholder="Item Barcode Scan"
-                      field={field}
-                      isLoading={itemLoading}
-                      disabled={session.finished ?? false}
-                    /> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>

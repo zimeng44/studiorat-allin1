@@ -27,6 +27,7 @@ import { createInventoryReportAction } from "@/data/actions/inventoryReports-act
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { inventory_items, Prisma, User } from "@prisma/client";
+import { DEV_MODE } from "@/data/definitions";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -106,7 +107,7 @@ const NewInventoryReportForm = ({
       const response = await fetch(url, authToken ? headers : {});
       const data = await response.json();
       // console.log(data);
-      return flattenAttributes(data);
+      return data;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error; // or return null;
@@ -125,16 +126,16 @@ const NewInventoryReportForm = ({
   const handleScan = useDebouncedCallback(async (term: string) => {
     if (term.length > 9) {
       const { data, error } = await getItemByBarcode(term);
-      if (data[0]) {
+      if (data) {
         // let newArr = [...itemIdArray];
-        if (itemObjArr?.map((item) => item.id).includes(data[0].id)) {
+        if (itemObjArr?.map((item) => item.id).includes(data.id)) {
           window.alert("Item scanned already.");
           form.setValue("scan", "");
           form.setFocus("scan");
         } else {
-          // const newIdArray = [data[0].id, ...itemIdArray];
+          // const newIdArray = [data.id, ...itemIdArray];
           // setItemIdArray(newIdArray);
-          const newObjArr = itemObjArr ? [data[0], ...itemObjArr] : [data[0]];
+          const newObjArr = itemObjArr ? [data, ...itemObjArr] : [data];
           setItemObjArr(newObjArr);
 
           // Auto Save
@@ -185,7 +186,7 @@ const NewInventoryReportForm = ({
     }
     form.setValue("scan", "");
     form.setFocus("scan");
-  }, 200);
+  }, 50);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
@@ -343,6 +344,9 @@ const NewInventoryReportForm = ({
                   onChange={(e) =>
                     handleScan((e.target as HTMLInputElement).value)
                   }
+                  onPaste={(e) => {
+                    if (!DEV_MODE) e.preventDefault();
+                  }}
                 >
                   <Input
                     className="bg-indigo-100"

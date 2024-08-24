@@ -25,8 +25,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { InventoryItem, studioList } from "@/data/definitions";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { DEV_MODE, InventoryItem, studioList } from "@/data/definitions";
+import { inventoryColumns } from "./embeddedInventoryColumns";
 import { createCheckoutSessionAction } from "@/data/actions/checkout-actions";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
@@ -38,7 +38,7 @@ import { useRouter } from "next/navigation";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { User } from "@prisma/client";
+import { inventory_items, User } from "@prisma/client";
 // import prisma from "@/lib/prisma";
 import { InputWithLoading } from "@/components/custom/InputWithLoading";
 
@@ -93,6 +93,7 @@ const NewCheckoutForm = ({
       `${thisMonitor.first_name} ${thisMonitor.last_name}` ?? undefined,
     notes: undefined,
     noTagItems: undefined,
+    scan: "",
   });
 
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
@@ -129,7 +130,7 @@ const NewCheckoutForm = ({
       const response = await fetch(url, authToken ? headers : {});
       const data = await response.json();
       // console.log(data);
-      return flattenAttributes(data);
+      return data;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error; // or return null;
@@ -187,25 +188,23 @@ const NewCheckoutForm = ({
   const handleScan = useDebouncedCallback(async (term: string) => {
     setItemLoading(true);
     if (term.length > 9) {
-      const { data: item } = await getItemByBarcode(term);
-      if (item[0]) {
-        let newArr = [...itemIdArray];
-        if (newArr.includes(item[0].id)) {
+      const { data, error } = await getItemByBarcode(term);
+      // console.log("data is ", data);
+      if (data) {
+        if (itemObjArr.map((item) => item.id).includes(data.id)) {
           let newItemObjArr = structuredClone(itemObjArr);
           newItemObjArr.map((item) => {
-            if (item.id === item[0].id) item.out = !item.out;
+            if (item.id === data.id) item.out = !item.out;
           });
           setItemObjArr(newItemObjArr);
         } else {
           // if the scanned item is already out
-          if (item[0].out) {
+          if (data.out) {
             window.alert("Item is marked as being used in a other session");
             // return;
           } else {
-            let newItem: InventoryItem = item[0];
+            let newItem: InventoryItem = data;
             newItem.out = true;
-            newArr = [...itemIdArray, item[0].id];
-            setItemIdArray(newArr);
             setItemObjArr([...itemObjArr, newItem]);
           }
         }
@@ -251,7 +250,7 @@ const NewCheckoutForm = ({
       finished: false,
       notes: values.notes ?? null,
       inventory_items: {
-        connect: itemIdArray.map((id) => ({ id })),
+        connect: itemObjArr.map((item: inventory_items) => ({ id: item.id })),
       },
       no_tag_items: noTagItems,
       user: {
@@ -329,6 +328,9 @@ const NewCheckoutForm = ({
                     onChange={(e) =>
                       handleStuIdInput((e.target as HTMLInputElement).value)
                     }
+                    onPaste={(e) => {
+                      if (!DEV_MODE) e.preventDefault();
+                    }}
                   >
                     <Input
                       className="bg-indigo-100"
@@ -465,6 +467,9 @@ const NewCheckoutForm = ({
                     onChange={(e) =>
                       handleScan((e.target as HTMLInputElement).value)
                     }
+                    onPaste={(e) => {
+                      if (!DEV_MODE) e.preventDefault();
+                    }}
                   >
                     <Input
                       className="bg-indigo-100"

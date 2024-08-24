@@ -1,16 +1,14 @@
 "use client";
 import React, { useState } from "react";
-
 import { useFormState } from "react-dom";
 import { updateProfileAction } from "@/data/actions/profile-actions";
 import { cn, getStrapiURL } from "@/lib/utils";
-
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { StrapiErrors } from "../custom/StrapiErrors";
 import ImagePickerInForm from "../custom/ImagePickerInForm";
-import { InventoryItemWithImage } from "@/data/definitions";
+// import { InventoryItemWithImage } from "@/data/definitions";
 import { Image } from "@prisma/client";
 
 const INITIAL_STATE = {

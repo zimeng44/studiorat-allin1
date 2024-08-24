@@ -1,6 +1,7 @@
 import { getAuthToken } from "@/data/services/get-token";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -87,18 +88,29 @@ export async function GET(req: NextRequest) {
     // console.log("Summary: ", summary);
     // return ;
 
+    const data = await prisma.inventory_items.findFirst({
+      where: { m_tech_barcode: { equals: barcode } },
+    });
+
+    // console.log("data from prisma is ", data);
+
     return new Response(
       JSON.stringify({
-        data: await prisma.inventory_items.findMany({
-          where: { m_tech_barcode: barcode },
-        }),
+        data: data,
         error: null,
       }),
     );
+
   } catch (error) {
-    console.error("Error processing request:", error);
-    if (error instanceof Error)
+    // console.error("Error processing request:", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
       return new Response(JSON.stringify({ data: null, error: error }));
-    return new Response(JSON.stringify({ data: null, error: "Unknown error" }));
+    } else {
+      console.log(error);
+      return new Response(
+        JSON.stringify({ data: null, error: "Error Unknown from Database" }),
+      );
+    }
   }
 }

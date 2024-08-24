@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import qs from "qs";
 import {
+  DEV_MODE,
   InventoryItem,
   InventoryReportType,
   InventoryReportTypePost,
@@ -59,14 +60,6 @@ const INITIAL_STATE = {
   status: "",
 };
 
-// const getIdArray: number[] = (session: CheckoutSessionType) => {
-//   let IdArray: number[] = session.inventory_items?.data.map(
-//     (item: InventoryItem) => item.id,
-//   );
-
-//   return IdArray;
-// };
-
 const EditInventoryReportForm = ({
   report,
   reportId,
@@ -78,7 +71,7 @@ const EditInventoryReportForm = ({
   thisMonitor: UserWithRole;
   authToken: string;
 }) => {
-  // console.log(report);
+  // console.log(process.env.DEV_MODE);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [strapiErrors, setStrapiErrors] = useState(INITIAL_STATE);
@@ -126,7 +119,7 @@ const EditInventoryReportForm = ({
       const response = await fetch(url, authToken ? headers : {});
       const data = await response.json();
       // console.log(data);
-      return flattenAttributes(data);
+      return data;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error; // or return null;
@@ -146,16 +139,16 @@ const EditInventoryReportForm = ({
     if (term.length > 9) {
       const { data, error } = await getItemByBarcode(term);
       // console.log(data);
-      if (data[0]) {
+      if (data) {
         // let newArr = [...itemIdArray];
-        if (itemObjArr.map((item) => item.id).includes(data[0].id)) {
+        if (itemObjArr.map((item) => item.id).includes(data.id)) {
           window.alert("Item scanned already.");
           form.setValue("scan", "");
           form.setFocus("scan");
         } else {
-          // const newIdArray = [data[0].id, ...itemIdArray];
+          // const newIdArray = [data.id, ...itemIdArray];
           // setItemIdArray(newIdArray);
-          const newObjArr = [data[0], ...itemObjArr];
+          const newObjArr = [data, ...itemObjArr];
           setItemObjArr(newObjArr);
 
           // Auto Save
@@ -210,7 +203,7 @@ const EditInventoryReportForm = ({
     }
     form.setValue("scan", "");
     form.setFocus("scan");
-  }, 200);
+  }, 50);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -388,6 +381,9 @@ const EditInventoryReportForm = ({
                     onChange={(e) =>
                       handleScan((e.target as HTMLInputElement).value)
                     }
+                    onPaste={(e) => {
+                      if (!DEV_MODE) e.preventDefault();
+                    }}
                   >
                     <Input
                       disabled={report.is_finished ?? false}

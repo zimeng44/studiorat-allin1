@@ -42,13 +42,13 @@ const EmbededInventoryTable = ({
 
   return (
     <div>
-      <div className="rounded-md border">
-        <Table className="md:max-w-lg">
+      <div className="rounded-md border overflow-auto">
+        <Table className="w-full">
           <TableHeader className="sticky top-0 bg-indigo-100">
             <TableRow>
               {columnsVisible[0] ? (
                 <TableHead
-                  className="whitespace-nowrap p-1 md:p-4"
+                  className="whitespace-nowrap p-1 md:p-3"
                   key={header[0]}
                 >
                   MTech Barcode
@@ -58,7 +58,7 @@ const EmbededInventoryTable = ({
               )}
               {columnsVisible[1] ? (
                 <TableHead
-                  className="whitespace-nowrap border-x-0 p-1 md:p-4"
+                  className="whitespace-nowrap border-x-0 p-1 md:p-3"
                   key={header[1]}
                 >
                   {/* {" "} */}
@@ -69,7 +69,7 @@ const EmbededInventoryTable = ({
               )}
               {columnsVisible[2] ? (
                 <TableHead
-                  className="whitespace-nowrap border-x-0 p-1 md:p-4"
+                  className="whitespace-nowrap border-x-0 p-1 md:p-3"
                   key={header[2]}
                 >
                   {/* {" "} */}
@@ -110,14 +110,14 @@ const EmbededInventoryTable = ({
                 ``
               )}
               {columnsVisible[8] ? (
-                <TableHead className="p-1 text-center md:p-4" key={header[8]}>
+                <TableHead className="p-1 text-center md:p-3" key={header[8]}>
                   Returned
                 </TableHead>
               ) : (
                 ``
               )}
               {columnsVisible[9] ? (
-                <TableHead className="p-1 text-center md:p-4" key={header[9]}>
+                <TableHead className="p-1 text-center md:p-3" key={header[9]}>
                   Broken
                 </TableHead>
               ) : (
@@ -131,14 +131,14 @@ const EmbededInventoryTable = ({
                 <TableRow key={row.id}>
                   {columnsVisible[0] ? (
                     <TableCell
-                      className="whitespace-nowrap p-1 md:p-4"
+                      className="whitespace-nowrap p-1 md:p-3"
                       key={header[0]}
                     >{`${row.m_tech_barcode}`}</TableCell>
                   ) : (
                     ``
                   )}
                   {columnsVisible[1] ? (
-                    <TableCell className="p-1 md:p-4" key={header[1]}>
+                    <TableCell className="p-1 md:p-3" key={header[1]}>
                       {(row.make?.length ?? 0) > MAX_TEXT_LEN
                         ? `${row.make?.substring(0, MAX_TEXT_LEN)}...`
                         : `${row.make ?? ""}`}
@@ -147,7 +147,7 @@ const EmbededInventoryTable = ({
                     ``
                   )}
                   {columnsVisible[2] ? (
-                    <TableCell className="p-1 md:p-4" key={header[2]}>
+                    <TableCell className="p-1 md:p-3" key={header[2]}>
                       {(row.model?.length ?? 0) > MAX_TEXT_LEN
                         ? `${row.model?.substring(0, MAX_TEXT_LEN)}...`
                         : `${row.model ?? ""}`}

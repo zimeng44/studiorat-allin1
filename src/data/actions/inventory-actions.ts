@@ -8,11 +8,11 @@ import {
   fileUploadService,
 } from "@/data/services/file-service";
 import { revalidatePath } from "next/cache";
-import { InventoryItem } from "../definitions";
+// import { InventoryItem } from "../definitions";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { getUserMeLoader } from "../services/get-user-me-loader";
-import { connect } from "http2";
+// import { connect } from "http2";
 
 export async function createInventoryItemAction(newItem: any) {
   const { ok } = await getUserMeLoader();
