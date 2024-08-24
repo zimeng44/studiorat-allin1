@@ -383,6 +383,10 @@ export async function getCheckoutSessions(
     if (value === true || value === "true") {
       filterArr.push({ [key]: { equals: value } });
     } else {
+      if (key === "studio") {
+        filterArr.push({ [key]: { equals: value } });
+        continue;
+      }
       filterArr.push({
         [key]: { contains: value, mode: Prisma.QueryMode.insensitive },
       });
