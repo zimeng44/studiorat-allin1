@@ -10,6 +10,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 import { NavigationEvents } from "@/components/custom/navigation-events";
 import type { Viewport } from "next";
+import { cn } from "@/lib/utils";
 // import prisma from "@/lib/prisma";
 
 export const viewport: Viewport = {
@@ -133,11 +134,11 @@ export default async function RootLayout({
   // console.log("here");
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={cn(inter.className, "flex h-screen flex-col")}>
         <Toaster position="top-center" />
         <Header data={globalData.header} />
-        <div>
-          {children}{" "}
+        <div className="grow">
+          {children}
           <Suspense fallback={null}>
             <NavigationEvents />
           </Suspense>

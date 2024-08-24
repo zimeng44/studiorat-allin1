@@ -16,9 +16,6 @@ export default async function DashboardRoute() {
 
   if (!ok || !thisUser) redirect("/signin");
 
-  // const thisUser = await auth();
-  // console.log(thisUser);
-
   const pageIndex = "1";
   const pageSize = "20";
 
@@ -85,8 +82,7 @@ export default async function DashboardRoute() {
   // console.log("inventoryReportsFilter");
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
-      {/* <h1>Dashboard</h1> */}
+    <div className="flex h-full flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
       <DashboardCards
         userRole={thisUser?.user_role.name}
         upcomingBookings={upcomingBookings}
@@ -98,7 +94,6 @@ export default async function DashboardRoute() {
           inventoryReportsItems?.length ? inventoryReportsCount : 0
         }
       />
-      {/* <LogoutButton /> */}
     </div>
   );
 }

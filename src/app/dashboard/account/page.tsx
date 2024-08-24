@@ -20,7 +20,7 @@ export default async function AccountRoute() {
   if (!userData) return <p>No user found</p>;
 
   return (
-    <>
+    <div className="h-full bg-gray-100 dark:bg-gray-900">
       <Breadcrumb className="p-5">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -46,6 +46,6 @@ export default async function AccountRoute() {
           className="col-span-1 md:col-span-2"
         /> */}
       </div>
-    </>
+    </div>
   );
 }

@@ -72,7 +72,6 @@ const InventoryPageTabs = ({
               </TabsTrigger>
               <TabsTrigger value="grid">
                 <Grid className="mr-1 h-4 w-4" />
-                {/* Grid */}
               </TabsTrigger>
             </TabsList>
           </div>

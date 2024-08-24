@@ -39,6 +39,8 @@ export function Search() {
     // </div>
     <div className="relative w-full max-w-sm">
       <Input
+        id="search"
+        name="search"
         type="text"
         placeholder="Search..."
         className="w-full pr-9"

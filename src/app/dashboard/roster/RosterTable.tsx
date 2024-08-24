@@ -120,22 +120,6 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
 
     if (!confirm) return;
 
-    // await Promise.all(
-    //   rowsSelected.map(async (row, index) => {
-    //     if (row) {
-    //       await deleteRosterAction(data[index].id);
-    //     }
-    //   }),
-    // );
-    // router.refresh();
-    // rowsSelected.map((row, index) => {
-    //   if (row) {
-    //     deleteRosterAction(data[index].id);
-    //   }
-    // });
-    // setRowsSelected(Array(data.length).fill(false));
-    // toast.success("Entries Deleted");
-
     const deleteList = rowsSelected.map((row, index) => {
       if (row) return data[index].id;
     });
@@ -152,7 +136,7 @@ const RosterTable = ({ data, columnsStatus, userRole }: RosterTableProps) => {
       if (!error) {
         setRowsSelected(Array(data.length).fill(false));
         toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
-        router.refresh();
+        // router.refresh();
       } else {
         toast.error("Error deleting entries");
       }

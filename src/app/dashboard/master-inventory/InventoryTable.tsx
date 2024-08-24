@@ -168,7 +168,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   return (
     <div className="rounded-md">
       <Table>
-        <TableHeader className="sticky top-0 bg-indigo-100">
+        <TableHeader className="sticky top-0 z-50 bg-indigo-100">
           <TableRow>
             <TableHead key={"select"}>
               <Popover open={isBatchOpOpen}>

@@ -74,6 +74,7 @@ const TabHeader = ({
       >
         <PopoverTrigger asChild>
           <Button
+            id="filter"
             variant="outline"
             className={`${filterOn ? "brightness-50" : ""}`}
           >
