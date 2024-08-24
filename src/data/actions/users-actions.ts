@@ -27,8 +27,6 @@ export const updateUserAction = async (
     password: (await hashedPassword) ?? undefined,
   };
 
-  // if (hashedPassword) updatedUser.password = await hashedPassword;
-
   try {
     const authToken = await getAuthToken();
     if (!authToken) throw new Error("No auth token found");

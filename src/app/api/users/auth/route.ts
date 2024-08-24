@@ -4,6 +4,7 @@
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { getUserByIdentifier } from "@/data/loaders";
+import { updateUserAction } from "@/data/actions/users-actions";
 
 export async function POST(req: NextRequest) {
   const userData = await req.json(); // Parse the ReadableStream to JSON
@@ -27,12 +28,25 @@ export async function POST(req: NextRequest) {
   // console.log(passwordMatches);
 
   if (passwordMatches) {
-    return new Response(
-      JSON.stringify({
-        data: { ...user, password: null },
-        error: null,
-      }),
+    const updateValuesWithLastLogin = { ...user, last_login: new Date() };
+    const { res, error } = await updateUserAction(
+      updateValuesWithLastLogin,
+      user.id,
     );
+    if (!error)
+      return new Response(
+        JSON.stringify({
+          data: { ...res, password: null },
+          error: null,
+        }),
+      );
+    else
+      return new Response(
+        JSON.stringify({
+          data: null,
+          error: error,
+        }),
+      );
   } else {
     return new Response(
       JSON.stringify({
