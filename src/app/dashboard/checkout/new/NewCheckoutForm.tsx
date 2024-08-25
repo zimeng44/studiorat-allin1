@@ -160,11 +160,23 @@ const NewCheckoutForm = ({
         form.setValue("userName", undefined);
         form.setValue("stuIDCheckout", "");
         form.setFocus("stuIDCheckout");
+        setUserId("");
         const confirm = window.confirm("User not found, create a new one?");
         if (confirm) router.push(`/signup?stuId=${term}`);
       } else {
-        setUserId(user[0].id ?? "");
-        form.setValue("userName", `${user[0].first_name} ${user[0].last_name}`);
+        if (user[0].blocked) {
+          window.alert("User blocked");
+          form.setValue("userName", undefined);
+          form.setValue("stuIDCheckout", "");
+          form.setFocus("stuIDCheckout");
+          setUserId("");
+        } else {
+          setUserId(user[0].id ?? "");
+          form.setValue(
+            "userName",
+            `${user[0].first_name} ${user[0].last_name}`,
+          );
+        }
       }
     } else {
       window.alert("hand typing not allowed, please use a scanner.");
