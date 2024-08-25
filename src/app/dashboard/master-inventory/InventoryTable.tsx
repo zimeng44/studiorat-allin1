@@ -58,43 +58,32 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
   // let filterOpen = searchParams.get("filterOpen") === "true";
   const pageIndex = searchParams.get("pageIndex") ?? "1";
   const pageSize = searchParams.get("pageSize") ?? "10";
-  const isAllSelected = searchParams.get("isAllSelected") === "true";
-  const isBatchOpOpen = searchParams.get("isBatchOpOpen") === "true";
-
-  // remember the current pageIndex and pageIndex size to tell if navigated to a new pageIndex or set a new pageIndex size
-  const [currentPage, setCurrentPage] = useState("1");
-  const [currentPageSize, setCurrentPageSize] = useState("10");
-  // const [numRowsSelected, setNumRowsSelected] = useState(0);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  const [isBatchOpOpen, setIsBatchOpOpen] = useState(false);
+  const [numRowsSelected, setNumRowsSelected] = useState("0");
 
   //store row selection
   const [rowsSelected, setRowsSelected] = useState(
     Array(data.length).fill(false),
   );
 
-  useEffect(() => {
-    const newNumRowsSelected = rowsSelected.filter((item) => item).length;
-    // setNumRowsSelected(newNumRowsSelected);
-    params.set("numRowsSelected", newNumRowsSelected.toString());
-    if (newNumRowsSelected === data.length) params.set("isAllSelected", "true");
-    else params.set("isAllSelected", "false");
-    if (newNumRowsSelected > 0) params.set("isBatchOpOpen", "true");
-    else params.set("isBatchOpOpen", "false");
-    params.set("numRowsSelected", newNumRowsSelected.toString());
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [rowsSelected]);
-
   // clear the row selections when moving to a new pageIndex or setting a new pageIndex size
-  if (pageIndex !== currentPage || pageSize !== currentPageSize) {
-    setCurrentPage(pageIndex);
-    setCurrentPageSize(pageSize);
-    setRowsSelected(Array(data.length).fill(false));
-  }
+  useEffect(() => {
+    if (numRowsSelected === "0") {
+      // setCurrentPage(pageIndex);
+      // setCurrentPageSize(pageSize);
+      setRowsSelected(Array(data.length).fill(false));
+      setIsAllSelected(false);
+      setIsBatchOpOpen(false);
+    }
+  }, [pageIndex, pageSize]);
 
   const handleAllSelected = (checked: boolean) => {
     setRowsSelected(Array(data.length).fill(checked));
-
     params.set("isAllSelected", checked ? "true" : "false");
+    setIsAllSelected(checked);
     params.set("isBatchOpOpen", checked ? "true" : "false");
+    setIsBatchOpOpen(checked);
     params.set("numRowsSelected", data.length.toString());
     router.replace(`${pathname}?${params.toString()}`);
     // console.log("All Selected is ", allSelected);
@@ -104,17 +93,37 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
     matchedIndex: number,
     checked: boolean | undefined,
   ) => {
-    setRowsSelected((rowsSelected) =>
-      rowsSelected.map((rowChecked, index) =>
-        index === matchedIndex ? checked : rowChecked,
-      ),
+    const newRowsSelected = rowsSelected.map((rowChecked, index) =>
+      index === matchedIndex ? checked : rowChecked,
     );
+    setRowsSelected(newRowsSelected);
+    const newNumRowsSelected = newRowsSelected.filter((item) => item).length;
+    params.set("numRowsSelected", newNumRowsSelected.toString());
+    if (newNumRowsSelected === data.length) {
+      params.set("isAllSelected", "true");
+      setIsAllSelected(true);
+    } else {
+      params.set("isAllSelected", "false");
+      setIsAllSelected(false);
+    }
+    if (newNumRowsSelected > 0) {
+      params.set("isBatchOpOpen", "true");
+      setIsBatchOpOpen(true);
+    } else {
+      params.set("isBatchOpOpen", "false");
+      setIsBatchOpOpen(false);
+    }
+    params.set("numRowsSelected", newNumRowsSelected.toString());
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   const handleResetSelection = () => {
+    const params = new URLSearchParams(searchParams);
     setRowsSelected(Array(data.length).fill(false));
     params.set("isAllSelected", "false");
+    setIsAllSelected(false);
     params.set("isBatchOpOpen", "false");
+    setIsBatchOpOpen(false);
     params.set("numRowsSelected", "0");
     router.replace(`${pathname}?${params.toString()}`);
   };
@@ -129,13 +138,6 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
 
     if (!confirm) return;
 
-    // await Promise.all(
-    //   rowsSelected.map(async (row, index) => {
-    //     if (row) {
-    //       await deleteItemAction(data[index].id);
-    //     }
-    //   }),
-    // );
     const deleteList = rowsSelected.map((row, index) => {
       if (row) return data[index].id;
     });
@@ -148,7 +150,14 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
       );
 
       if (!error) {
+        const params = new URLSearchParams(searchParams);
         setRowsSelected(Array(data.length).fill(false));
+        params.set("isAllSelected", "false");
+        setIsAllSelected(false);
+        params.set("isBatchOpOpen", "false");
+        setIsBatchOpOpen(false);
+        params.set("numRowsSelected", "0");
+        router.replace(`${pathname}?${params.toString()}`);
         toast.success(`${res?.count} Entrie(s) Deleted Successfully.`);
         router.refresh();
       } else {

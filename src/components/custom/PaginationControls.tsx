@@ -41,7 +41,8 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   const displayNumRows =
     pageCount === 1
       ? totalEntries
-      : parseInt(pageIndex) === pageCount
+      : parseInt(pageIndex) === pageCount &&
+          parseInt(`${totalEntries % pageSizeInt}`) !== 0
         ? parseInt(`${totalEntries % pageSizeInt}`)
         : parseInt(pageSize);
 
@@ -52,6 +53,9 @@ const PaginationControls: FC<PaginationControlsProps> = ({
     const params = new URLSearchParams(searchParams);
     params.set("pageIndex", pageIndex.toString());
     params.set("pageSize", newPageSize.toString());
+    params.set("numRowsSelected", "0");
+    params.set("isAllSelected", "false");
+    params.set("isBatchOpOpen", "false");
     return `${pathname}?${params.toString()}`;
   };
 
