@@ -279,7 +279,7 @@ const EditBookingForm = ({
 
     if (res.error) setError(res.error);
     else {
-      toast.success("New Booking Updated Successfully");
+      toast.success("Booking Updated");
       setError("");
       router.push("/dashboard/booking");
       router.refresh();
