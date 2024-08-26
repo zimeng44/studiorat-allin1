@@ -45,7 +45,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
     storage_location: searchParams?.storage_location ?? "Floor 8",
     // comments: searchParams?.comments ?? "",
     // out: searchParams?.out === "true" ? true : false,
-    // broken: searchParams?.broken === "true" ? true : false,
+    broken: "false",
   };
 
   const { data, count } = searchParams?.query

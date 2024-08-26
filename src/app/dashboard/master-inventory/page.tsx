@@ -62,8 +62,8 @@ export default async function MasterInventory({
     accessories: searchParams?.accessories ?? "",
     storage_location: searchParams?.storage_location ?? "All",
     comments: searchParams?.comments ?? "",
-    out: searchParams?.out === "true" ? true : false,
-    broken: searchParams?.broken === "true" ? true : false,
+    out: searchParams?.out ?? "All",
+    broken: searchParams?.broken ?? "All",
   };
 
   // console.log(filter.broken);

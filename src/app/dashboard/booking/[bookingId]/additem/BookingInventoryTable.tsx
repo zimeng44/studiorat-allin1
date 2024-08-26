@@ -103,6 +103,10 @@ const BookingInventoryTable = ({
   };
 
   const handleAddToBooking = (row: InventoryItem) => {
+    if (row.broken) {
+      window.alert("Checkout fobidden for Broken Item");
+      return;
+    }
     const newArr = structuredClone(itemObjArr);
     if (newArr.filter((item) => item.id === row.id).length > 0) {
       window.alert("Item Added Already.");

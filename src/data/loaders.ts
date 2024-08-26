@@ -1,7 +1,7 @@
-import qs from "qs";
-import { getAuthToken } from "./services/get-token";
-// import { unstable_noStore as noStore } from "next/cache";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+// import qs from "qs";
+// import { getAuthToken } from "./services/get-token";
+// // import { unstable_noStore as noStore } from "next/cache";
+// import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 
 import {
   addDays,
@@ -26,8 +26,8 @@ interface InventoryFilterProps {
   accessories?: string;
   storage_location?: string;
   comments?: string;
-  out?: boolean;
-  broken?: boolean;
+  out?: string;
+  broken?: string;
 }
 
 interface CheckoutSessionsFilterProps {
@@ -191,11 +191,16 @@ export async function getInventoryItems(
   let filterArr = [];
   for (const [key, value] of Object.entries(filter)) {
     // console.log(`${key}: ${value}`);
-    if (value === "" || value === false || value === "false") continue;
+    if (value === "" || value === null || value === "All") continue;
     if (key === "storage_location" && value === "All") continue;
 
-    if (value === true || value === "true") {
-      filterArr.push({ [key]: { equals: value } });
+    if (
+      value === true ||
+      value === "true" ||
+      value === false ||
+      value === "false"
+    ) {
+      filterArr.push({ [key]: { equals: value === "true" } });
     } else {
       filterArr.push({
         [key]: { contains: value, mode: Prisma.QueryMode.insensitive },

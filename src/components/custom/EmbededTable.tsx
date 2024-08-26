@@ -8,10 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { InventoryItem } from "@/data/definitions";
 import { inventory_items } from "@prisma/client";
+import { Switch } from "../ui/switch";
+import { Badge } from "../ui/badge";
 
 const MAX_TEXT_LEN = 30;
 
@@ -42,7 +44,7 @@ const EmbededInventoryTable = ({
 
   return (
     <div>
-      <div className="rounded-md border overflow-auto">
+      <div className="overflow-auto rounded-md border">
         <Table className="w-full">
           <TableHeader className="sticky top-0 bg-indigo-100">
             <TableRow>
@@ -203,11 +205,11 @@ const EmbededInventoryTable = ({
                       className=" p-1 text-center md:p-4"
                       key={header[8]}
                     >
-                      <Checkbox
-                        disabled
-                        checked={!row.out}
-                        // className={`${disabled ? "invisible" : ""}`}
-                      />
+                      {row.out ? (
+                        <Badge variant="default">No</Badge>
+                      ) : (
+                        <Badge variant="secondary">Yes</Badge>
+                      )}
                     </TableCell>
                   ) : (
                     ``
@@ -217,20 +219,20 @@ const EmbededInventoryTable = ({
                       className=" p-1 text-center md:p-4"
                       key={header[9]}
                     >
-                      <Checkbox
-                        checked={row.broken ?? false}
-                        onCheckedChange={(checked: boolean) =>
-                          setItemObjArr((prev: InventoryItem[]) =>
-                            prev.map((item) => {
-                              item.broken =
-                                item.id === row.id ? checked : item.broken;
-                              return item;
-                            }),
-                          )
-                        }
-                        disabled={disabled}
-                        // className={`${disabled ? "invisible" : ""}`}
-                      />
+                      <div className="h-10 content-center items-center">
+                        <Switch
+                          checked={row.broken ?? false}
+                          onCheckedChange={(checked: boolean) =>
+                            setItemObjArr((prev: InventoryItem[]) =>
+                              prev.map((item) => {
+                                item.broken =
+                                  item.id === row.id ? checked : item.broken;
+                                return item;
+                              }),
+                            )
+                          }
+                        />
+                      </div>
                     </TableCell>
                   ) : (
                     ``

@@ -79,7 +79,7 @@ export const inventoryColumns = [
   {
     accessorKey: "broken",
     header: "Broken",
-    visible: true,
+    visible: false,
   },
 ];
 

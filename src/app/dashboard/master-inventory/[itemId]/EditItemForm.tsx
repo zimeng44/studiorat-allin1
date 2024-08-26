@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   deleteItemAction,
@@ -28,17 +28,17 @@ import {
 } from "@/data/actions/inventory-actions";
 import {
   ACCEPTED_IMAGE_TYPES,
-  InventoryItem,
   InventoryItemWithImage,
   MAX_FILE_SIZE,
 } from "@/data/definitions";
-import Link from "next/link";
+// import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
-import { inventory_items } from "@prisma/client";
+// import { inventory_items } from "@prisma/client";
 import ImagePickerInForm from "@/components/custom/ImagePickerInForm";
 import { getStrapiURL } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 const INITIAL_STATE = {
   strapiErrors: null,
@@ -319,27 +319,7 @@ const EditItemForm = ({
                 </FormItem>
               )}
             />
-            <div className="col-span-1 flex h-10 items-center justify-evenly bg-slate-300">
-              <FormField
-                control={form.control}
-                name="out"
-                render={({ field }) => (
-                  <FormItem className="flex content-center items-center">
-                    <FormLabel>Out</FormLabel>
-                    <FormControl className="pl-2">
-                      <div className="flex">
-                        <Checkbox
-                          className="mb-2"
-                          disabled
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="col-span-1 flex h-10 content-center items-center justify-evenly">
               <FormField
                 control={form.control}
                 name="broken"
@@ -347,10 +327,8 @@ const EditItemForm = ({
                   <FormItem className="flex content-center items-center">
                     <FormLabel>Broken</FormLabel>
                     <FormControl className="pl-2">
-                      <div className="flex">
-                        <Checkbox
-                          className="mb-2"
-                          disabled
+                      <div className="">
+                        <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />

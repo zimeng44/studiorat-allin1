@@ -109,10 +109,10 @@ export const inventoryColumnsDefault = {
   //   header: "Out",
   //   visible: true,
   // },
-  // broken: {
-  //   header: "Broken",
-  //   visible: true,
-  // },
+  broken: {
+    header: "Broken",
+    visible: true,
+  },
 };
 
 // export default inventoryColumns;

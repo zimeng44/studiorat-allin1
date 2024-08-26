@@ -9,7 +9,8 @@ import {
 import EditItemForm from "./EditItemForm";
 import { getInventoryItemById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import { InventoryImageForm } from "@/components/forms/InventoryImageForm";
+// import { InventoryImageForm } from "@/components/forms/InventoryImageForm";
+import { Badge } from "@/components/ui/badge";
 
 interface ParamsProps {
   params: {
@@ -59,7 +60,19 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">Edit Item</h1>
+      <h1 className="px-2 py-4 text-lg font-bold">
+        Edit Item{" "}
+        {data.out ? (
+          <Badge variant="default">Out</Badge>
+        ) : (
+          <Badge variant="secondary">In</Badge>
+        )}{" "}
+        {data.broken ? (
+          <Badge variant="destructive">Broken</Badge>
+        ) : (
+          <Badge variant="secondary">Working</Badge>
+        )}
+      </h1>
       <div className="max-w-sm items-start gap-3 md:max-w-3xl md:px-2">
         <EditItemForm item={data} itemId={params.itemId} />
       </div>
