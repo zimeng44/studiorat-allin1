@@ -344,7 +344,7 @@ const NewBookingForm = ({
     }
     setUserLoading(false);
     // console.log(params.toString());
-  }, 1000);
+  }, 500);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
