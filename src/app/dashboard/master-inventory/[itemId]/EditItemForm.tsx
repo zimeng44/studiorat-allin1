@@ -110,9 +110,10 @@ const EditItemForm = ({
 
   const imageForm = useForm<z.infer<typeof imageSchema>>({
     resolver: zodResolver(imageSchema),
-    // defaultValues: {
-    //   image: item.image ?? null,
-    // },
+    defaultValues: {
+      image: undefined,
+    },
+    mode: "onChange",
   });
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
@@ -122,6 +123,10 @@ const EditItemForm = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
+    // console.log(imageForm.formState.errors);
+
+    if (imageForm.formState.errors.image) return;
+    // console.log(imageForm.formState.errors);
     // updateAction(updatedData);
 
     let imgId = null;
