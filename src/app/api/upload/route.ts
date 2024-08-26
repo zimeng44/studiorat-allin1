@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const filename =
       Date.now().toString() + "_" + file.name.replaceAll(" ", "_");
-    console.log(filename);
+    // console.log(filename);
 
     try {
       await fs.writeFile(

@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuthToken } from "@/data/services/get-token";
+// import { getAuthToken } from "@/data/services/get-token";
 // import { mutateData } from "@/data/services/mutate-data";
 // import { flattenAttributes } from "@/lib/utils";
 // import { redirect } from "next/navigation";
@@ -15,22 +15,17 @@ export const updateUserAction = async (
   updatedUser: Prisma.UserUncheckedUpdateInput,
   id: string,
 ) => {
-  // console.log(id);
-
   const formPassword = updatedUser.password ?? undefined;
   const hashedPassword = formPassword
-    ? bcrypt.hash(formPassword as string, 10)
+    ? await bcrypt.hash(formPassword as string, 10)
     : undefined;
 
   const userWithHashedPassword = {
     ...updatedUser,
-    password: (await hashedPassword) ?? undefined,
+    password: hashedPassword ?? undefined,
   };
 
   try {
-    // const authToken = await getAuthToken();
-    // if (!authToken) throw new Error("No auth token found");
-
     const payload = {
       where: { id: id },
       data: userWithHashedPassword,
@@ -38,8 +33,6 @@ export const updateUserAction = async (
     };
 
     const res = await prisma.user.update(payload);
-    // console.log("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrre");
-    // console.log("res is ############## ", res);
 
     revalidatePath("/dashboard/users");
     return { res: res, error: null };

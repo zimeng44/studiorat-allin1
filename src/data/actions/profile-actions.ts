@@ -2,7 +2,7 @@
 import { z } from "zod";
 // import qs from "qs";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import { mutateData } from "@/data/services/mutate-data";
+// import { mutateData } from "@/data/services/mutate-data";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 
 import {
@@ -12,61 +12,6 @@ import {
 import { revalidatePath } from "next/cache";
 import { updateUserAction } from "./users-actions";
 import prisma from "@/lib/prisma";
-
-export async function updateProfileAction(
-  userId: string,
-  imageId: number | null,
-  prevState: any,
-  formData: FormData,
-) {
-  const rawFormData = Object.fromEntries(formData);
-
-  const { ok, data } = await getUserMeLoader();
-
-  if (!ok || data?.id !== userId) {
-    return {
-      ...prevState,
-      strapiErrors: null,
-      message: "You're not authorized to update this record",
-    };
-  }
-
-  const payload = {
-    first_name: rawFormData.first_name.toString(),
-    last_name: rawFormData.last_name.toString(),
-    bio: rawFormData.bio.toString(),
-    password: rawFormData.password.toString(),
-    image: imageId ? { connect: { id: imageId } } : undefined,
-  };
-
-  const { res: responseData, error } = await updateUserAction(payload, userId);
-
-  // if (!responseData) {
-  //   return {
-  //     ...prevState,
-  //     strapiErrors: null,
-  //     message: "Ops! Something went wrong. Please try again.",
-  //   };
-  // }
-
-  if (error) {
-    return {
-      ...prevState,
-      strapiErrors: { name: "Database Error", message: error },
-      message: "Failed to Update User.",
-    };
-  }
-
-  // const flattenedData = flattenAttributes(responseData);
-  revalidatePath("/dashboard/account");
-
-  return {
-    ...prevState,
-    message: "Profile Updated",
-    data: { data: responseData },
-    strapiErrors: null,
-  };
-}
 
 const MAX_FILE_SIZE = 5000000;
 
@@ -92,6 +37,55 @@ const imageSchema = z.object({
     )
     .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`),
 });
+
+export async function updateProfileAction(
+  userId: string,
+  imageId: number | null,
+  prevState: any,
+  formData: FormData,
+) {
+  const rawFormData = Object.fromEntries(formData);
+
+  const { ok, data } = await getUserMeLoader();
+
+  if (!ok || data?.id !== userId) {
+    return {
+      ...prevState,
+      strapiErrors: null,
+      data: null,
+      message: "You're not authorized to update this record",
+    };
+  }
+
+  const payload = {
+    first_name: rawFormData.first_name.toString(),
+    last_name: rawFormData.last_name.toString(),
+    bio: rawFormData.bio.toString(),
+    password: rawFormData.password.toString(),
+    image: imageId ? { connect: { id: imageId } } : undefined,
+  };
+
+  const { res: responseData, error } = await updateUserAction(payload, userId);
+
+  if (error) {
+    return {
+      ...prevState,
+      data: null,
+      strapiErrors: { name: "Database Error", message: error },
+      message: "update user error",
+    };
+  }
+
+  // const flattenedData = flattenAttributes(responseData);
+  revalidatePath("/dashboard/account");
+
+  return {
+    ...prevState,
+    message: "Profile Updated",
+    data: responseData,
+    strapiErrors: null,
+  };
+}
 
 export async function uploadProfileImageAction(
   imageId: number | null,

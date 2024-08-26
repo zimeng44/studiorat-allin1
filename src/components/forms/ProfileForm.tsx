@@ -10,6 +10,7 @@ import { StrapiErrors } from "../custom/StrapiErrors";
 import ImagePickerInForm from "../custom/ImagePickerInForm";
 // import { InventoryItemWithImage } from "@/data/definitions";
 import { Image } from "@prisma/client";
+import { z } from "zod";
 
 const INITIAL_STATE = {
   data: null,
@@ -26,6 +27,32 @@ interface ProfileFormProps {
   last_name?: string | null;
   bio?: string | null;
 }
+
+const MAX_FILE_SIZE = 5000000;
+
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+// VALIDATE IMAGE WITH ZOD
+const imageSchema = z.object({
+  image: z
+    .any()
+    .refine((file) => {
+      if (file.size === 0 || file.name === undefined) return false;
+      else return true;
+    }, "Please update or add new image.")
+
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+      ".jpg, .jpeg, .png and .webp files are accepted.",
+    )
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .optional(),
+});
 
 export function ProfileForm({
   data,
@@ -59,7 +86,21 @@ export function ProfileForm({
   };
 
   const handleFormSubmit = async (initialState: any, formData: any) => {
+    const validatedFields = imageSchema.safeParse({
+      image: imageFile,
+    });
+
+    if (!validatedFields.success) {
+      return {
+        ...initialState,
+        // zodErrors: validatedFields.error.flatten().fieldErrors,
+        strapiErrors: null,
+        data: null,
+        message: JSON.parse(validatedFields.error.message)[0].message,
+      };
+    }
     setIsLoading(true);
+
     try {
       // Step 1: Upload the image and get the imageId
 
@@ -77,13 +118,13 @@ export function ProfileForm({
 
       // console.log(res);
       setIsLoading(false);
-      return await res;
 
-      // console.log("Profile updated successfully");
+      return res;
     } catch (error) {
       setIsLoading(false);
       console.error("Error updating profile:", error);
       return {
+        ...initialState,
         message: "Error updateing profile",
         data: null,
         StrapiErrors: null,
