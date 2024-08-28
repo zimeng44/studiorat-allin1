@@ -1,11 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
-// import PaginationControls from "@/components/custom/PaginationControls";
 import { InventoryItemWithImage } from "@/data/definitions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
+import { inventoryColumnsDefault } from "../bookingInventoryColumns";
 import TabHeader from "./TabHeader";
 import BookingInventoryTable from "./BookingInventoryTable";
 import { CirclePlus, Grid, List } from "lucide-react";

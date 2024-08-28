@@ -3,7 +3,6 @@ import React from "react";
 import qs from "qs";
 import { cn } from "@/lib/utils";
 import {
-  InventoryItem,
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
@@ -44,10 +43,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { inventoryColumns } from "@/app/dashboard/booking/bookingInventoryColumns";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
-import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
   PopoverContent,
@@ -60,6 +57,8 @@ import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Textarea } from "@/components/ui/textarea";
 import { inventory_items } from "@prisma/client";
 import { InputWithLoading } from "@/components/custom/InputWithLoading";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
+import { bookingInventoryCartColumns } from "../inventoryCartColumns";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -89,18 +88,6 @@ const formSchema = z.object({
   bookingCreatorName: z.string().min(1),
   notes: z.string().nullable(),
 });
-
-// type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
-//   include: {
-//     user: { include: { user_role: true } };
-//     created_by: true;
-//     inventory_items: true;
-//     // user_role: true;
-//   };
-// }>;
-// type UserWithRole = Prisma.UserGetPayload<{
-//   include: { user_role: true };
-// }>;
 
 const NewBookingForm = ({
   booking,
@@ -158,26 +145,26 @@ const NewBookingForm = ({
   useEffect(() => {
     if (localStorage) {
       const tempBookingStr =
-        localStorage.getItem(`tempNewBooking`) ?? undefined;
+        localStorage.getItem(`tempBookingnew`) ?? undefined;
       if (tempBookingStr !== undefined) {
-        const tempNewBooking = tempBookingStr
+        const tempBookingnew = tempBookingStr
           ? JSON.parse(tempBookingStr)
           : undefined;
-        // console.log(tempNewBooking.start_date);
-        tempNewBooking.start_date = new Date(tempNewBooking.start_date);
-        tempNewBooking.end_date = new Date(tempNewBooking.end_date);
-        setTempForm(tempNewBooking);
-        setUser(tempNewBooking.user);
-        localStorage.removeItem(`tempNewBooking`);
+        // console.log(tempBookingnew.start_date);
+        tempBookingnew.start_date = new Date(tempBookingnew.start_date);
+        tempBookingnew.end_date = new Date(tempBookingnew.end_date);
+        setTempForm(tempBookingnew);
+        setUser(tempBookingnew.user);
+        localStorage.removeItem(`tempBookingnew`);
       }
 
-      const localItemsStr = localStorage.getItem(`tempNewBookingItems`) ?? "";
+      const localItemsStr = localStorage.getItem(`tempBookingItemsnew`) ?? "";
       if (localItemsStr !== "") {
         // console.log(localItemsStr);
         localItemsObj = localItemsStr ? JSON.parse(localItemsStr) : undefined;
         // setItemIdArray(localItemsObj.map((item: InventoryItem) => item.id));
         setItemObjArr(localItemsObj);
-        localStorage.removeItem(`tempNewBookingItems`);
+        localStorage.removeItem(`tempBookingItemsnew`);
       }
     }
   }, []);
@@ -265,18 +252,11 @@ const NewBookingForm = ({
     tempBooking.user = user;
     tempBooking.created_by = booking.created_by;
 
-    localStorage.setItem(`tempNewBooking`, JSON.stringify(tempBooking));
-    router.push(`/dashboard/booking/new/additem`);
+    localStorage.setItem(`tempBookingnew`, JSON.stringify(tempBooking));
+    router.push(`/dashboard/booking/additem?bookingId=new&view=${view}`);
 
     return;
   }
-
-  const handleRemoveFromBooking = (row: InventoryItem) => {
-    let newArr = itemObjArr.filter((item) => item.id !== row.id);
-    setItemObjArr(newArr);
-    // router.refresh();
-    // console.log("item should be removed")
-  };
 
   const baseUrl = getStrapiURL();
 
@@ -412,7 +392,7 @@ const NewBookingForm = ({
           // className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-4"
           className="w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-4 md:px-0 xl:max-w-screen-lg xl:grid-cols-8 xl:flex-row"
         >
-          <div className="flex-1 gap-2 md:col-span-4 md:grid md:max-w-xl md:grid-cols-4 md:px-0 xl:col-span-4">
+          <div className="flex-1 gap-2 md:col-span-4 md:grid md:max-w-xl md:grid-cols-4 md:px-0">
             <div className="col-span-2 max-w-sm md:col-span-4">
               <FormField
                 control={form.control}
@@ -733,7 +713,8 @@ const NewBookingForm = ({
 
             <div className="col-span-2"></div>
           </div>
-          <div className="flex-col gap-2 md:col-span-4 xl:col-span-4 xl:max-w-md">
+
+          <div className="flex-col gap-2 md:col-span-4">
             <div className="col-span-2 flex flex-1 justify-evenly p-1 md:col-span-4">
               <h1 className="flex-1 content-center text-center">
                 Booking Items
@@ -750,14 +731,21 @@ const NewBookingForm = ({
             </div>
 
             <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
-              <BookingEmbededTable
+              {/* <BookingEmbededTable
                 data={itemObjArr}
                 columns={inventoryColumns}
                 handleRemoveFromBooking={handleRemoveFromBooking}
                 isPast={false}
+              /> */}
+              <InventoryItemCart
+                data={itemObjArr}
+                columnsMeta={bookingInventoryCartColumns}
+                setItemObjArr={setItemObjArr}
+                disabled={false}
               />
             </div>
           </div>
+
           <div className="col-span-2 flex gap-1 py-2 md:col-span-4">
             <SubmitButton
               className="flex-1"

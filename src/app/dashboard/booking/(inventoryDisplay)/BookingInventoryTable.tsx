@@ -12,7 +12,7 @@ import { CirclePlus } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { deleteItemAction } from "@/data/actions/inventory-actions";
+// import { deleteItemAction } from "@/data/actions/inventory-actions";
 import {
   useParams,
   usePathname,
@@ -20,7 +20,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
+import { inventoryColumnsDefault } from "../bookingInventoryColumns";
 import { InventoryItem, InventoryItemWithImage } from "@/data/definitions";
 import { toast } from "sonner";
 import { StrapiImage } from "@/components/custom/StrapiImage";

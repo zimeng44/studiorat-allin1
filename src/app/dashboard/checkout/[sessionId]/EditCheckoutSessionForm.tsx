@@ -4,6 +4,7 @@ import qs from "qs";
 import {
   CheckoutWithUserAndItems,
   DEV_MODE,
+  InventoryItemWithImage,
   studioList,
 } from "@/data/definitions";
 import { z } from "zod";
@@ -31,11 +32,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
-import {
-  inventoryColumns,
-  inventoryColumnsFinished,
-} from "./embeddedInventoryColumns";
-import EmbededTable from "@/components/custom/EmbededTable";
+// import EmbededTable from "@/components/custom/EmbededTable";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -49,7 +46,12 @@ import {
   Prisma,
   User,
 } from "@prisma/client";
-import { InputWithLoading } from "@/components/custom/InputWithLoading";
+// import { InputWithLoading } from "@/components/custom/InputWithLoading";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
+import {
+  checkoutEditInventoryCartColumns,
+  checkoutFinishedInventoryCartColumns,
+} from "../InventoryCartColumns";
 
 // import { useRouter } from "next/navigation";
 
@@ -111,7 +113,7 @@ const EditCheckoutSessionForm = ({
     session.no_tag_items ?? ["unreturned", "example: xlr cable 2"],
   );
 
-  const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
+  const [itemObjArr, setItemObjArr] = useState<InventoryItemWithImage[]>(
     session.inventory_items ?? undefined,
   );
   const [itemLoading, setItemLoading] = useState(false);
@@ -197,7 +199,7 @@ const EditCheckoutSessionForm = ({
             window.alert("Item is marked as being used in a other session");
             // return;
           } else {
-            let newItem: inventory_items = data;
+            let newItem: InventoryItemWithImage = data;
             newItem.out = true;
             setItemObjArr([...itemObjArr, newItem]);
           }
@@ -574,7 +576,7 @@ const EditCheckoutSessionForm = ({
             )}
 
             <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-              <EmbededTable
+              {/* <EmbededTable
                 data={itemObjArr}
                 setItemObjArr={setItemObjArr}
                 columns={
@@ -583,6 +585,16 @@ const EditCheckoutSessionForm = ({
                     : inventoryColumns
                 }
                 disabled={session.finished ?? false}
+              /> */}
+              <InventoryItemCart
+                data={itemObjArr}
+                setItemObjArr={setItemObjArr}
+                columnsMeta={
+                  session.finished ?? false
+                    ? checkoutFinishedInventoryCartColumns
+                    : checkoutEditInventoryCartColumns
+                }
+                disabled={true}
               />
             </div>
           </div>

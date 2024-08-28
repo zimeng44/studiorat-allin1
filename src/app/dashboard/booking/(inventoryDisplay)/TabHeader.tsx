@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { Search } from "@/components/custom/Search";
-import { inventoryColumnsDefault } from "../../bookingInventoryColumns";
+import { inventoryColumnsDefault } from "../bookingInventoryColumns";
 
 interface TableFieldStatus {
   header: string;

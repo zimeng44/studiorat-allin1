@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 // Define the main function that will handle database operations
 async function main() {
+  try {
   // Create a new user in the database using Prisma Client
   const role1 = await prisma.user_role.createMany({
     data: [
@@ -22,27 +23,32 @@ async function main() {
         name: "InventoryManager",
       },
     ],
+    skipDuplicates: true,
   });
 
-  const user1 = await prisma.user.create({
-    data: {
-      email: "admin@admin.com",
-      net_id: "first_admin",
-      first_name: "Admin",
-      password: await bcrypt.hash("first_admin", 10),
-      user_role: { connect: { id: 1 } }, // Note: In a real application, ensure passwords are hashed!
-    },
+  const user1 = await prisma.user.upsert({
+    where: { net_id: "first_admin" }, // Check if the user already exists by email
+      update: {}, // If the user exists, don't update any fields
+      create: {
+        email: "admin@admin.com",
+        net_id: "first_admin",
+        first_name: "Admin",
+        password: await bcrypt.hash("first_admin", 10),
+        user_role: { connect: { id: 1 } }, // Adjust this if you need to connect by something other than ID
+      },
   });
 
   // Output the email of the newly created user
   console.log(`Created user: ${user1.email}`);
+  } catch (error) {
+    console.error("Error during seeding:", error);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 // Execute the main function and handle disconnection and errors
-main()
-  .then(() => prisma.$disconnect()) // Disconnect from the database on successful completion
-  .catch(async (e) => {
-    console.error(e); // Log any errors
-    await prisma.$disconnect(); // Ensure disconnection even if an error occurs
-    process.exit(1); // Exit the process with an error code
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

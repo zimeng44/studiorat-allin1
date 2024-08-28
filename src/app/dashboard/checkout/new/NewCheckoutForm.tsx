@@ -26,11 +26,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { DEV_MODE, InventoryItem, studioList } from "@/data/definitions";
-import { inventoryColumns } from "./embeddedInventoryColumns";
+
 import { createCheckoutSessionAction } from "@/data/actions/checkout-actions";
 import { flattenAttributes, getStrapiURL } from "@/lib/utils";
 import qs from "qs";
-import EmbededTable from "@/components/custom/EmbededTable";
+// import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { updateItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -41,6 +41,8 @@ import { format } from "date-fns";
 import { inventory_items, User } from "@prisma/client";
 // import prisma from "@/lib/prisma";
 import { InputWithLoading } from "@/components/custom/InputWithLoading";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
+import { checkoutNewInventoryCartColumns } from "../InventoryCartColumns";
 
 interface StrapiErrorsProps {
   message?: string | null;
@@ -496,11 +498,17 @@ const NewCheckoutForm = ({
               )}
             />
             <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-              <EmbededTable
+              {/* <EmbededTable
                 data={itemObjArr}
                 setItemObjArr={setItemObjArr}
                 columns={inventoryColumns}
                 disabled={false}
+              /> */}
+              <InventoryItemCart
+                data={itemObjArr}
+                setItemObjArr={setItemObjArr}
+                columnsMeta={checkoutNewInventoryCartColumns}
+                disabled={true}
               />
             </div>
           </div>

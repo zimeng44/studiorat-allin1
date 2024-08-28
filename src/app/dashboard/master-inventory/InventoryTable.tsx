@@ -20,7 +20,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import {
-  deleteItemAction,
   deleteManyItemAction,
 } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -330,11 +329,6 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                   );
                 })}
                 <TableCell className="text-center" key="edit">
-                  {/* <Link href={`/dashboard/master-inventory/${row.id}`}>
-                    <Button variant="outline">
-                      <SquarePen className="h-4 w-4" />
-                    </Button>
-                  </Link> */}
                   <Button
                     variant="outline"
                     onClick={(e) => {

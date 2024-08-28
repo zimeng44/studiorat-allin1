@@ -10,9 +10,7 @@ import {
 import { getBookingById } from "@/data/loaders";
 import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
-// import { getCookie } from "cookies-next";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-// import prisma from "@/lib/prisma";
 
 interface ParamsProps {
   params: {
@@ -23,19 +21,22 @@ interface ParamsProps {
 export default async function BookingDetails({
   params,
 }: Readonly<ParamsProps>) {
-  const { data: currentUser } = await getUserMeLoader();
+  const { ok, data: currentUser } = await getUserMeLoader();
 
-  const { data: bookingData, count } = await getBookingById(
-    params.bookingId,
-    currentUser,
-  );
-  // console.log(data);
+  if (!ok) {
+    return <p>Authorization Error</p>;
+  }
 
   const jwtCookie = cookies().get("jwt");
 
-  if (!jwtCookie) console.error("JWT cookie not found");
+  if (!jwtCookie) {
+    console.error("JWT cookie not found");
+    return <p>JWT token not found</p>;
+  }
 
-  if (!bookingData) {
+  const { data } = await getBookingById(params.bookingId, currentUser);
+
+  if (!data) {
     return <p>No Booking Found</p>;
   }
 
@@ -60,10 +61,10 @@ export default async function BookingDetails({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold md:px-2">Edit Booking</h1>
+      <h1 className="px-2 pt-2 text-lg font-bold md:px-2">Edit Booking</h1>
       <div className="flex items-center md:px-2">
         <EditBookingForm
-          booking={bookingData}
+          booking={data}
           bookingId={params.bookingId}
           currentUser={currentUser}
           authToken={jwtCookie?.value ?? ""}

@@ -6,6 +6,7 @@ import {
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
+  InventoryItemWithImage,
 } from "@/data/definitions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,9 +31,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { inventoryColumns } from "@/app/dashboard/booking/bookingInventoryColumns";
-import BookingEmbededTable from "../BookingEmbededTable";
+import { useRouter, useSearchParams } from "next/navigation";
+import { bookingInventoryCartColumns } from "@/app/dashboard/booking/inventoryCartColumns";
+// import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +50,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { inventory_items } from "@prisma/client";
 import { BookingWithUserAndItems, UserWithRole } from "@/data/definitions";
+import { Badge } from "@/components/ui/badge";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
 
 const formSchema = z.object({
   // username: z.string().min(2).max(50),
@@ -56,11 +59,15 @@ const formSchema = z.object({
   startTime: z.string(),
   end_date: z.date(),
   endTime: z.string(),
-  // stuIDCheckout: z.string().min(15).max(16),
+  netId: z
+    .string()
+    .min(2, {
+      message: "Type in a NetID to retrieve the user name",
+    })
+    .optional(),
   userName: z.string().min(2, {
     message: "Type in a NetID to retrieve the user name",
   }),
-  // studio: z.enum(bookingLocationList),
   use_location: z.string().min(1, {
     message: "Location can't be blank",
   }),
@@ -108,7 +115,7 @@ const EditBookingForm = ({
     notes: booking.notes ?? "",
     scan: "",
   });
-  const [itemObjArr, setItemObjArr] = useState(
+  const [itemObjArr, setItemObjArr] = useState<InventoryItemWithImage[]>(
     booking.inventory_items ?? Array(),
   );
   const [bookingType, setBookingType] = useState(booking.type);
@@ -214,19 +221,12 @@ const EditBookingForm = ({
       JSON.stringify(tempBooking),
     );
     router.push(
-      `/dashboard/booking/${bookingId}/additem?bookingId=${bookingId}&view=${view}`,
+      `/dashboard/booking/additem?bookingId=${bookingId}&view=${view}`,
     );
 
     // console.log(tempBooking);
     return;
   }
-
-  const handleRemoveFromBooking = (row: InventoryItem) => {
-    let newArr = itemObjArr.filter((item) => item.id !== row.id);
-    setItemObjArr(newArr);
-    // router.refresh();
-    // console.log("item should be removed")
-  };
 
   function time12To24(time: string) {
     const hour = time.slice(0, 2);
@@ -275,8 +275,6 @@ const EditBookingForm = ({
 
     const res = await updateBookingAction(updateValues, parseInt(bookingId));
 
-    // console.log(res);
-
     if (res.error) setError(res.error);
     else {
       toast.success("Booking Updated");
@@ -288,13 +286,24 @@ const EditBookingForm = ({
 
   return (
     <div>
+      {isPast ? (
+        <Badge className="size-fit" variant="secondary">
+          Archived
+        </Badge>
+      ) : (
+        ``
+        // <Badge className="size-fit" variant="default">
+        //   Ongoing
+        // </Badge>
+      )}
       {error ? <p className="text-red-500">{error}</p> : ``}
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-4 md:px-0 xl:max-w-screen-lg xl:grid-cols-8 xl:flex-row"
         >
-          <div className="flex-1 gap-2 md:col-span-4 md:grid md:max-w-xl md:grid-cols-4 md:px-0 xl:col-span-4">
+          <div className="flex-1 gap-2 md:col-span-4 md:grid md:max-w-xl md:grid-cols-4 md:px-0 ">
             <div className="col-span-1 flex md:col-span-2">
               <FormField
                 control={form.control}
@@ -602,7 +611,7 @@ const EditBookingForm = ({
             <div className="col-span-2"></div>
           </div>
 
-          <div className="flex-col gap-2 md:col-span-4 xl:col-span-4 xl:max-w-md">
+          <div className="flex-col gap-2 md:col-span-4">
             <div className="col-span-2 flex justify-evenly p-1 md:col-span-4">
               <h1 className="flex-1 content-center text-center">
                 Booking Items
@@ -620,11 +629,17 @@ const EditBookingForm = ({
               {/* </div> */}
             </div>
             <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
-              <BookingEmbededTable
+              {/* <BookingEmbededTable
                 data={itemObjArr}
                 columns={inventoryColumns}
                 handleRemoveFromBooking={handleRemoveFromBooking}
                 isPast={isPast}
+              /> */}
+              <InventoryItemCart
+                data={itemObjArr}
+                columnsMeta={bookingInventoryCartColumns}
+                setItemObjArr={setItemObjArr}
+                disabled={isPast}
               />
             </div>
           </div>
