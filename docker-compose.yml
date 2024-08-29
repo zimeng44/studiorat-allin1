@@ -1,3 +1,4 @@
+name: zimeng44/studio-rat-amd64:latest
 services:
   studio-rat:
     platform: linux/amd64

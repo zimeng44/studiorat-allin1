@@ -59,7 +59,12 @@ export function getStrapiMedia(url: string | null) {
 export function geLocalMedia(filename: string | null) {
   if (filename == null) return null;
   if (filename.startsWith("data:")) return filename;
-  if (filename.startsWith("http") || filename.startsWith("//")) return filename;
+  if (
+    filename.startsWith("http") ||
+    filename.startsWith("//") ||
+    filename.startsWith("/")
+  )
+    return filename;
   return `${getStrapiURL()}/api/image?filename=${filename}`;
 }
 

@@ -1,17 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb", // maximum `4.5MB/4MB` if you are using Vercel
+    },
+  },
   output: "standalone",
   images: {
     remotePatterns: [
       {
         protocol: "http",
         hostname: "localhost",
-        port: "1337",
-        pathname: "/uploads/**/*",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
         port: "3000",
         pathname: "/uploads/**/*",
       },
@@ -35,9 +34,8 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "api.zimeng.dev",
-        port: "",
-        pathname: "/uploads/**/*",
+        hostname: "studio-rat.up.railway.app",
+        pathname: "/api/**/*",
       },
       {
         protocol: "https",

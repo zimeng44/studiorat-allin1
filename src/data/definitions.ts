@@ -15,7 +15,7 @@ export type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
   include: {
     user: { include: { user_role: true }; omit: { password: true } };
     created_by: { include: { user_role: true }; omit: { password: true } };
-    inventory_items: true;
+    inventory_items: { include: { image: true } };
   };
 }>;
 
@@ -28,7 +28,7 @@ export type CheckoutWithUserAndItems = Prisma.checkout_sessionsGetPayload<{
   include: {
     user: { include: { user_role: true }; omit: { password: true } };
     created_by: { omit: { password: true } };
-    inventory_items: true;
+    inventory_items: { include: { image: true } };
     // user_role: true;
   };
 }>;

@@ -406,7 +406,7 @@ export async function getCheckoutSessions(
       AND: [...filterArr],
     },
     include: {
-      inventory_items: true,
+      inventory_items: { include: { image: true } },
       user: { include: { user_role: true } },
       created_by: true,
     },
@@ -430,7 +430,7 @@ export async function getCheckoutSessionById(itemId: string) {
     where: { id: parseInt(itemId) },
     include: {
       user: { include: { user_role: true } },
-      inventory_items: true,
+      inventory_items: { include: { image: true } },
       created_by: true,
     },
   });
@@ -723,7 +723,7 @@ export async function getBookings(
     take: parseInt(pageSize),
     orderBy: order_by,
     include: {
-      inventory_items: true,
+      inventory_items: { include: { image: true } },
       user: { include: { user_role: true } },
       created_by: { include: { user_role: true } },
     },
@@ -760,7 +760,7 @@ export async function getBookingById(
     include: {
       user: { include: { user_role: true } },
       created_by: { include: { user_role: true } },
-      inventory_items: true,
+      inventory_items: { include: { image: true } },
     },
   };
   return { data: await prisma.bookings.findFirst(query), count: 1 };

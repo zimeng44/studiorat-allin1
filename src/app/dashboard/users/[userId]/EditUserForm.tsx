@@ -201,7 +201,7 @@ const EditUserForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex-col gap-2 space-y-1 md:grid md:grid-cols-2"
+          className="w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-lg md:grid-cols-2 md:px-0"
         >
           <FormField
             control={form.control}
@@ -262,7 +262,11 @@ const EditUserForm = ({
               <FormItem className="col-span-1">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" placeholder="New Password"></Input>
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="New Password"
+                  ></Input>
                 </FormControl>
                 <FormMessage />
               </FormItem>

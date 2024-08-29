@@ -82,7 +82,7 @@ const EmbededInventoryTable = ({
               )}
               {columnsVisible[3] ? (
                 <TableHead
-                  className="whitespace-nowrap border-x-0"
+                  className="whitespace-nowrap border-x-0 p-1 md:p-3"
                   key={header[3]}
                 >
                   {/* {" "} */}

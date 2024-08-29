@@ -72,7 +72,7 @@ export default async function Home() {
 
         subHeading: "Your studio management assistant",
 
-        image: { url: "hero.jpg" },
+        image: { url: "/hero.jpg" },
 
         link: {
           id: 1,

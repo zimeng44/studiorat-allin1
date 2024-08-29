@@ -31,7 +31,7 @@ export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
   if (!data) return <p>No User Found</p>;
 
   return (
-    <div className="p-5">
+    <div className="flex-col p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -52,7 +52,7 @@ export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="px-2 py-4 text-lg font-bold">Edit User</h1>
-      <div className="flex items-center px-4">
+      <div className="flex items-center md:px-2">
         <EditUserForm
           user={data}
           userId={params.userId}

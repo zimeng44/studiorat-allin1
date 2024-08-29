@@ -76,7 +76,7 @@ async function itemConflictCheck(booking: any, bookingId?: number) {
 }
 
 async function locationConflictCheck(booking: any, bookingId?: number) {
-  if (booking.user_location === "Outside") return 0;
+  if (booking.use_location === "Outside") return 0;
 
   const query = {
     where: {
