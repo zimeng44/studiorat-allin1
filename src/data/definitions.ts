@@ -42,7 +42,7 @@ export type InventoryReportWithCreatorAndItems =
     include: {
       // user: { include: { user_role: true } };
       created_by: { omit: { password: true } };
-      inventory_items: true;
+      inventory_items: { include: { image: true } };
       // user_role: true;
     };
   }>;

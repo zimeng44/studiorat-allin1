@@ -4,6 +4,7 @@ import qs from "qs";
 import {
   DEV_MODE,
   InventoryItem,
+  InventoryItemWithImage,
   InventoryReportType,
   InventoryReportTypePost,
   InventoryReportWithCreatorAndItems,
@@ -42,6 +43,8 @@ import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Badge } from "@/components/ui/badge";
 import { inventory_items, inventory_reports, Prisma } from "@prisma/client";
 import { getInventoryItemByBarcode } from "@/data/loaders";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
+import { inventoryReportInventoryCartColumns } from "../InventoryCartColumns";
 
 // import { useRouter } from "next/navigation";
 
@@ -80,7 +83,7 @@ const EditInventoryReportForm = ({
   // const [itemIdArray, setItemIdArray] = useState(
   //   report.inventory_items?.map((item: inventory_items) => item.id) ?? [],
   // );
-  const [itemObjArr, setItemObjArr] = useState<inventory_items[]>(
+  const [itemObjArr, setItemObjArr] = useState<InventoryItemWithImage[]>(
     report.inventory_items,
   );
   // const [autoSaved, setAutoSaved] = useState(false);
@@ -207,13 +210,13 @@ const EditInventoryReportForm = ({
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    let updateValues: Prisma.inventory_reportsCreateInput = {
+    let updateValues: Prisma.inventory_reportsUpdateInput = {
       created_by: { connect: { id: thisMonitor.id } },
       inventory_size: values.inventory_size,
       notes: values.notes,
       is_finished: values.is_finished,
       inventory_items: {
-        connect: itemObjArr.map((item) => ({ id: item.id })),
+        set: itemObjArr.map((item) => ({ id: item.id })),
       },
     };
 
@@ -267,7 +270,7 @@ const EditInventoryReportForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-1 space-y-1 md:grid md:grid-cols-2"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-xl md:grid-cols-2 md:px-0"
         >
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
@@ -399,10 +402,16 @@ const EditInventoryReportForm = ({
             />
           )}
           <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-            <EmbededTable
+            {/* <EmbededTable
               data={itemObjArr}
               setItemObjArr={setItemObjArr}
               columns={inventoryColumns}
+              disabled={true}
+            /> */}
+            <InventoryItemCart
+              data={itemObjArr}
+              setItemObjArr={setItemObjArr}
+              columnsMeta={inventoryReportInventoryCartColumns}
               disabled={true}
             />
           </div>

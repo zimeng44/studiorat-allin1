@@ -13,6 +13,7 @@ import { Switch } from "../ui/switch";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { CircleMinus } from "lucide-react";
+import { StrapiImage } from "./StrapiImage";
 
 const MAX_TEXT_LEN = 30;
 
@@ -72,6 +73,27 @@ const InventoryItemCart = ({
                 <TableRow key={row.id}>
                   {Object.entries(columnsMeta).map(
                     ([key, value]: [key: string, value: any]) => {
+                      if (key === "image") {
+                        return value.visible ? (
+                          <TableCell
+                            className="relative flex h-20 w-20 items-center overflow-hidden rounded-md"
+                            key={"image"}
+                          >
+                            {row.image ? (
+                              <StrapiImage
+                                className="h-full w-full rounded-lg object-contain"
+                                src={row.image.url}
+                                height={100}
+                                width={100}
+                              />
+                            ) : (
+                              ``
+                            )}
+                          </TableCell>
+                        ) : (
+                          ``
+                        );
+                      }
                       if (key === "m_tech_barcode") {
                         return value.visible ? (
                           <TableCell className="whitespace-nowrap" key={key}>

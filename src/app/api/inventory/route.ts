@@ -89,6 +89,7 @@ export async function GET(req: NextRequest) {
     // return ;
 
     const data = await prisma.inventory_items.findFirst({
+      include: { image: true },
       where: { m_tech_barcode: { equals: barcode } },
     });
 
@@ -100,7 +101,6 @@ export async function GET(req: NextRequest) {
         error: null,
       }),
     );
-
   } catch (error) {
     // console.error("Error processing request:", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

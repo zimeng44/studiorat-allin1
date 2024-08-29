@@ -1304,7 +1304,10 @@ export async function getInventoryReports(
     orderBy: order_by,
     skip: skipValue,
     take: pageSizeNumber,
-    include: { created_by: true, inventory_items: true },
+    include: {
+      created_by: true,
+      inventory_items: { include: { image: true } },
+    },
     where: {
       AND: [...filterArr],
     },
@@ -1321,7 +1324,10 @@ export async function getInventoryReports(
 export async function getInventoryReportById(reportId: string) {
   try {
     const data = await prisma.inventory_reports.findUnique({
-      include: { created_by: true, inventory_items: true },
+      include: {
+        created_by: true,
+        inventory_items: { include: { image: true } },
+      },
       where: { id: parseInt(reportId) },
     });
     return { data: data, error: null };
@@ -1346,7 +1352,10 @@ export async function getInventoryReportsByQuery(
     orderBy: order_by,
     skip: skipValue,
     take: pageSizeNumber,
-    include: { created_by: true, inventory_items: true },
+    include: {
+      created_by: true,
+      inventory_items: { include: { image: true } },
+    },
     where: {
       OR: [
         {

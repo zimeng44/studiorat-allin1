@@ -1,25 +1,9 @@
 "use server";
 
 import { getAuthToken } from "@/data/services/get-token";
-import { mutateData } from "@/data/services/mutate-data";
-import { flattenAttributes } from "@/lib/utils";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { BookingTypePost } from "@/data/definitions";
-import { inventory_items, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
-
-type BookingWithUserAndItems = Prisma.bookingsGetPayload<{
-  include: {
-    user: { include: { user_role: true } };
-    created_by: true;
-    inventory_items: true;
-    // user_role: true;
-  };
-}>;
-type UserWithRole = Prisma.UserGetPayload<{
-  include: { user_role: true };
-}>;
 
 async function itemConflictCheck(booking: any, bookingId?: number) {
   if (!booking.inventory_items || booking.inventory_items.length === 0)

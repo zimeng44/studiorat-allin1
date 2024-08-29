@@ -7,8 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { getCheckoutSessionById, getInventoryReportById } from "@/data/loaders";
-import EditCheckoutSessionForm from "./EditInventoryReportForm";
+import { getInventoryReportById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import { cookies } from "next/headers";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +46,7 @@ export default async function SingleInventoryReportDetails({
   // console.log("checkout session by ID \n", data);
 
   return (
-    <div className="p-2 md:p-5">
+    <div className="p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -70,14 +69,16 @@ export default async function SingleInventoryReportDetails({
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex items-center">
-        <h1 className="px-2 py-4 text-lg font-bold">Edit Inventory Report</h1>
+        <h1 className="px-1 py-4 text-lg font-bold md:px-2">
+          Edit Inventory Report
+        </h1>
         {data.is_finished ? (
           <Badge variant="secondary">Finished</Badge>
         ) : (
           <Badge variant="default">In Progress</Badge>
         )}
       </div>
-      <div className="flex items-center px-2">
+      <div className="flex items-center md:px-2">
         <EditInventoryReportForm
           report={data}
           reportId={params.reportId}

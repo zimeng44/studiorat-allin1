@@ -472,6 +472,7 @@ const NewBookingForm = ({
                         }
                       >
                         <Input
+                          className="bg-indigo-100"
                           placeholder="Type in a NetID Here"
                           {...field}
                           autoCapitalize="none"

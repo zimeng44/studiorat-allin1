@@ -27,7 +27,9 @@ import { createInventoryReportAction } from "@/data/actions/inventoryReports-act
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { inventory_items, Prisma, User } from "@prisma/client";
-import { DEV_MODE } from "@/data/definitions";
+import { DEV_MODE, InventoryItemWithImage } from "@/data/definitions";
+import InventoryItemCart from "@/components/custom/InventoryItemCart";
+import { inventoryReportInventoryCartColumns } from "../InventoryCartColumns";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -66,7 +68,7 @@ const NewInventoryReportForm = ({
   });
   const [error, setError] = useState<StrapiErrorsProps>(INITIAL_STATE);
   // const [itemIdArray, setItemIdArray] = useState(Array());
-  const [itemObjArr, setItemObjArr] = useState<inventory_items[]>();
+  const [itemObjArr, setItemObjArr] = useState<InventoryItemWithImage[]>();
 
   // console.log(inventory_size);
 
@@ -247,7 +249,7 @@ const NewInventoryReportForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-1 space-y-1 md:grid md:grid-cols-2"
+          className="flex w-screen shrink flex-col gap-2 space-y-1 px-4 md:grid md:max-w-xl md:grid-cols-2 md:px-0"
         >
           <div className="col-span-1 flex gap-1 md:col-span-2">
             <SubmitButton
@@ -360,10 +362,16 @@ const NewInventoryReportForm = ({
             )}
           />
           <div className="col-span-1 size-full justify-center gap-2 md:col-span-2">
-            <EmbededTable
+            {/* <EmbededTable
               data={itemObjArr}
               setItemObjArr={setItemObjArr}
               columns={inventoryColumns}
+              disabled={true}
+            /> */}
+            <InventoryItemCart
+              data={itemObjArr}
+              setItemObjArr={setItemObjArr}
+              columnsMeta={inventoryReportInventoryCartColumns}
               disabled={true}
             />
           </div>

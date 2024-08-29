@@ -68,7 +68,7 @@ const NewInventoryReportPage = async () => {
   );
 
   return (
-    <div className="p-5">
+    <div className="p-0 md:p-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -90,8 +90,10 @@ const NewInventoryReportPage = async () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="px-2 py-4 text-lg font-bold">New Inventory Report</h1>
-      <div className="flex items-center px-4">
+      <h1 className="px-1 py-4 text-lg font-bold md:px-2">
+        New Inventory Report
+      </h1>
+      <div className="flex items-center md:px-2">
         <NewInventoryReportForm
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}

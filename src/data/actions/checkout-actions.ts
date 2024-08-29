@@ -3,7 +3,7 @@
 import { getAuthToken } from "@/data/services/get-token";
 // import { mutateData } from "@/data/services/mutate-data";
 // import { flattenAttributes } from "@/lib/utils";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 // import {
 //   CheckoutSessionType,

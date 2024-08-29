@@ -403,9 +403,10 @@ const EditCheckoutSessionForm = ({
                     }}
                   >
                     <Input
+                      className={session.finished ? `` : `bg-indigo-100`}
                       {...field}
                       disabled={session.finished ?? false}
-                      placeholder="Scan an ID Here"
+                      placeholder="Scan an ID here"
                       autoComplete="off"
                     ></Input>
                   </FormControl>
