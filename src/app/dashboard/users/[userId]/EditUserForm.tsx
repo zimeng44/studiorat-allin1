@@ -31,6 +31,7 @@ import {
   updateUserAction,
 } from "@/data/actions/users-actions";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
+import { Switch } from "@/components/ui/switch";
 
 const INITIAL_STATE = {
   message: "",
@@ -364,10 +365,8 @@ const EditUserForm = ({
               <FormItem className="col-span-1 flex-col">
                 <FormLabel>Block</FormLabel>
                 <FormControl className="contents-center flex items-center justify-center">
-                  <div className="h-10 flex-1 bg-indigo-200">
-                    <Checkbox
-                      // disabled
-
+                  <div className="h-10 content-center items-center">
+                    <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />

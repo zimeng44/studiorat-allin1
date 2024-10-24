@@ -1,26 +1,29 @@
-name: zimeng44/studio-rat-amd64:latest
+name: zimeng44/studio-rat-bundle
 services:
   studio-rat:
     platform: linux/amd64
-    container_name: studio-rat
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: zimeng44/studio-rat-dev:latest
+    # container_name: studio-rat
+    # build:
+    #   context: .
+    #   dockerfile: ./Dockerfile
     # Set envrionment variables based on the .env file
     env_file:
       - .env
     # Set environment variables directly in the docker-compose file
     environment:
-      POSTGRES_ADDR: postgres
-      POSTGRES_DATABASE: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      NODE_ENV: 'development'
+      POSTGRES_ADDR: 'postgres'
+      POSTGRES_DATABASE: 'postgres'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - .:/app/studio-rat
+      # - .:/app
+      - studio-rat-data:/app/public/uploads
     restart: always
     ports:
       - 3000:3000
@@ -30,7 +33,7 @@ services:
     image: postgres:15
     restart: always
     ports:
-      - 5436:5432
+      - 5432:5432
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -46,3 +49,4 @@ services:
 
 volumes:
   pgdata: {}
+  studio-rat-data: {}

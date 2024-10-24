@@ -19,9 +19,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import {
-  deleteManyItemAction,
-} from "@/data/actions/inventory-actions";
+import { deleteManyItemAction } from "@/data/actions/inventory-actions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "../../../components/ui/badge";
 import {
@@ -320,7 +318,7 @@ const InventoryTable = ({ data, columnsStatus }: InventoryTableProps) => {
                         </HoverCard>
                       ) : (
                         <Button className="m-0 p-0" variant="link">
-                          {`${row[key as keyof InventoryItemWithImage]}`}
+                          {`${row[key as keyof InventoryItemWithImage] ?? ""}`}
                         </Button>
                       )}
                     </TableCell>
