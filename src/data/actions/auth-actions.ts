@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 
 const config = {
-  maxAge: 60 * 60 * 24 * 7, // 1 week
+  maxAge: 60 * 60 * 12, // 12 hours
   path: "/",
   domain: process.env.HOST ?? "localhost",
   httpOnly: true,
