@@ -9,31 +9,33 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-interface ParamsProps {
-  searchParams: {
-    bookingId: string;
-    itemId: string;
-    pageIndex: string;
-    pageSize: string;
-    sort: string;
-    m_tech_barcode: string;
-    make: string;
-    model: string;
-    category: string;
-    description: string;
-    accessories: string;
-    storage_location: string;
-    comments: string;
-    out: string;
-    broken: string;
-    query: string;
-  };
-}
+type ParamsProps = Promise<{
+  bookingId: string;
+  itemId: string;
+  pageIndex: string;
+  pageSize: string;
+  sort: string;
+  m_tech_barcode: string;
+  make: string;
+  model: string;
+  category: string;
+  description: string;
+  accessories: string;
+  storage_location: string;
+  comments: string;
+  out: string;
+  broken: string;
+  query: string;
+}>;
 
-const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "make:asc";
+const BookingAddItemPage = async ({
+  searchParams,
+}: {
+  searchParams: ParamsProps;
+}) => {
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "make:asc";
 
   const filter = {
     // mTechBarcode: searchParams?.mTechBarcode ?? "",
@@ -42,17 +44,17 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
     // category: searchParams?.category ?? "",
     // description: searchParams?.description ?? "",
     // accessories: searchParams?.accessories ?? "",
-    storage_location: searchParams?.storage_location ?? "Floor 8",
+    storage_location: (await searchParams)?.storage_location ?? "Floor 8",
     // comments: searchParams?.comments ?? "",
     // out: searchParams?.out === "true" ? true : false,
     // broken: searchParams?.broken === "true" ? true : false,
     broken: "false",
   };
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getItemsByQuery(
         sort,
-        searchParams?.query,
+        (await searchParams)?.query,
         pageIndex.toString(),
         pageSize.toString(),
       )
@@ -94,7 +96,7 @@ const BookingAddItemPage = async ({ searchParams }: Readonly<ParamsProps>) => {
       </Breadcrumb>
       <div className="flex items-center md:px-2">
         <BookingAddItemForm
-          bookingId={searchParams.bookingId}
+          bookingId={(await searchParams).bookingId}
           // bookingData={bookingData}
           totalEntries={count}
           inventoryData={data}

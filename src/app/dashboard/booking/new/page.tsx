@@ -22,42 +22,26 @@ import { bookings, Prisma } from "@prisma/client";
 //   createMonitor: "",
 //   notes: "",
 // };
-interface SearchParamsProps {
-  searchParams?: {
-    start_time?: string;
-    // query?: string;
-    // page?: number;
-    // pageSize?: number;
-    // sort?: string;
-    // filterOpen?: boolean;
-    // creationTimeFrom?: string;
-    // creationTimeTo?: string;
-    // finishTimeFrom?: string;
-    // finishTimeTo?: string;
-    // stuIDCheckout?: string;
-    // stuIDCheckin?: string;
-    // studio?: string;
-    // otherLocation?: string;
-    // creationMonitor?: string;
-    // finishMonitor?: string;
-    // notes?: string;
-    // finished?: string;
-    // userName?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  start_time?: string;
+}>;
 
-const NewBooking = async ({ searchParams }: Readonly<SearchParamsProps>) => {
+const NewBooking = async ({
+  searchParams,
+}: {
+  searchParams: SearchParamsProps;
+}) => {
   // console.log(searchParams);
   const { data: currentUser } = await getUserMeLoader();
 
   const data = {
     user: currentUser?.user_role.name === "Authenticated" ? currentUser : null,
-    start_time: searchParams?.start_time
-      ? new Date(searchParams?.start_time)
+    start_time: (await searchParams)?.start_time
+      ? new Date((await searchParams).start_time ?? "")
       : addHours(startOfDay(addDays(new Date(), 1)), 12),
   };
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) console.error("JWT cookie not found");
 

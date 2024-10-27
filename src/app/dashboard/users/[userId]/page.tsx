@@ -10,13 +10,15 @@ import { getUserById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import EditUserForm from "./EditUserForm";
 
-interface ParamsProps {
-  params: {
-    userId: string;
-  };
-}
+type ParamsProps = Promise<{
+  userId: string;
+}>;
 
-export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
+export default async function EditUserRoute({
+  params,
+}: {
+  params: ParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -26,7 +28,7 @@ export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
     return <p>User Access Forbidden</p>;
   }
   // console.log(params.userId);
-  const data = await getUserById(params.userId);
+  const data = await getUserById((await params).userId);
 
   if (!data) return <p>No User Found</p>;
 
@@ -55,7 +57,7 @@ export default async function EditUserRoute({ params }: Readonly<ParamsProps>) {
       <div className="flex items-center md:px-2">
         <EditUserForm
           user={data}
-          userId={params.userId}
+          userId={(await params).userId}
           currentUserRole={thisUser.user_role}
         />
       </div>

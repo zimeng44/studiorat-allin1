@@ -2,9 +2,7 @@
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  loginUserService,
-} from "@/data/services/auth-services";
+import { loginUserService } from "@/data/services/auth-services";
 import { getUserMeLoader } from "../services/get-user-me-loader";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
@@ -237,12 +235,12 @@ export async function loginUserAction(prevState: any, formData: FormData) {
   // }
   // console.log(responseData.jwt);
 
-  cookies().set("jwt", responseData.jwt ?? "", config);
+  (await cookies()).set("jwt", responseData.jwt ?? "", config);
 
   redirect("/dashboard");
 }
 
 export async function logoutAction() {
-  cookies().set("jwt", "", { ...config, maxAge: 0 });
+  (await cookies()).set("jwt", "", { ...config, maxAge: 0 });
   redirect("/");
 }

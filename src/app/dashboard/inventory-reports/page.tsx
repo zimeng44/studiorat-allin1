@@ -16,25 +16,25 @@ import InventoryReportsPageTabs from "./InventoryReportsPageTabs";
 import { redirect } from "next/navigation";
 import { count } from "console";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    page?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    // createdFrom?: string;
-    // createdTo?: string;
-    // notes?: string;
-    is_finished?: string;
-    // itemChecked?: string;
-    // creator?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  // createdFrom?: string;
+  // createdTo?: string;
+  // notes?: string;
+  is_finished?: string;
+  // itemChecked?: string;
+  // creator?: string;
+}>;
 
 export default async function InventoryReportsPage({
   searchParams,
-}: Readonly<SearchParamsProps>) {
+}: {
+  searchParams: SearchParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (thisUser?.user_role.name === "Monitor") redirect("/dashboard/checkout");
@@ -43,29 +43,29 @@ export default async function InventoryReportsPage({
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.page ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "created_at:desc";
+  const pageIndex = (await searchParams)?.page ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "created_at:desc";
 
   // console.log(sort);
 
   const filter = {
     // createdAt: {
-    //   from: searchParams?.createdFrom ?? undefined,
-    //   to: searchParams?.createdTo ?? undefined,
+    //   from: (await searchParams)?.createdFrom ?? undefined,
+    //   to: (await searchParams)?.createdTo ?? undefined,
     // },
-    // itemChecked: searchParams?.itemChecked ?? "",
-    // notes: searchParams?.notes ?? "",
-    is_finished: searchParams?.is_finished ?? "All",
-    // creator: searchParams?.creator ?? "",
+    // itemChecked: (await searchParams)?.itemChecked ?? "",
+    // notes: (await searchParams)?.notes ?? "",
+    is_finished: (await searchParams)?.is_finished ?? "All",
+    // creator: (await searchParams)?.creator ?? "",
   };
 
   // console.log(filter);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getInventoryReportsByQuery(
         sort,
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
       )

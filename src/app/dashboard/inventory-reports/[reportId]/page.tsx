@@ -13,15 +13,15 @@ import { cookies } from "next/headers";
 import { Badge } from "@/components/ui/badge";
 import EditInventoryReportForm from "./EditInventoryReportForm";
 
-interface ParamsProps {
-  params: {
-    reportId: string;
-  };
-}
+type ParamsProps = Promise<{
+  reportId: string;
+}>;
 
 export default async function SingleInventoryReportDetails({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   // console.log(params);
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
@@ -33,13 +33,13 @@ export default async function SingleInventoryReportDetails({
     return <p>User Access Forbidden</p>;
   }
 
-  const { data, error } = await getInventoryReportById(params.reportId);
+  const { data, error } = await getInventoryReportById((await params).reportId);
 
   if (!data) {
     return <p>No data</p>;
   }
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) console.error("JWT cookie not found");
 
@@ -81,7 +81,7 @@ export default async function SingleInventoryReportDetails({
       <div className="flex items-center md:px-2">
         <EditInventoryReportForm
           report={data}
-          reportId={params.reportId}
+          reportId={(await params).reportId}
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}
         />

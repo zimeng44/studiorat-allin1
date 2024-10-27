@@ -10,15 +10,15 @@ import { getRosterPermissionById } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import EditRosterPermissionForm from "./EditRosterPermissionForm";
 
-interface ParamsProps {
-  params: {
-    permissionId: string;
-  };
-}
+type ParamsProps = Promise<{
+  permissionId: string;
+}>;
 
 export default async function EditRosterRoute({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -28,7 +28,9 @@ export default async function EditRosterRoute({
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const { data, error } = await getRosterPermissionById(params.permissionId);
+  const { data, error } = await getRosterPermissionById(
+    (await params).permissionId,
+  );
 
   // console.log(data);
   if (!data) return <p>Data not found</p>;
@@ -64,7 +66,7 @@ export default async function EditRosterRoute({
       <div className="flex items-center md:px-2">
         <EditRosterPermissionForm
           permission={data}
-          permissionId={params.permissionId}
+          permissionId={(await params).permissionId}
           userRole={thisUser?.user_role?.name ?? ""}
         />
       </div>

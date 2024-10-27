@@ -10,15 +10,15 @@ import { getRosterById, getRosterPermissions } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import EditRosterForm from "./EditRosterForm";
 
-interface ParamsProps {
-  params: {
-    rosterId: string;
-  };
-}
+type ParamsProps = Promise<{
+  rosterId: string;
+}>;
 
 export default async function EditRosterRoute({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -28,7 +28,7 @@ export default async function EditRosterRoute({
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const { data, error } = await getRosterById(params.rosterId);
+  const { data, error } = await getRosterById((await params).rosterId);
 
   const { data: permissions, count } = await getRosterPermissions(
     "",
@@ -63,7 +63,7 @@ export default async function EditRosterRoute({
       <div className="flex items-center md:px-2">
         <EditRosterForm
           roster={data}
-          rosterId={params.rosterId}
+          rosterId={(await params).rosterId}
           permissions={permissions}
           userRole={thisUser?.user_role?.name ?? ""}
         />

@@ -17,25 +17,25 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import RosterPageTabs from "./RosterPageTabs";
 // import Loading from "@/app/loading";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    pageIndex?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    stu_n?: string;
-    net_id?: string;
-    stu_name?: string;
-    academic_level?: string;
-    academic_program?: string;
-    agreement?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  stu_n?: string;
+  net_id?: string;
+  stu_name?: string;
+  academic_level?: string;
+  academic_program?: string;
+  agreement?: string;
+}>;
 
 export default async function RosterPage({
   searchParams,
-}: Readonly<SearchParamsProps>) {
+}: {
+  searchParams: SearchParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -45,24 +45,24 @@ export default async function RosterPage({
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "created_at:desc";
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "created_at:desc";
 
   const filter = {
-    stu_n: searchParams?.stu_n ?? null,
-    net_id: searchParams?.net_id ?? null,
-    stu_name: searchParams?.stu_name ?? null,
-    academic_level: searchParams?.academic_level ?? null,
-    academic_program: searchParams?.academic_program ?? null,
+    stu_n: (await searchParams)?.stu_n ?? null,
+    net_id: (await searchParams)?.net_id ?? null,
+    stu_name: (await searchParams)?.stu_name ?? null,
+    academic_level: (await searchParams)?.academic_level ?? null,
+    academic_program: (await searchParams)?.academic_program ?? null,
   };
 
   // console.log(filter.broken);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getRostersByQuery(
         sort,
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
       )

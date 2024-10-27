@@ -18,27 +18,27 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
 import UsersPageTabs from "./UsersPageTabs";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    pageIndex?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    username?: string;
-    stu_id?: string;
-    fullName?: string;
-    academic_level?: string;
-    email?: string;
-    bio?: string;
-    blocked?: string;
-    user_role?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  username?: string;
+  stu_id?: string;
+  fullName?: string;
+  academic_level?: string;
+  email?: string;
+  bio?: string;
+  blocked?: string;
+  user_role?: string;
+}>;
 
 export default async function Users({
   searchParams,
-}: Readonly<SearchParamsProps>) {
+}: {
+  searchParams: SearchParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -48,26 +48,26 @@ export default async function Users({
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "created_at:desc";
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "created_at:desc";
 
   const filter = {
-    username: searchParams?.username ?? null,
-    stu_id: searchParams?.stu_id ?? null,
-    fullName: searchParams?.fullName ?? null,
-    academic_level: searchParams?.academic_level ?? null,
-    email: searchParams?.email ?? null,
-    bio: searchParams?.bio ?? null,
-    blocked: searchParams?.blocked === "true",
-    user_role: searchParams?.user_role ?? null,
+    username: (await searchParams)?.username ?? null,
+    stu_id: (await searchParams)?.stu_id ?? null,
+    fullName: (await searchParams)?.fullName ?? null,
+    academic_level: (await searchParams)?.academic_level ?? null,
+    email: (await searchParams)?.email ?? null,
+    bio: (await searchParams)?.bio ?? null,
+    blocked: (await searchParams)?.blocked === "true",
+    user_role: (await searchParams)?.user_role ?? null,
   };
 
   // console.log(filter.broken);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getUsersByQuery(
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
         thisUser,

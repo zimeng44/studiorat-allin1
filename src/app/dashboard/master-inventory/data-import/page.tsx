@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { cookies } from "next/headers";
 
-const page = () => {
-  const jwtCookie = cookies().get("jwt");
+const page = async () => {
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) {
     console.error("JWT cookie not found");

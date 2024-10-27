@@ -22,7 +22,7 @@ const NewCheckoutSession = async () => {
     return <p>User Access Forbidden</p>;
   }
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) console.error("JWT cookie not found");
   // console.log(thisMonitor);

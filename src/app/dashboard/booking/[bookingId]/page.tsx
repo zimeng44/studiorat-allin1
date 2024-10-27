@@ -12,29 +12,29 @@ import EditBookingForm from "./EditBookingForm";
 import { cookies } from "next/headers";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
-interface ParamsProps {
-  params: {
-    bookingId: string;
-  };
-}
+type ParamsProps = Promise<{
+  bookingId: string;
+}>;
 
 export default async function BookingDetails({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   const { ok, data: currentUser } = await getUserMeLoader();
 
   if (!ok) {
     return <p>Authorization Error</p>;
   }
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) {
     console.error("JWT cookie not found");
     return <p>JWT token not found</p>;
   }
 
-  const { data } = await getBookingById(params.bookingId, currentUser);
+  const { data } = await getBookingById((await params).bookingId, currentUser);
 
   if (!data) {
     return <p>No Booking Found</p>;
@@ -65,7 +65,7 @@ export default async function BookingDetails({
       <div className="flex items-center md:px-2">
         <EditBookingForm
           booking={data}
-          bookingId={params.bookingId}
+          bookingId={(await params).bookingId}
           currentUser={currentUser}
           authToken={jwtCookie?.value ?? ""}
         />

@@ -17,29 +17,29 @@ import {
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 // import Loading from "@/app/loading";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    pageIndex?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    m_tech_barcode?: string;
-    make?: string;
-    model?: string;
-    category?: string;
-    description?: string;
-    accessories?: string;
-    storage_location?: string;
-    comments?: string;
-    out?: string;
-    broken?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  m_tech_barcode?: string;
+  make?: string;
+  model?: string;
+  category?: string;
+  description?: string;
+  accessories?: string;
+  storage_location?: string;
+  comments?: string;
+  out?: string;
+  broken?: string;
+}>;
 
 export default async function MasterInventory({
   searchParams,
-}: Readonly<SearchParamsProps>) {
+}: {
+  searchParams: SearchParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -49,29 +49,29 @@ export default async function MasterInventory({
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "updated_at:desc";
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "updated_at:desc";
 
   const filter = {
-    m_tech_barcode: searchParams?.m_tech_barcode ?? "",
-    make: searchParams?.make ?? "",
-    model: searchParams?.model ?? "",
-    category: searchParams?.category ?? "",
-    description: searchParams?.description ?? "",
-    accessories: searchParams?.accessories ?? "",
-    storage_location: searchParams?.storage_location ?? "All",
-    comments: searchParams?.comments ?? "",
-    out: searchParams?.out ?? "All",
-    broken: searchParams?.broken ?? "All",
+    m_tech_barcode: (await searchParams)?.m_tech_barcode ?? "",
+    make: (await searchParams)?.make ?? "",
+    model: (await searchParams)?.model ?? "",
+    category: (await searchParams)?.category ?? "",
+    description: (await searchParams)?.description ?? "",
+    accessories: (await searchParams)?.accessories ?? "",
+    storage_location: (await searchParams)?.storage_location ?? "All",
+    comments: (await searchParams)?.comments ?? "",
+    out: (await searchParams)?.out ?? "All",
+    broken: (await searchParams)?.broken ?? "All",
   };
 
   // console.log(filter.broken);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getItemsByQuery(
         sort,
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
       )

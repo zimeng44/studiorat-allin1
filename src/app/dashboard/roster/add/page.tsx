@@ -10,15 +10,15 @@ import { getRosterPermissions } from "@/data/loaders";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import AddRosterForm from "./AddRosterForm";
 
-interface ParamsProps {
-  params: {
-    rosterId: string;
-  };
-}
+type ParamsProps = Promise<{
+  rosterId: string;
+}>;
 
 export default async function EditRosterRoute({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (

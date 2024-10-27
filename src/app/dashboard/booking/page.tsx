@@ -22,61 +22,63 @@ import { cookies } from "next/headers";
 // import { bookings } from "@prisma/client";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    pageIndex?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    start_timeFrom?: string;
-    start_timeTo?: string;
-    end_timeFrom?: string;
-    end_timeTo?: string;
-    user?: string;
-    type?: string;
-    use_location?: string;
-    bookingCreator?: string;
-    notes?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  start_timeFrom?: string;
+  start_timeTo?: string;
+  end_timeFrom?: string;
+  end_timeTo?: string;
+  user?: string;
+  type?: string;
+  use_location?: string;
+  bookingCreator?: string;
+  notes?: string;
+}>;
 
 export default async function BookingPage({
   searchParams,
-}: Readonly<SearchParamsProps>) {
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "start_time:desc";
+}: {
+  searchParams: SearchParamsProps;
+}) {
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "start_time:desc";
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
 
   const filter = {
     start_time: {
-      from: searchParams?.start_timeFrom
-        ? new Date(searchParams?.start_timeFrom)
+      from: (await searchParams)?.start_timeFrom
+        ? new Date((await searchParams)?.start_timeFrom ?? "")
         : null,
-      to: searchParams?.start_timeTo
-        ? new Date(searchParams?.start_timeTo)
+      to: (await searchParams)?.start_timeTo
+        ? new Date((await searchParams)?.start_timeTo ?? "")
         : null,
     },
     end_time: {
-      from: searchParams?.end_timeFrom
-        ? new Date(searchParams?.end_timeFrom)
+      from: (await searchParams)?.end_timeFrom
+        ? new Date((await searchParams)?.end_timeFrom ?? "")
         : null,
-      to: searchParams?.end_timeTo ? new Date(searchParams?.end_timeTo) : null,
+      to: (await searchParams)?.end_timeTo
+        ? new Date((await searchParams)?.end_timeTo ?? "")
+        : null,
     },
-    // user: searchParams?.user ?? "",
-    use_location: searchParams?.use_location ?? null,
-    // bookingCreator: searchParams?.bookingCreator ?? "",
-    type: searchParams?.type ?? null,
-    // notes: searchParams?.notes ?? "",
+    // user: (await searchParams)?.user ?? "",
+    use_location: (await searchParams)?.use_location ?? null,
+    // bookingCreator: (await searchParams)?.bookingCreator ?? "",
+    type: (await searchParams)?.type ?? null,
+    // notes: (await searchParams)?.notes ?? "",
   };
 
   // console.log(filter);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getBookingsByQuery(
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
         thisUser,
@@ -105,7 +107,7 @@ export default async function BookingPage({
 
   // const { value: authToken } = cookies().get("jwt");
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (!jwtCookie) {
     console.error("JWT cookie not found");

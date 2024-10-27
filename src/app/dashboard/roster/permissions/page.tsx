@@ -21,23 +21,23 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import RosterPermissionsPageTabs from "./RosterPermissionsPageTabs";
 // import Loading from "@/app/loading";
 
-interface SearchParamsProps {
-  searchParams?: {
-    query?: string;
-    pageIndex?: number;
-    pageSize?: number;
-    sort?: string;
-    filterOpen?: boolean;
-    permission_code?: string;
-    permission_title?: string;
-    instructor?: string;
-    permitted_studios?: string;
-  };
-}
+type SearchParamsProps = Promise<{
+  query?: string;
+  pageIndex?: number;
+  pageSize?: number;
+  sort?: string;
+  filterOpen?: boolean;
+  permission_code?: string;
+  permission_title?: string;
+  instructor?: string;
+  permitted_studios?: string;
+}>;
 
 export default async function RosterPermissionPage({
   searchParams,
-}: Readonly<SearchParamsProps>) {
+}: {
+  searchParams: SearchParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -47,23 +47,23 @@ export default async function RosterPermissionPage({
     return <p>User Access Forbidden</p>;
   }
 
-  const pageIndex = searchParams?.pageIndex ?? "1";
-  const pageSize = searchParams?.pageSize ?? "10";
-  const sort = searchParams?.sort ?? "created_at:desc";
+  const pageIndex = (await searchParams)?.pageIndex ?? "1";
+  const pageSize = (await searchParams)?.pageSize ?? "10";
+  const sort = (await searchParams)?.sort ?? "created_at:desc";
 
   const filter = {
-    permission_code: searchParams?.permission_code ?? null,
-    permission_title: searchParams?.permission_title ?? null,
-    instructor: searchParams?.instructor ?? null,
-    permitted_studios: searchParams?.permitted_studios ?? null,
+    permission_code: (await searchParams)?.permission_code ?? null,
+    permission_title: (await searchParams)?.permission_title ?? null,
+    instructor: (await searchParams)?.instructor ?? null,
+    permitted_studios: (await searchParams)?.permitted_studios ?? null,
   };
 
   // console.log(filter.broken);
 
-  const { data, count } = searchParams?.query
+  const { data, count } = (await searchParams)?.query
     ? await getRosterPermissionsByQuery(
         sort,
-        searchParams?.query,
+        (await searchParams)?.query ?? "",
         pageIndex.toString(),
         pageSize.toString(),
       )

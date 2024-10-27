@@ -13,15 +13,15 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 import { cookies } from "next/headers";
 import { Badge } from "@/components/ui/badge";
 
-interface ParamsProps {
-  params: {
-    sessionId: string;
-  };
-}
+type ParamsProps = Promise<{
+  sessionId: string;
+}>;
 
 export default async function SingleCheckoutSessionDetails({
   params,
-}: Readonly<ParamsProps>) {
+}: {
+  params: ParamsProps;
+}) {
   // console.log(params);
   // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
@@ -33,11 +33,11 @@ export default async function SingleCheckoutSessionDetails({
     return <p>User Access Forbidden</p>;
   }
 
-  const data = await getCheckoutSessionById(params.sessionId);
+  const data = await getCheckoutSessionById((await params).sessionId);
 
   if (!data) return <p>No data</p>;
 
-  const jwtCookie = cookies().get("jwt");
+  const jwtCookie = (await cookies()).get("jwt");
 
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
@@ -86,7 +86,7 @@ export default async function SingleCheckoutSessionDetails({
       <div className="flex items-center md:px-2">
         <EditCheckoutSessionForm
           session={data}
-          sessionId={params.sessionId}
+          sessionId={(await params).sessionId}
           thisMonitor={thisUser}
           authToken={jwtCookie?.value ?? ""}
         />

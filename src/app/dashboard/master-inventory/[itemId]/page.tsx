@@ -12,13 +12,15 @@ import { getUserMeLoader } from "@/data/services/get-user-me-loader";
 // import { InventoryImageForm } from "@/components/forms/InventoryImageForm";
 import { Badge } from "@/components/ui/badge";
 
-interface ParamsProps {
-  params: {
-    itemId: string;
-  };
-}
+type ParamsProps = Promise<{
+  itemId: string;
+}>;
 
-export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
+export default async function EditItemRoute({
+  params,
+}: {
+  params: ParamsProps;
+}) {
   const { data: thisUser } = await getUserMeLoader();
   // console.log(thisUser);
   if (
@@ -28,7 +30,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
     return <p>User Access Forbidden</p>;
   }
   // console.log(params);
-  const { data, error } = await getInventoryItemById(params.itemId);
+  const { data, error } = await getInventoryItemById((await params).itemId);
   const itemImage = data?.image ?? null;
 
   if (error) {
@@ -74,7 +76,7 @@ export default async function EditItemRoute({ params }: Readonly<ParamsProps>) {
         )}
       </h1>
       <div className="max-w-sm items-start gap-3 md:max-w-3xl md:px-2">
-        <EditItemForm item={data} itemId={params.itemId} />
+        <EditItemForm item={data} itemId={(await params).itemId} />
       </div>
     </div>
   );
