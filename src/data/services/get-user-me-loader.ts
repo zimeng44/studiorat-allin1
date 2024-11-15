@@ -1,5 +1,4 @@
 import { getAuthToken } from "./get-token";
-import qs from "qs";
 import { verifyUserService } from "./auth-services";
 
 // const query = qs.stringify({

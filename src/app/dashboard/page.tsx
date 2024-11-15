@@ -12,7 +12,9 @@ import { redirect } from "next/navigation";
 export default async function DashboardRoute() {
   // console.log("here");
 
-  const { data: thisUser, ok } = await getUserMeLoader();
+  const { data: thisUser, ok, error } = await getUserMeLoader();
+
+  if (error) console.log("getUserMeLoader Error: ", error);
 
   if (!ok || !thisUser) redirect("/signin");
 

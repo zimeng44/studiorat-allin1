@@ -122,9 +122,13 @@ export async function verifyUserService(jwt: string) {
         error: null,
       };
     } else {
-      return { ok: false, data: null, error: "Error verifying user" };
+      return {
+        ok: false,
+        data: null,
+        error: "Error getting user from database: " + error,
+      };
     }
   } catch (error) {
-    return { ok: false, data: null, error: "Error verifying user" };
+    return { ok: false, data: null, error: "Error verifying user: " + error };
   }
 }
