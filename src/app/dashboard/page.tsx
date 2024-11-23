@@ -14,7 +14,10 @@ export default async function DashboardRoute() {
 
   const { data: thisUser, ok, error } = await getUserMeLoader();
 
-  if (error) console.log("getUserMeLoader Error: ", error);
+  if (error) {
+    console.log("getUserMeLoader Error: ", error);
+    return <p>{`{error}`}</p>;
+  }
 
   if (!ok || !thisUser) redirect("/signin");
 
