@@ -14,6 +14,8 @@ export default async function DashboardRoute() {
 
   const { data: thisUser, ok, error } = await getUserMeLoader();
 
+  return <p>{thisUser?.first_name}</p>;
+
   if (error) {
     console.log("getUserMeLoader Error: ", error);
     throw Error("getUserMeLoader Error: ", error);
