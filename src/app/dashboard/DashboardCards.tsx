@@ -25,9 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  BookingType,
   BookingWithUserAndItems,
-  CheckoutSessionType,
   CheckoutWithUserAndItems,
 } from "@/data/definitions";
 import { format } from "date-fns";

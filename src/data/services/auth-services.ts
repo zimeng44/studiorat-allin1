@@ -64,7 +64,7 @@ export async function registerUserService(userData: RegisterUserProps) {
 
 export async function loginUserService(userData: LoginUserProps) {
   const url = new URL("/api/users/auth", baseUrl);
-  const authToken = await getAuthToken();
+  // const authToken = await getAuthToken();
 
   // console.log(JSON.stringify({ ...userData }));
 

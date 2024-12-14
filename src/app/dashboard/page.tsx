@@ -14,12 +14,12 @@ export default async function DashboardRoute() {
 
   const { data: thisUser, ok, error } = await getUserMeLoader();
 
-  return <p>{thisUser?.first_name}</p>;
+  // return <p>{thisUser?.first_name}</p>;
 
   if (error) {
     console.log("getUserMeLoader Error: ", error);
-    throw Error("getUserMeLoader Error: ", error);
-    // return <p>{`{error}`}</p>;
+    // throw Error("getUserMeLoader Error: ", error);
+    return <p>{`{error}`}</p>;
   }
 
   if (!ok || !thisUser) redirect("/signin");
@@ -92,7 +92,7 @@ export default async function DashboardRoute() {
   return (
     <div className="flex h-full flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
       <DashboardCards
-        userRole={thisUser?.user_role.name}
+        userRole={thisUser?.user_role.name ?? "wrong"}
         upcomingBookings={upcomingBookings}
         upcomingBookingsNum={bookingCount ?? 0}
         checkoutUnfinished={checkoutUnfinished}
