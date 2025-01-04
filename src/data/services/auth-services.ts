@@ -2,15 +2,18 @@
 import { getStrapiURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcrypt";
-// import prisma from "@/lib/prisma";
-// import bcrypt from "bcrypt";
-// import { Prisma } from "@prisma/client";
 import { getUserByIdentifier } from "../loaders";
+
+interface JwtPayload {
+  data: {
+    net_id: string; // Replace with actual fields in your payload
+    [key: string]: any; // Allow additional properties if needed
+  };
+}
 
 const secretKey = "secret";
 const key = new TextEncoder().encode(secretKey);
-const EXPIRE = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7); // 1 week
+// const EXPIRE = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7); // 1 week
 
 export async function encrypt(payload: any) {
   return await new SignJWT(payload)
@@ -64,9 +67,6 @@ export async function registerUserService(userData: RegisterUserProps) {
 
 export async function loginUserService(userData: LoginUserProps) {
   const url = new URL("/api/users/auth", baseUrl);
-  // const authToken = await getAuthToken();
-
-  // console.log(JSON.stringify({ ...userData }));
 
   try {
     const response = await fetch(url, {
@@ -82,10 +82,8 @@ export async function loginUserService(userData: LoginUserProps) {
 
     if (error) return { user: null, jwt: null, error: error };
 
-    const jwt = await encrypt({ data, EXPIRE });
+    const jwt = await encrypt({ data });
     return { jwt: jwt, user: data, error: null };
-    // console.log(await response.json());
-    // return response.json();
   } catch (error) {
     console.error("Login User Service Error:", error);
     return { user: null, jwt: null, error: "Error at Login" };
@@ -98,22 +96,16 @@ export async function verifyUserService(jwt: string) {
     return { ok: false, data: null, error: "jwt not found" };
 
   try {
-    const { data: user, EXPIRE: currentExpire } = await decrypt(jwt);
-    // console.log(user);
-    if (new Date(currentExpire).toISOString() <= new Date().toISOString())
-      return { ok: false, data: null, error: "JWT expired" };
+    const { payload } = (await jwtVerify(jwt, key, {
+      algorithms: ["HS256"],
+    })) as { payload: JwtPayload };
+    const { data: user } = payload;
 
-    // console.log(new Date(currentExpire).toISOString());
+    if (!user || !user.net_id) {
+      return { ok: false, data: null, error: "Invalid user data in token" };
+    }
 
     const { data: userInDb, error } = await getUserByIdentifier(user.net_id);
-
-    // const passwordMatches = await bcrypt.compare(
-    //   user.password,
-    //   userInDb?.password ?? "",
-    // );
-
-    // const expires = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7);
-    // const jwtDb = await encrypt({ userInDb, EXPIRE });
 
     if (userInDb) {
       return {

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   Barcode,
-  BarcodeIcon,
   BookPlus,
   ClipboardPlusIcon,
   Library,
@@ -9,10 +8,8 @@ import {
   UserCheck,
   UserIcon,
   Users,
-  Vault,
 } from "lucide-react";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-// import { auth } from "@/auth";
 
 export default async function DashboardLayout({
   children,
