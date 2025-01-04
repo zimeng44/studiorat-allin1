@@ -3,7 +3,6 @@ import { getStrapiURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
 import { getUserByIdentifier } from "../loaders";
-
 interface JwtPayload {
   data: {
     net_id: string; // Replace with actual fields in your payload
@@ -19,7 +18,7 @@ export async function encrypt(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7 days")
+    .setExpirationTime("12 hours")
     .sign(key);
 }
 
