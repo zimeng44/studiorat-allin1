@@ -120,7 +120,16 @@ export async function verifyUserService(jwt: string) {
         error: "Error getting user from database: " + error,
       };
     }
-  } catch (error) {
-    return { ok: false, data: null, error: "Error verifying user: " + error };
+  } catch (error: any) {
+    // Handle the case where the JWT has expired or is otherwise invalid
+    if (error.code === "ERR_JWT_EXPIRED") {
+      return { ok: false, data: null, error: "JWT has expired" };
+    }
+    // Catch other errors and return a generic message
+    return {
+      ok: false,
+      data: null,
+      error: `Error verifying user: ${error.message}`,
+    };
   }
 }
