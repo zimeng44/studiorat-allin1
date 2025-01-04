@@ -10,7 +10,11 @@ interface JwtPayload {
   };
 }
 
-const secretKey = "secret";
+// const secretKey = "secret";
+const secretKey = process.env.SECRET_KEY;
+if (!secretKey) {
+  throw new Error("SECRET_KEY is not defined in environment variables");
+}
 const key = new TextEncoder().encode(secretKey);
 // const EXPIRE = new Date(Date.now() + 60 * 1000 * 60 * 24 * 7); // 1 week
 

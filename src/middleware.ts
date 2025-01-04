@@ -6,7 +6,11 @@ import { getAuthToken } from "./data/services/get-token";
 import { jwtVerify } from "jose";
 import { JWTExpired } from "jose/errors";
 
-const secretKey = "secret";
+// const secretKey = "secret";
+const secretKey = process.env.SECRET_KEY;
+if (!secretKey) {
+  throw new Error("SECRET_KEY is not defined in environment variables");
+}
 const key = new TextEncoder().encode(secretKey);
 
 export async function middleware(request: NextRequest) {
