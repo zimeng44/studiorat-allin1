@@ -48,7 +48,7 @@ const DashboardCards = ({
   inventoryReportsInADay: number;
 }) => {
   return (
-    <>
+    <div>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {userRole !== "InventoryManager" ? (
@@ -62,7 +62,6 @@ const DashboardCards = ({
                   {upcomingBookingsNum ?? "0"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {/* +20.1% from last month */}
                   upcoming appointments
                 </p>
               </CardContent>
@@ -207,7 +206,7 @@ const DashboardCards = ({
                             </TableCell>
                           </TableRow>
                         ))
-                      : ``}
+                      : null}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -299,7 +298,7 @@ const DashboardCards = ({
                             </TableCell>
                           </TableRow>
                         ))
-                      : ``}
+                      : null}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -309,7 +308,7 @@ const DashboardCards = ({
           )}
         </div>
       </main>
-    </>
+    </div>
   );
 };
 

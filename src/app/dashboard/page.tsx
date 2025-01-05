@@ -87,10 +87,8 @@ export default async function DashboardRoute() {
       inventoryReportsFilter,
     );
 
-  // console.log("inventoryReportsFilter");
-
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-full flex-col items-center justify-start bg-gray-100 dark:bg-gray-900">
       <DashboardCards
         userRole={thisUser?.user_role.name ?? "wrong"}
         upcomingBookings={upcomingBookings}

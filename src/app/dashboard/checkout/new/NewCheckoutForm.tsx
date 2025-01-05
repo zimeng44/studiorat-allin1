@@ -91,8 +91,7 @@ const NewCheckoutForm = ({
     stuIDCheckout: "",
     studio: "",
     other_location: undefined,
-    creationMonitor:
-      `${thisMonitor.first_name} ${thisMonitor.last_name}` ?? undefined,
+    creationMonitor: `${thisMonitor.first_name} ${thisMonitor.last_name}`,
     notes: undefined,
     noTagItems: undefined,
     scan: "",
