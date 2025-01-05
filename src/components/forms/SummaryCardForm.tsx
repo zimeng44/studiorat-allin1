@@ -3,7 +3,8 @@ import {
   updateSummaryAction,
   deleteSummaryAction,
 } from "@/data/actions/summary-actions";
-import { useFormState } from "react-dom";
+// import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -35,12 +36,12 @@ export function SummaryCardForm({
 }) {
   const deleteSummaryById = deleteSummaryAction.bind(null, item.id);
 
-  const [deleteState, deleteAction] = useFormState(
+  const [deleteState, deleteAction] = useActionState(
     deleteSummaryById,
     INITIAL_STATE,
   );
 
-  const [updateState, updateAction] = useFormState(
+  const [updateState, updateAction] = useActionState(
     updateSummaryAction,
     INITIAL_STATE,
   );

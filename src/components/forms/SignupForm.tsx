@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useFormState } from "react-dom";
+// import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { registerUserAction } from "@/data/actions/auth-actions";
 import { ZodErrors } from "../custom/ZodErrors";
 import { StrapiErrors } from "../custom/StrapiErrors";
@@ -37,7 +38,7 @@ export function SignupForm({
   userRole: string;
   stuId: string;
 }) {
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     registerUserAction,
     INITIAL_STATE,
   );

@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { cn } from "@/lib/utils";
-import { uploadProfileImageAction } from "@/data/actions/profile-actions";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import ImagePicker from "@/components/custom/ImagePicker";
 import { ZodErrors } from "@/components/custom/ZodErrors";
@@ -37,7 +36,7 @@ export function InventoryImageForm({
     inventoryId,
   );
 
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     uploadInventoryImageWithIdAction,
     initialState,
   );

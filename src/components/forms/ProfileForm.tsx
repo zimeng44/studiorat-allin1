@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { useFormState } from "react-dom";
+import React, { useState, useActionState } from "react";
+// import { useFormState } from "react-dom";
 import { updateProfileAction } from "@/data/actions/profile-actions";
 import { cn, getStrapiURL } from "@/lib/utils";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -138,7 +138,10 @@ export function ProfileForm({
   // );
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formState, formAction] = useFormState(handleFormSubmit, INITIAL_STATE);
+  const [formState, formAction] = useActionState(
+    handleFormSubmit,
+    INITIAL_STATE,
+  );
   // console.log(formState.message);
 
   return (

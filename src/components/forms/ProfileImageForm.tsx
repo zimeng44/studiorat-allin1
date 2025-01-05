@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { useFormState } from "react-dom";
+import React, { useActionState } from "react";
+// import { useFormState } from "react-dom";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ export function ProfileImageForm({
     data?.id ?? null,
   );
 
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     uploadProfileImageWithIdAction,
     initialState,
   );

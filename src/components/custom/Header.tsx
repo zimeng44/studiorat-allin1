@@ -71,7 +71,7 @@ export async function Header({ data }: Readonly<HeaderProps>) {
     );
 
   return (
-    <div className="flex flex-non z-40 items-center h-16 justify-between bg-white px-4 py-3 shadow-md dark:bg-gray-800">
+    <div className="flex-non z-40 flex h-16 items-center justify-between bg-white px-4 py-3 shadow-md dark:bg-gray-800">
       <Logo text={logoText.text} />
       {/* {user.ok && <SummaryForm />} */}
       <div className="flex items-center gap-4">

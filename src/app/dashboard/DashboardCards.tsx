@@ -70,7 +70,6 @@ const DashboardCards = ({
           ) : (
             ``
           )}
-
           {userRole === "Admin" || userRole === "Monitor" ? (
             <>
               <Card x-chunk="dashboard-01-chunk-1">
@@ -128,7 +127,6 @@ const DashboardCards = ({
         </div>
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
           {userRole !== "InventoryManager" ? (
-            // className="xl:col-span-2"
             <Card x-chunk="dashboard-01-chunk-4">
               <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
@@ -218,100 +216,94 @@ const DashboardCards = ({
             ``
           )}
           {userRole === "Admin" || userRole === "Monitor" ? (
-            <>
-              {/* className="xl:col-span-2" */}
-              <Card x-chunk="dashboard-01-chunk-4">
-                <CardHeader className="flex flex-row items-center">
-                  <div className="grid gap-2">
-                    <CardTitle>Checkout Sessions</CardTitle>
-                    <CardDescription>
-                      Unfinished sessions in the system
-                    </CardDescription>
-                  </div>
-                  <Button asChild size="sm" className="ml-auto gap-1">
-                    <Link href="/dashboard/checkout">
-                      View All
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead key="userName">User</TableHead>
-                        <TableHead
-                          className="hidden xl:table-column"
-                          key="type"
-                        >
-                          Type
-                        </TableHead>
-                        <TableHead
-                          className="hidden xl:table-column"
-                          key="status"
-                        >
-                          Status
-                        </TableHead>
-                        <TableHead
-                          className="hidden md:table-cell lg:hidden xl:table-column"
-                          key="location"
-                        >
-                          Studio
-                        </TableHead>
-                        <TableHead className="text-right" key="creationTime">
-                          Started At
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {checkoutUnfinished?.length
-                        ? checkoutUnfinished.slice(0, 6).map((checkout) => (
-                            <TableRow key={checkout.id}>
-                              <TableCell key="userName">
-                                <div className="font-medium">
-                                  {`${checkout.user?.first_name} ${checkout.user?.last_name}`}
-                                </div>
-                                <div className="hidden text-sm text-muted-foreground md:inline">
-                                  {checkout.user?.stu_id}
-                                </div>
-                              </TableCell>
-                              <TableCell
-                                className="hidden xl:table-column"
-                                key="type"
-                              >
-                                Sale
-                              </TableCell>
-                              <TableCell
-                                className="hidden xl:table-column"
-                                key="status"
-                              >
-                                <Badge className="text-xs" variant="outline">
-                                  Approved
-                                </Badge>
-                              </TableCell>
-                              <TableCell
-                                className="hidden md:table-cell lg:hidden xl:table-column"
-                                key="location"
-                              >
-                                {checkout.studio}
-                              </TableCell>
-                              <TableCell
-                                className="text-right"
-                                key="creationTime"
-                              >
-                                {format(
-                                  new Date(checkout.created_at ?? ""),
-                                  "MM/dd/yyyy hh:mm a",
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        : ``}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </>
+            <Card x-chunk="dashboard-01-chunk-4">
+              <CardHeader className="flex flex-row items-center">
+                <div className="grid gap-2">
+                  <CardTitle>Checkout Sessions</CardTitle>
+                  <CardDescription>
+                    Unfinished sessions in the system
+                  </CardDescription>
+                </div>
+                <Button asChild size="sm" className="ml-auto gap-1">
+                  <Link href="/dashboard/checkout">
+                    View All
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead key="userName">User</TableHead>
+                      <TableHead className="hidden xl:table-column" key="type">
+                        Type
+                      </TableHead>
+                      <TableHead
+                        className="hidden xl:table-column"
+                        key="status"
+                      >
+                        Status
+                      </TableHead>
+                      <TableHead
+                        className="hidden md:table-cell lg:hidden xl:table-column"
+                        key="location"
+                      >
+                        Studio
+                      </TableHead>
+                      <TableHead className="text-right" key="creationTime">
+                        Started At
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {checkoutUnfinished?.length
+                      ? checkoutUnfinished.slice(0, 6).map((checkout) => (
+                          <TableRow key={checkout.id}>
+                            <TableCell key="userName">
+                              <div className="font-medium">
+                                {`${checkout.user?.first_name} ${checkout.user?.last_name}`}
+                              </div>
+                              <div className="hidden text-sm text-muted-foreground md:inline">
+                                {checkout.user?.stu_id}
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              className="hidden xl:table-column"
+                              key="type"
+                            >
+                              Sale
+                            </TableCell>
+                            <TableCell
+                              className="hidden xl:table-column"
+                              key="status"
+                            >
+                              <Badge className="text-xs" variant="outline">
+                                Approved
+                              </Badge>
+                            </TableCell>
+                            <TableCell
+                              className="hidden md:table-cell lg:hidden xl:table-column"
+                              key="location"
+                            >
+                              {checkout.studio}
+                            </TableCell>
+                            <TableCell
+                              className="text-right"
+                              key="creationTime"
+                            >
+                              {format(
+                                new Date(checkout.created_at ?? ""),
+                                "MM/dd/yyyy hh:mm a",
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : ``}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           ) : (
             ``
           )}
