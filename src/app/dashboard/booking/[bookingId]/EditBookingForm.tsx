@@ -312,6 +312,7 @@ const EditBookingForm = ({
                   <FormItem className="size-fit">
                     <FormLabel>Type</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       // onValueChange={field.onChange}
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -428,6 +429,7 @@ const EditBookingForm = ({
                   >
                     <FormLabel>Start Time</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       value={field.value}
                       disabled={isPast}
@@ -513,6 +515,7 @@ const EditBookingForm = ({
                   >
                     <FormLabel>End Time</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       value={field.value}
                       disabled={
@@ -549,6 +552,7 @@ const EditBookingForm = ({
                   <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                     <FormLabel>Use Location</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}

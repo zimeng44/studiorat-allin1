@@ -44,7 +44,7 @@ const BookingAddItemForm = ({
     // localStorage.removeItem(`tempBooking${bookingId}`);
 
     router.push(`/dashboard/booking/${bookingId}`);
-    router.refresh();
+    // router.refresh();
   };
 
   return (

@@ -102,7 +102,8 @@ const NewBookingForm = ({
   const searchParams = useSearchParams();
   const view = searchParams.get("view") ?? "calendar";
 
-  const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
+  // const [tempForm, setTempForm] = useState<z.infer<typeof formSchema>>();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -122,13 +123,11 @@ const NewBookingForm = ({
           ? `${booking.user.first_name} ${booking.user.last_name}`
           : "",
       use_location: "Outside",
-      bookingCreatorName:
-        `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
-        "",
+      bookingCreatorName: `${booking.created_by?.first_name} ${booking.created_by?.last_name}`,
       notes: "",
     },
     mode: "onChange",
-    values: tempForm,
+    // values: tempForm,
   });
 
   // const inventoryItems = booking.inventory_items as RetrievedItems;
@@ -143,23 +142,23 @@ const NewBookingForm = ({
 
   //Load local storage
   useEffect(() => {
-    if (localStorage) {
+    if (typeof window !== "undefined" && localStorage) {
       const tempBookingStr =
         localStorage.getItem(`tempBookingnew`) ?? undefined;
-      if (tempBookingStr !== undefined) {
+      if (tempBookingStr) {
         const tempBookingnew = tempBookingStr
           ? JSON.parse(tempBookingStr)
           : undefined;
-        // console.log(tempBookingnew.start_date);
         tempBookingnew.start_date = new Date(tempBookingnew.start_date);
         tempBookingnew.end_date = new Date(tempBookingnew.end_date);
-        setTempForm(tempBookingnew);
+        // setTempForm(tempBookingnew);
+        form.reset(tempBookingnew);
         setUser(tempBookingnew.user);
         localStorage.removeItem(`tempBookingnew`);
       }
 
       const localItemsStr = localStorage.getItem(`tempBookingItemsnew`) ?? "";
-      if (localItemsStr !== "") {
+      if (localItemsStr) {
         // console.log(localItemsStr);
         localItemsObj = localItemsStr ? JSON.parse(localItemsStr) : undefined;
         // setItemIdArray(localItemsObj.map((item: InventoryItem) => item.id));
@@ -401,6 +400,7 @@ const NewBookingForm = ({
                   <FormItem className="size-fit">
                     <FormLabel>Type</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={(value) => {
                         field.onChange(value);
                         handleTypeSelect(value);
@@ -434,18 +434,6 @@ const NewBookingForm = ({
                   <FormItem className="size-fit flex-1 md:size-full">
                     <FormLabel>User Name</FormLabel>
                     <FormControl>
-                      {/* <Input
-                      placeholder="Waiting for a NetID"
-                      {...field}
-                      disabled
-                      // onChange={(e) => setUserId(e.target.value)}
-                    ></Input> */}
-                      {/* <Label
-                      {...field}
-                      className="flex p-2 font-sans italic text-slate-400"
-                    >
-                      {field.value === "" ? "NetID needed" : field.value}
-                    </Label> */}
                       <InputWithLoading
                         placeholder="Type in a NetID"
                         field={field}
@@ -537,6 +525,7 @@ const NewBookingForm = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="start_time"
@@ -550,9 +539,11 @@ const NewBookingForm = ({
                   >
                     <FormLabel>Start Time</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
+                      // {...field}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -562,7 +553,7 @@ const NewBookingForm = ({
                       <SelectContent className="w-auto p-0">
                         {bookingTimeList.map((time, index) => (
                           <SelectItem
-                            key={index}
+                            key={`startTime${index}`}
                             value={`${time}`}
                           >{`${time}`}</SelectItem>
                         ))}
@@ -634,9 +625,11 @@ const NewBookingForm = ({
                   >
                     <FormLabel>End Time</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
+                      // {...field}
                       disabled={
                         form.getValues("type") === "Overnight" ||
                         form.getValues("type") === "Weekend"
@@ -650,7 +643,7 @@ const NewBookingForm = ({
                       <SelectContent>
                         {bookingTimeList.map((time, index) => (
                           <SelectItem
-                            key={index}
+                            key={`endTime${index}`}
                             value={`${time}`}
                           >{`${time}`}</SelectItem>
                         ))}
@@ -670,6 +663,7 @@ const NewBookingForm = ({
                   <FormItem className="col-span-1 flex size-full flex-col text-left font-normal md:col-span-2 md:size-full">
                     <FormLabel>Use Location</FormLabel>
                     <Select
+                      key={field.value || "default-key"}
                       onValueChange={field.onChange}
                       // defaultValue={field.value}
                       value={field.value}
@@ -703,6 +697,7 @@ const NewBookingForm = ({
                       <Textarea
                         value={field.value ?? ""}
                         // {...field}
+                        onChange={field.onChange}
                         placeholder="Leave a note"
                       ></Textarea>
                     </FormControl>
@@ -732,12 +727,6 @@ const NewBookingForm = ({
             </div>
 
             <div className="col-span-2 size-full justify-center gap-10 md:col-span-4">
-              {/* <BookingEmbededTable
-                data={itemObjArr}
-                columns={inventoryColumns}
-                handleRemoveFromBooking={handleRemoveFromBooking}
-                isPast={false}
-              /> */}
               <InventoryItemCart
                 data={itemObjArr}
                 columnsMeta={bookingInventoryCartColumns}
