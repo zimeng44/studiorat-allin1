@@ -7,7 +7,6 @@ const nextConfig = {
       bodySizeLimit: "5mb", // maximum `4.5MB/4MB` if you are using Vercel
     },
   },
-  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -32,11 +31,6 @@ const nextConfig = {
         protocol: "https",
         hostname: "zimeng.dev",
         // port: "",
-        pathname: "/api/**/*",
-      },
-      {
-        protocol: "https",
-        hostname: "studio-rat.up.railway.app",
         pathname: "/api/**/*",
       },
       {
