@@ -33,6 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
+    "prisma/**/*.ts",
     "prisma/seed.js",
     "src/app/dashboard/test/page.jsx"
   ],

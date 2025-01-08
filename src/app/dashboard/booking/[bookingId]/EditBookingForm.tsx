@@ -110,8 +110,7 @@ const EditBookingForm = ({
     use_location: booking.use_location ?? "",
     type: booking.type ?? "",
     bookingCreatorName:
-      `${booking.created_by?.first_name} ${booking.created_by?.last_name}` ??
-      "",
+      `${booking.created_by?.first_name} ${booking.created_by?.last_name}`,
     notes: booking.notes ?? "",
     scan: "",
   });

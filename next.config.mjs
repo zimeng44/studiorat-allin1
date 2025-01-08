@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+import bundleAnalyzer from "@next/bundle-analyzer";
+
 const nextConfig = {
   experimental: {
     serverActions: {
@@ -44,5 +46,9 @@ const nextConfig = {
     ],
   },
 };
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 export default nextConfig;
