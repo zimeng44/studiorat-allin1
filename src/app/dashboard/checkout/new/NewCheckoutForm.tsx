@@ -28,7 +28,7 @@ import Link from "next/link";
 import { DEV_MODE, InventoryItem, studioList } from "@/data/definitions";
 
 import { createCheckoutSessionAction } from "@/data/actions/checkout-actions";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 import qs from "qs";
 // import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
@@ -116,7 +116,7 @@ const NewCheckoutForm = ({
 
   // 2. Define a submit handler.
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {

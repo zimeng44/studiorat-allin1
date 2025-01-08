@@ -1,8 +1,8 @@
 import { getAuthToken } from "./get-token";
-import { getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 
 export async function mutateData(method: string, path: string, payload?: any) {
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
   const authToken = await getAuthToken();
   const url = new URL(path, baseUrl);
 

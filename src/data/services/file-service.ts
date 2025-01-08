@@ -1,7 +1,7 @@
 import { getAuthToken } from "@/data/services/get-token";
 // import { mutateData } from "@/data/services/mutate-data";
 // import { flattenAttributes } from "@/lib/utils";
-import { getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 import { join } from "path";
 import { promises as fs } from "fs";
 import prisma from "@/lib/prisma";
@@ -40,7 +40,7 @@ export async function fileUploadService(image: any) {
   // console.log(authToken);
   if (!authToken) throw new Error("No auth token found");
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
   const url = new URL("/api/upload", baseUrl);
 
   const formData = new FormData();

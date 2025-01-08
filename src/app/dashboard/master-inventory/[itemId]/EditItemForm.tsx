@@ -37,7 +37,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
 // import { inventory_items } from "@prisma/client";
 import ImagePickerInForm from "@/components/custom/ImagePickerInForm";
-import { getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 
 const INITIAL_STATE = {
@@ -132,7 +132,7 @@ const EditItemForm = ({
     let imgId = null;
     try {
       if (imageForm.getValues("image")) {
-        const baseUrl = getStrapiURL();
+        const baseUrl = getBackendURL();
         const url = new URL("/api/upload", baseUrl);
 
         const formData = new FormData();

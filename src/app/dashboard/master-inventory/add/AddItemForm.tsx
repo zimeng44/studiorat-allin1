@@ -28,10 +28,10 @@ import { createInventoryItemAction } from "@/data/actions/inventory-actions";
 import { SubmitButton } from "../../../../components/custom/SubmitButton";
 import { useRouter } from "next/navigation";
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/data/definitions";
-import ImagePicker from "@/components/custom/ImagePicker";
+// import ImagePicker from "@/components/custom/ImagePicker";
 import ImagePickerInForm from "@/components/custom/ImagePickerInForm";
-import { fileUploadService } from "@/data/services/file-service";
-import { getStrapiURL } from "@/lib/utils";
+// import { fileUploadService } from "@/data/services/file-service";
+import { getBackendURL } from "@/lib/utils";
 
 interface StrapiErrorsProps {
   message: string | null;
@@ -114,7 +114,7 @@ const AddItem = ({ rowData }: { rowData: any }) => {
       // console.log(form.getValues("image"));
       let imageId = null;
       if (form.getValues("image")) {
-        const baseUrl = getStrapiURL();
+        const baseUrl = getBackendURL();
         const url = new URL("/api/upload", baseUrl);
 
         const formData = new FormData();

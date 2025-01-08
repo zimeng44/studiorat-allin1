@@ -17,16 +17,16 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+// import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+import { getBackendURL } from "@/lib/utils";
 import qs from "qs";
-import EmbededTable from "@/components/custom/EmbededTable";
+// import EmbededTable from "@/components/custom/EmbededTable";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { createInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { inventory_items, Prisma, User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { DEV_MODE, InventoryItemWithImage } from "@/data/definitions";
 import InventoryItemCart from "@/components/custom/InventoryItemCart";
 import { inventoryReportInventoryCartColumns } from "../InventoryCartColumns";
@@ -94,7 +94,7 @@ const NewInventoryReportForm = ({
     form.setFocus("scan");
   }, []);
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {

@@ -2,7 +2,7 @@
 import React, { useState, useActionState } from "react";
 // import { useFormState } from "react-dom";
 import { updateProfileAction } from "@/data/actions/profile-actions";
-import { cn, getStrapiURL } from "@/lib/utils";
+import { cn, getBackendURL } from "@/lib/utils";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,7 +66,7 @@ export function ProfileForm({
   const uploadImage = async (file: File | undefined) => {
     if (!file) return null;
 
-    const baseUrl = getStrapiURL();
+    const baseUrl = getBackendURL();
     const url = new URL("/api/upload", baseUrl);
 
     const formData = new FormData();

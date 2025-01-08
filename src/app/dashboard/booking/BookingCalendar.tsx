@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import { Calendar, Views, DateLocalizer } from "react-big-calendar";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+import { flattenAttributes, getBackendURL } from "@/lib/utils";
 import qs from "qs";
 import {
   addDays,
@@ -118,7 +118,7 @@ export default function BookingCalendar({
     [],
   );
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {

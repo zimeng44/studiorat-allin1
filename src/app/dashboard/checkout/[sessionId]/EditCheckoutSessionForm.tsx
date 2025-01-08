@@ -33,19 +33,14 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
 // import EmbededTable from "@/components/custom/EmbededTable";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { TagsInput } from "react-tag-input-component";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import {
-  checkout_sessions,
-  inventory_items,
-  Prisma,
-  User,
-} from "@prisma/client";
+import { inventory_items, Prisma, User } from "@prisma/client";
 // import { InputWithLoading } from "@/components/custom/InputWithLoading";
 import InventoryItemCart from "@/components/custom/InventoryItemCart";
 import {
@@ -147,7 +142,7 @@ const EditCheckoutSessionForm = ({
   // if (isLoading) return <p>Loading...</p>;
   // if (!data) return <p>No profile data</p>;
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {

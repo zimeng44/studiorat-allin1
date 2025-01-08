@@ -1,5 +1,5 @@
 "use server";
-import { getStrapiURL } from "@/lib/utils";
+import { getBackendURL } from "@/lib/utils";
 import { getAuthToken } from "./get-token";
 import { SignJWT, jwtVerify } from "jose";
 import { getUserByIdentifier } from "../loaders";
@@ -45,7 +45,7 @@ interface LoginUserProps {
   password: string;
 }
 
-const baseUrl = getStrapiURL();
+const baseUrl = getBackendURL();
 
 export async function registerUserService(userData: RegisterUserProps) {
   const url = new URL("/api/auth/local/register", baseUrl);

@@ -45,15 +45,15 @@ export function flattenAttributes(data: any): any {
   return flattened;
 }
 
-export function getStrapiURL() {
-  return process.env.NEXT_PUBLIC_SR_BACKEND_API_URL ?? "http://localhost:3000";
+export function getBackendURL() {
+  return process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:3000";
 }
 
 export function getStrapiMedia(url: string | null) {
   if (url == null) return null;
   if (url.startsWith("data:")) return url;
   if (url.startsWith("http") || url.startsWith("//")) return url;
-  return `${getStrapiURL()}${url}`;
+  return `${getBackendURL()}${url}`;
 }
 
 export function geLocalMedia(filename: string | null) {
@@ -65,7 +65,7 @@ export function geLocalMedia(filename: string | null) {
     filename.startsWith("/")
   )
     return filename;
-  return `${getStrapiURL()}/api/image?filename=${filename}`;
+  return `${getBackendURL()}/api/image?filename=${filename}`;
 }
 
 export function extractYouTubeID(urlOrID: string): string | null {

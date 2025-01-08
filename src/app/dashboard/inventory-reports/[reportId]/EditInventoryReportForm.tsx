@@ -1,15 +1,10 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import qs from "qs";
 import {
   DEV_MODE,
-  InventoryItem,
   InventoryItemWithImage,
-  InventoryReportType,
-  InventoryReportTypePost,
   InventoryReportWithCreatorAndItems,
-  RetrievedItems,
-  UserType,
   UserWithRole,
 } from "@/data/definitions";
 import { z } from "zod";
@@ -29,22 +24,20 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
-import EmbededTable from "@/components/custom/EmbededTable";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
-import { updateItemAction } from "@/data/actions/inventory-actions";
+// import { inventoryColumns } from "@/app/dashboard/master-inventory/inventoryColumns";
+// import EmbededTable from "@/components/custom/EmbededTable";
+import { getBackendURL } from "@/lib/utils";
+// import { updateItemAction } from "@/data/actions/inventory-actions";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
-import {
-  createInventoryReportAction,
-  updateInventoryReportAction,
-} from "@/data/actions/inventoryReports-actions";
+import { updateInventoryReportAction } from "@/data/actions/inventoryReports-actions";
 import { StrapiErrors } from "@/components/custom/StrapiErrors";
 import { Badge } from "@/components/ui/badge";
-import { inventory_items, inventory_reports, Prisma } from "@prisma/client";
-import { getInventoryItemByBarcode } from "@/data/loaders";
+// import { inventory_items, inventory_reports, Prisma } from "@prisma/client";
+// import { getInventoryItemByBarcode } from "@/data/loaders";
 import InventoryItemCart from "@/components/custom/InventoryItemCart";
 import { inventoryReportInventoryCartColumns } from "../InventoryCartColumns";
+import { Prisma } from "@prisma/client";
 
 // import { useRouter } from "next/navigation";
 
@@ -107,7 +100,7 @@ const EditInventoryReportForm = ({
     if (!report.is_finished) form.setFocus("scan");
   }, []);
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {

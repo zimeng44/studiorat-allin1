@@ -43,7 +43,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { flattenAttributes, getStrapiURL } from "@/lib/utils";
+import { flattenAttributes, getBackendURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import {
   Popover,
@@ -257,7 +257,7 @@ const NewBookingForm = ({
     return;
   }
 
-  const baseUrl = getStrapiURL();
+  const baseUrl = getBackendURL();
 
   async function fetchData(url: string) {
     const headers = {
