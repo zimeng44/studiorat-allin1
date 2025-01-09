@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { geLocalMedia, getStrapiMedia } from "@/lib/utils";
+import { geLocalMedia } from "@/lib/utils";
 
 interface StrapiImageProps {
   src: string | null;
