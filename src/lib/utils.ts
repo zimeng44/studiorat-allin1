@@ -57,7 +57,6 @@ export function getBackendURL() {
 // }
 
 export function geLocalMedia(filename: string | null) {
-  console.log("Get Local Media: ", filename);
   if (filename == null) return null;
   if (filename.startsWith("data:")) return filename;
   if (filename.startsWith("http") || filename.startsWith("https"))
