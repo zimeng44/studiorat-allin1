@@ -1,24 +1,8 @@
-// import { getAuthToken } from "@/data/services/get-token";
-// import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-// import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import fs from "fs";
 import path from "path";
 
 export async function GET(req: NextRequest) {
-  // const reqAuthToken = req.headers.get("Authorization")?.split(" ")[1];
-  // const user = await getUserMeLoader(reqAuthToken);
-
-  // console.log(await getAuthToken());
-
-  // if (!user.ok)
-  //   return new Response(
-  //     JSON.stringify({ data: null, error: "Not authorized" }),
-  //     {
-  //       status: 401,
-  //     },
-  //   );
-  // console.log("called here");
   const url = new URL(req.url);
   const filename = url.searchParams.get("filename");
 
@@ -30,7 +14,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const filePath = path.join(process.cwd(), "public/uploads", filename);
+  const filePath = path.join(process.cwd(), "public", filename);
 
   if (!fs.existsSync(filePath)) {
     return Response.json({ error: "Image not found" }, { status: 404 });
