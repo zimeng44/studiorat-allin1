@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const filePath = path.join(process.cwd(), "public/uploads", filename);
+  const filePath = path.join(process.cwd(), "public", filename);
 
   if (!fs.existsSync(filePath)) {
     return Response.json({ error: "Image not found" }, { status: 404 });

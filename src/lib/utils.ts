@@ -49,21 +49,10 @@ export function getBackendURL() {
   return process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:3000";
 }
 
-export function getStrapiMedia(url: string | null) {
-  if (url == null) return null;
-  if (url.startsWith("data:")) return url;
-  if (url.startsWith("http") || url.startsWith("//")) return url;
-  return `${getBackendURL()}${url}`;
-}
-
 export function geLocalMedia(filename: string | null) {
   if (filename == null) return null;
   if (filename.startsWith("data:")) return filename;
-  if (
-    filename.startsWith("http") ||
-    filename.startsWith("//") ||
-    filename.startsWith("/")
-  )
+  if (filename.startsWith("http") || filename.startsWith("https"))
     return filename;
   return `${getBackendURL()}/api/image?filename=${filename}`;
 }
