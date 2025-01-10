@@ -2,7 +2,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import {
-  InventoryItem,
   bookingTimeList,
   bookingLocationList,
   bookingTypeList,
@@ -33,7 +32,6 @@ import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { bookingInventoryCartColumns } from "@/app/dashboard/booking/inventoryCartColumns";
-// import BookingEmbededTable from "../BookingEmbededTable";
 import {
   Popover,
   PopoverContent,

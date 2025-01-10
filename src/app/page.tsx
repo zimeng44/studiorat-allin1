@@ -1,28 +1,5 @@
-// import { Button } from '@/components/ui/button';
-// import { getHomePageData } from "@/data/loaders";
 import { HeroSection } from "@/components/custom/HeroSection";
-// import { flattenAttributes } from "@/lib/utils";
-// import qs from "qs";
-// import { getStrapiURL } from "@/lib/utils";
 import { FeatureSection } from "@/components/custom/FeaturesSection";
-
-// const homePageQuery = qs.stringify({
-//   populate: {
-//     blocks: {
-//       populate: {
-//         image: {
-//           fields: ["url", "alternativeText"],
-//         },
-//         link: {
-//           populate: true,
-//         },
-//         feature: {
-//           populate: true,
-//         },
-//       },
-//     },
-//   },
-// });
 
 function blockRenderer(block: any) {
   switch (block.__component) {
@@ -35,26 +12,7 @@ function blockRenderer(block: any) {
   }
 }
 
-// async function getStrapiData(path: string) {
-//   const baseUrl = getStrapiURL();
-
-//   const url = new URL(path, baseUrl);
-//   url.search = homePageQuery;
-
-//   try {
-//     const res = await fetch(url.href, { cache: "no-store" });
-//     const data = await res.json();
-//     const flattenedData = flattenAttributes(data);
-//     return flattenedData;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-
 export default async function Home() {
-  // const strapiData = await getHomePageData();
-  // console.log('data length: ',strapiData.data);
-  // console.log("here");
   const strapiData = {
     id: 1,
 

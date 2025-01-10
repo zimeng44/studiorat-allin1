@@ -1,12 +1,10 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 // import { getGlobalPageData, getGlobalPageMetadata } from "@/data/loaders";
 import { Header } from "@/components/custom/Header";
-import { Footer } from "@/components/custom/Footer";
-import { describe } from "node:test";
-import { unstable_noStore as noStore } from "next/cache";
+// import { Footer } from "@/components/custom/Footer";
 import { Suspense } from "react";
 import { NavigationEvents } from "@/components/custom/navigation-events";
 import type { Viewport } from "next";

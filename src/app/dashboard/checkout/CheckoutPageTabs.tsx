@@ -3,9 +3,7 @@ import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 import {
-  CheckoutSessionType,
   CheckoutWithUserAndItems,
-  InventoryItem,
 } from "@/data/definitions";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +13,6 @@ import CheckoutSessionsTable from "./CheckoutSessionsTable";
 import TabHeader from "./TabHeader";
 import { Grid, HomeIcon, List } from "lucide-react";
 import { format } from "date-fns";
-import { checkout_sessions } from "@prisma/client";
 
 interface ViewTabsProps {
   data: any[];

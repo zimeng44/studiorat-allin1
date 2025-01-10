@@ -22,10 +22,8 @@ export default async function SingleCheckoutSessionDetails({
 }: {
   params: ParamsProps;
 }) {
-  // console.log(params);
-  // const { value: authToken } = cookies().get("jwt");
   const { data: thisUser } = await getUserMeLoader();
-  // console.log(thisUser);
+
   if (
     thisUser?.user_role.name !== "Admin" &&
     thisUser?.user_role.name !== "Monitor"
@@ -41,14 +39,10 @@ export default async function SingleCheckoutSessionDetails({
 
   if (jwtCookie) {
     const { value: authToken } = jwtCookie;
-    // You can now use authToken safely here
-    // console.log(authToken);
   } else {
     // Handle the case where the cookie is not found
     console.error("JWT cookie not found");
   }
-
-  // console.log("checkout session by ID \n", data);
 
   return (
     <div className="flex-col p-0 md:p-5">

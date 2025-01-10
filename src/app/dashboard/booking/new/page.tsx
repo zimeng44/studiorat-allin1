@@ -9,19 +9,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { BookingType, BookingWithUserAndItems } from "@/data/definitions";
 import { getUserMeLoader } from "@/data/services/get-user-me-loader";
-import { add, addDays, addHours, startOfDay } from "date-fns";
-import { bookings, Prisma } from "@prisma/client";
+import { addDays, addHours, startOfDay } from "date-fns";
 
-// const INITIAL_STATE = {
-//   startTime: "",
-//   endTime: "",
-//   useLocation: "",
-//   type: "",
-//   createMonitor: "",
-//   notes: "",
-// };
 type SearchParamsProps = Promise<{
   start_time?: string;
 }>;

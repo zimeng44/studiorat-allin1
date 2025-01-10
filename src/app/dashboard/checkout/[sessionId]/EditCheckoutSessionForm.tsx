@@ -32,7 +32,6 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateCheckoutSessionActionWithItems } from "@/data/actions/checkout-actions";
-// import EmbededTable from "@/components/custom/EmbededTable";
 import { getBackendURL } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import { SubmitButton } from "@/components/custom/SubmitButton";
@@ -41,7 +40,6 @@ import { TagsInput } from "react-tag-input-component";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { inventory_items, Prisma, User } from "@prisma/client";
-// import { InputWithLoading } from "@/components/custom/InputWithLoading";
 import InventoryItemCart from "@/components/custom/InventoryItemCart";
 import {
   checkoutEditInventoryCartColumns,

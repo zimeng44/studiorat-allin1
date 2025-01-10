@@ -16,18 +16,7 @@ import {
 import "!style-loader!css-loader!react-big-calendar/lib/css/react-big-calendar.css";
 import { BookingWithUserAndItems } from "@/data/definitions";
 import { useRouter, useSearchParams } from "next/navigation";
-// import Loading from "./loading";
 import { Loader2 } from "lucide-react";
-
-// const mLocalizer = momentLocalizer(moment);
-
-// const ColoredDateCellWrapper = ({ children }) =>
-//   React.cloneElement(React.Children.only(children), {
-//     style: {
-//       backgroundColor: "lightblue",
-//     },
-//   });
-
 export default function BookingCalendar({
   localizer,
   authToken,
@@ -53,7 +42,6 @@ export default function BookingCalendar({
       // window.alert(newDate);
       getDateData(newDate).then(({ data, error }) => {
         setIsLoading(false);
-        // console.log("Date is ###############", data);
         setEvents(
           data.map((booking: BookingWithUserAndItems) => {
             return {
@@ -86,7 +74,6 @@ export default function BookingCalendar({
         // window.alert("Our office hours are 8AM to 11PM");
         start = addHours(startOfDay(start), 12);
         // console.log(compareAsc(eightAM, start));
-        // return;
       }
       const confirm = window.confirm("Creating a new booking?");
 

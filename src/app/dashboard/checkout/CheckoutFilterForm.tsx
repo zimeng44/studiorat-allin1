@@ -3,7 +3,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
@@ -13,8 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-// import { Checkbox } from "@/components/ui/checkbox";
-// import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { studioList } from "@/data/definitions";
 
 import {
@@ -35,10 +32,6 @@ import {
 } from "@/components/ui/select";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-// const mTechBarcode = z.union([
-//   z.string().min(12).and(z.string().max(13)),
-//   z.string().length(0),
-// ]);
 interface FilterFormProps {
   creation_time?: { from?: Date | null; to?: Date | null } | null;
   finish_time?: { from?: Date | null; to?: Date | null } | null;

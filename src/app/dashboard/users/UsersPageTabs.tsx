@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import PaginationControls from "@/components/custom/PaginationControls";
 
-import { UserType, UserWithRole } from "@/data/definitions";
+import { UserWithRole } from "@/data/definitions";
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

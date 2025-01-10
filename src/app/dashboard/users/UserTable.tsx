@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 
 import { SquarePen } from "lucide-react";
-import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
