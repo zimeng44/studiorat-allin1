@@ -1,8 +1,8 @@
-name: zimeng44/studio-rat-bundle
+name: zimeng44/studiorat
 services:
-  studio-rat:
+  studiorat:
     platform: linux/amd64
-    image: zimeng44/studio-rat-dev:latest
+    image: zimeng44/studiorat:latest
     # container_name: studio-rat
     # build:
     #   context: .
@@ -23,7 +23,7 @@ services:
         condition: service_healthy
     volumes:
       # - .:/app
-      - studio-rat-data:/app/public/uploads
+      - studiorat-data:/app/public/uploads
     restart: always
     ports:
       - 3000:3000
@@ -49,4 +49,4 @@ services:
 
 volumes:
   pgdata: {}
-  studio-rat-data: {}
+  studiorat-data: {}
