@@ -38,3 +38,7 @@ next-env.d.ts
 /unused
 
 /public/uploads
+
+Dockerfile
+
+docker-compose.yml
