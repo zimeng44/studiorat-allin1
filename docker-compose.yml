@@ -1,8 +1,8 @@
-name: zimeng44/studiorat
+name: zimeng44/studiorat-multi
 services:
   studiorat:
-    platform: linux/amd64
-    image: zimeng44/studiorat:latest
+    # platform: linux/amd64
+    image: zimeng44/studiorat-multi:latest
     # container_name: studio-rat
     # build:
     #   context: .
@@ -29,8 +29,8 @@ services:
       - 3000:3000
     # command: "sh -c 'cd studio-rat; npm install; npx prisma migrate deploy; npx prisma db seed'"
   postgres:
-    platform: linux/amd64
-    image: postgres:15
+    # platform: linux/amd64
+    image: postgres:16
     restart: always
     ports:
       - 5432:5432
