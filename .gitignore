@@ -39,8 +39,8 @@ next-env.d.ts
 
 /public/uploads
 
-Dockerfile
-
-docker-compose.yml
 
 mydb.tar
+
+docker-compose.yml
+>>>>>>> 7c4f3c1 (docker compose ignored)
